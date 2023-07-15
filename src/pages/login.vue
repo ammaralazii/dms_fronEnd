@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { VForm } from 'vuetify/components'
-import type { LoginResponse } from '@/@fake-db/types'
+import hundlerErorr from '@/helper/hundlerErorr'
+import axiosIns from '@/plugins/axios'
 import { useAppAbility } from '@/plugins/casl/useAppAbility'
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
+import type { ApiResponse } from '@/types/response/api-response-info'
+import setUserApility from '@/utils/permissions/setUserApility'
 import axios from '@axios'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { emailValidator, requiredValidator } from '@validators'
+import { requiredValidator } from '@validators'
+import { VForm } from 'vuetify/components'
 
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
@@ -27,35 +29,49 @@ const router = useRouter()
 
 const ability = useAppAbility()
 
-const errors = ref<Record<string, string | undefined>>({
-  email: undefined,
-  password: undefined,
-})
-
 const refVForm = ref<VForm>()
-const email = ref('admin@demo.com')
+const identify = ref('admin@demo.com')
 const password = ref('admin')
 const rememberMe = ref(false)
+const loading = ref(false)
 
 const login = () => {
-  axios.post<LoginResponse>('/auth/login', { email: email.value, password: password.value })
+  loading.value = true
+  axios.post<ApiResponse>(`${process.env.baseUrl}login`, { identify: identify.value, password: password.value })
     .then(r => {
-      const { accessToken, userData, userAbilities } = r.data
+      const data = r.data.data
+      const accessToken = r.data.data.token
 
-      localStorage.setItem('userAbilities', JSON.stringify(userAbilities))
-      ability.update(userAbilities)
+      loading.value = false
 
-      localStorage.setItem('userData', JSON.stringify(userData))
+      localStorage.setItem('userData', JSON.stringify({
+        email: data.email,
+        username: data.username,
+        id: data.id,
+      }))
       localStorage.setItem('accessToken', JSON.stringify(accessToken))
 
       // Redirect to `to` query if exist or redirect to index route
-      router.replace(route.query.to ? String(route.query.to) : '/')
+      router.push({ name: 'dashboards-analytics' })
     })
     .catch(e => {
-      const { errors: formErrors } = e.response.data
+      loading.value = false
+      hundlerErorr(e)
+    })
+    .finally(async () => {
+      const configurationURL = `${process.env.baseUrl}permission`
 
-      errors.value = formErrors
-      console.error(e.response.data)
+      try {
+        const info = await axiosIns.get<ApiResponse>(configurationURL)
+
+        const userAbilities = setUserApility(info.data.data)
+
+        localStorage.setItem('userAbilities', JSON.stringify(userAbilities))
+        ability.update(userAbilities)
+      }
+      catch (e) {
+        hundlerErorr(e)
+      }// /catch
     })
 }
 
@@ -116,19 +132,7 @@ const onSubmit = () => {
             Please sign-in to your account and start the adventure
           </p>
         </VCardText>
-        <VCardText>
-          <VAlert
-            color="primary"
-            variant="tonal"
-          >
-            <p class="text-caption mb-2">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
-            </p>
-            <p class="text-caption mb-0">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
-            </p>
-          </VAlert>
-        </VCardText>
+
         <VCardText>
           <VForm
             ref="refVForm"
@@ -138,11 +142,10 @@ const onSubmit = () => {
               <!-- email -->
               <VCol cols="12">
                 <VTextField
-                  v-model="email"
-                  label="Email"
+                  v-model="identify"
+                  label="Email or Username"
                   type="email"
-                  :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors.email"
+                  :rules="[requiredValidator]"
                 />
               </VCol>
 
@@ -153,7 +156,6 @@ const onSubmit = () => {
                   label="Password"
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :error-messages="errors.password"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
@@ -174,6 +176,7 @@ const onSubmit = () => {
                 <VBtn
                   block
                   type="submit"
+                  :loading="loading"
                 >
                   Login
                 </VBtn>
@@ -192,22 +195,27 @@ const onSubmit = () => {
                   Create an account
                 </RouterLink>
               </VCol>
-              <VCol
+
+              <!--
+                <VCol
                 cols="12"
                 class="d-flex align-center"
-              >
+                >
                 <VDivider />
                 <span class="mx-4">or</span>
                 <VDivider />
-              </VCol>
+                </VCol>
+              -->
 
               <!-- auth providers -->
-              <VCol
+              <!--
+                <VCol
                 cols="12"
                 class="text-center"
-              >
+                >
                 <AuthProvider />
-              </VCol>
+                </VCol>
+              -->
             </VRow>
           </VForm>
         </VCardText>
