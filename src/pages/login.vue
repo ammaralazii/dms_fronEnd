@@ -53,7 +53,7 @@ const login = () => {
       localStorage.setItem('accessToken', JSON.stringify(accessToken))
 
       // Redirect to `to` query if exist or redirect to index route
-      router.replace(route.query.to ? String(route.query.to) : '/')
+      router.push(route.query.to ? String(route.query.to) : '/')
     })
     .catch(e => {
       loading.value = false
