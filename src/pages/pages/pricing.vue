@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import laptopGirl from '@images/illustrations/laptop-girl.png'
+import laptopGirl from '@images/illustrations/laptop-girl.png';
 
 const features = [
   {
@@ -393,3 +393,9 @@ const faqs = [
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

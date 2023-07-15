@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { FaqCategory } from '@/@fake-db/types'
-import sittingGirlWithLaptop from '@images/illustrations/sitting-girl-with-laptop.png'
 import axios from '@axios'
 import AppSearchHeader from '@core/components/AppSearchHeader.vue'
+import sittingGirlWithLaptop from '@images/illustrations/sitting-girl-with-laptop.png'
 
 const faqSearchQuery = ref('')
 
@@ -215,3 +215,9 @@ const contactUs = [
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

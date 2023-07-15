@@ -154,3 +154,9 @@ const simpleStatisticsDemoCards = [
     </VCol>
   </VRow>
 </template>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

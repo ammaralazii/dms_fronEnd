@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import '@fullcalendar/core/vdom' // solves problem with Vite
+import '@fullcalendar/core/vdom'; // solves problem with Vite
 
 // Local imports
 
-import FullCalendar from '@fullcalendar/vue3'
 import { blankEvent, useCalendar } from '@/views/apps/calendar/useCalendar'
 import { useCalendarStore } from '@/views/apps/calendar/useCalendarStore'
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
+import FullCalendar from '@fullcalendar/vue3'
 
 // Components
 import CalendarEventHandler from '@/views/apps/calendar/CalendarEventHandler.vue'
@@ -171,3 +171,9 @@ const checkAll = computed({
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

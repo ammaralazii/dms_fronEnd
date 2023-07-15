@@ -169,3 +169,9 @@ const iconsList = [
     </div>
   </div>
 </template>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

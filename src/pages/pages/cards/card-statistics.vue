@@ -567,3 +567,9 @@ const simpleStatisticsDemoCards = [
 <style lang="scss">
 @use "@core/scss/template/libs/apex-chart.scss";
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

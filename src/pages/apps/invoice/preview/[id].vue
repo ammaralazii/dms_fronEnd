@@ -429,3 +429,9 @@ const printInvoice = () => {
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

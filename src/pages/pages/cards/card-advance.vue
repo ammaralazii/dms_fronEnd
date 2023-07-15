@@ -130,3 +130,9 @@ import CardAdvanceWebsiteAnalytics from '@/views/pages/cards/card-advance/CardAd
     </VCol>
   </VRow>
 </template>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

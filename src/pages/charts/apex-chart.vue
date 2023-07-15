@@ -244,3 +244,9 @@ import ApexChartStocksPrices from '@/views/charts/apex-chart/ApexChartStocksPric
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

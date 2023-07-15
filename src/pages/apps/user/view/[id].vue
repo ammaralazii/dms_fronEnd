@@ -87,3 +87,9 @@ userListStore.fetchUser(Number(route.params.id)).then(response => {
     </VCol>
   </VRow>
 </template>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

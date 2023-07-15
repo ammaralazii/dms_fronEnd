@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
 import type { HelpCenterSubcategoriesType, HelpCenterSubcategoryArticlesType } from '@/@fake-db/types'
 import axios from '@axios'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
@@ -143,5 +143,8 @@ watch(activeTab, fetchHelpCenterArticlesData, { immediate: true })
 
 <route lang="yaml">
 meta:
+  action: manage
+  subject: Auth
   navActiveLink: pages-help-center
 </route>
+

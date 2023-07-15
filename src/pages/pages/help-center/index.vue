@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type {
-  HelpCenterArticlesOverviewType,
-  HelpCenterCategoriesType,
+HelpCenterArticlesOverviewType,
+HelpCenterCategoriesType,
 } from '@/@fake-db/types'
 
 import HelpCenterLandingArticlesOverview from '@/views/pages/help-center/HelpCenterLandingArticlesOverview.vue'
@@ -68,3 +68,9 @@ fetchHelpCenterData()
     <HelpCenterLandingFooter />
   </VCard>
 </template>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

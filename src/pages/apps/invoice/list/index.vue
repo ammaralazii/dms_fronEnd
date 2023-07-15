@@ -395,3 +395,9 @@ const resolveInvoiceStatusVariantAndIcon = (status: string) => {
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

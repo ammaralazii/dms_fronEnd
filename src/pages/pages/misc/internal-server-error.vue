@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import ErrorHeader from '@core/components/ErrorHeader.vue'
 import pages500 from '@images/pages/404.png'
 import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
-import ErrorHeader from '@core/components/ErrorHeader.vue'
 
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 
@@ -45,5 +45,6 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
 <route lang="yaml">
 meta:
+
   layout: blank
 </route>

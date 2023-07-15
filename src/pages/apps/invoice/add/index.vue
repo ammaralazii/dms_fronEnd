@@ -150,3 +150,8 @@ const paymentMethods = ['Bank Account', 'PayPal', 'UPI Transfer']
   </VRow>
 </template>
 
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

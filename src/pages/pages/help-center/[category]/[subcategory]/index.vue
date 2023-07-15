@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
 import axios from '@axios'
+import { useRoute } from 'vue-router'
 
 import type { HelpCenterCategoriesType } from '@/@fake-db/types'
 
@@ -128,5 +128,7 @@ watch(activeTab, fetchHelpCenterCategoriesData, { immediate: true })
 
 <route lang="yaml">
 meta:
+  action: manage
+  subject: Auth
   navActiveLink: pages-help-center
 </route>

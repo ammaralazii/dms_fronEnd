@@ -14,6 +14,8 @@ export default [
       {
         title: 'Level 2.1',
         to: null,
+        action: 'manage',
+        subject: 'Auth',
       },
       {
         title: 'Level 2.2',
@@ -21,10 +23,14 @@ export default [
           {
             title: 'Level 3.1',
             to: null,
+            action: 'manage',
+            subject: 'Auth',
           },
           {
             title: 'Level 3.2',
             to: null,
+            action: 'manage',
+            subject: 'Auth',
           },
         ],
       },
@@ -35,17 +41,23 @@ export default [
     to: null,
     icon: { icon: 'tabler-eye-off' },
     disable: true,
+    action: 'manage',
+    subject: 'Auth',
   },
   {
     title: 'Raise Support',
     href: 'https://pixinvent.ticksy.com/',
     icon: { icon: 'tabler-lifebuoy' },
     target: '_blank',
+    action: 'manage',
+    subject: 'Auth',
   },
   {
     title: 'Documentation',
     href: 'https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/documentation/',
     icon: { icon: 'tabler-file' },
     target: '_blank',
+    action: 'manage',
+    subject: 'Auth',
   },
 ]

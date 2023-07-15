@@ -201,3 +201,9 @@ const chartJsCustomColors: ChartJsCustomColors = {
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>

@@ -85,3 +85,9 @@ import CardWidgetsTotalEarning from '@/views/pages/cards/card-widgets/CardWidget
     </VCol>
   </VRow>
 </template>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>
