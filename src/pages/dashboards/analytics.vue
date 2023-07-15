@@ -180,7 +180,7 @@ const statisticsVertical = {
 
 <route lang="yaml">
 meta:
-  action: manage
+  action: read
   subject: Auth
 </route>
 

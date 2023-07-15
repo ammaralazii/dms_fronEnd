@@ -1,1 +1,9 @@
 // Write your overrides
+.layout-vertical-nav .nav-header {
+  margin-inline: 10px !important;
+
+  svg.logo {
+    block-size: 50px;
+    inline-size: 50px;
+  }
+}
