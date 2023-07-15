@@ -48,11 +48,12 @@ const login = () => {
         email: data.email,
         username: data.username,
         id: data.id,
+        role: 'admin',
       }))
       localStorage.setItem('accessToken', JSON.stringify(accessToken))
 
       // Redirect to `to` query if exist or redirect to index route
-      router.push({ name: 'dashboards-analytics' })
+      router.replace(route.query.to ? String(route.query.to) : '/')
     })
     .catch(e => {
       loading.value = false
