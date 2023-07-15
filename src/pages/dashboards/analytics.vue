@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
 import AnalyticsEarningReportsWeeklyOverview from '@/views/dashboards/analytics/AnalyticsEarningReportsWeeklyOverview.vue'
 import AnalyticsMonthlyCampaignState from '@/views/dashboards/analytics/AnalyticsMonthlyCampaignState.vue'
 import AnalyticsProjectTable from '@/views/dashboards/analytics/AnalyticsProjectTable.vue'
@@ -10,6 +9,7 @@ import AnalyticsSupportTracker from '@/views/dashboards/analytics/AnalyticsSuppo
 import AnalyticsTotalEarning from '@/views/dashboards/analytics/AnalyticsTotalEarning.vue'
 import AnalyticsWebsiteAnalytics from '@/views/dashboards/analytics/AnalyticsWebsiteAnalytics.vue'
 import CardStatisticsVertical from '@core/components/CardStatisticsVertical.vue'
+import { useTheme } from 'vuetify'
 
 const vuetifyTheme = useTheme()
 const currentTheme = vuetifyTheme.current.value.colors
@@ -177,6 +177,12 @@ const statisticsVertical = {
     </VCol>
   </VRow>
 </template>
+
+<route lang="yaml">
+meta:
+  action: manage
+  subject: Auth
+</route>
 
 <style lang="scss">
 @use "@core/scss/template/libs/apex-chart.scss";
