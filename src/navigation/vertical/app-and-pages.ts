@@ -1,12 +1,37 @@
 export default [
   { heading: 'Apps & Pages' },
   {
-    title: 'Email',
-    icon: { icon: 'tabler-mail' },
-    to: 'apps-email',
-    action: 'manage',
-    subject: 'Auth',
+    title: 'Main Store',
+    icon: { icon: 'tabler-user' },
+    children: [
+      {
+        title: 'Help Center',
+        to: 'apps-main-store-help-center',
+        action: 'manage',
+        subject: 'Auth',
+      },
+      {
+        title: 'List',
+        to: 'apps-main-store-list',
+        action: 'manage',
+        subject: 'Auth',
+      },
+      {
+        title: 'View',
+        to: { name: 'apps-main-store-view-id', params: { id: 21 } },
+        action: 'manage',
+        subject: 'Auth',
+      },
+    ],
   },
+
+  // {
+  //   title: 'Email',
+  //   icon: { icon: 'tabler-mail' },
+  //   to: 'apps-email',
+  //   action: 'manage',
+  //   subject: 'Auth',
+  // },
   {
     title: 'Chat',
     icon: { icon: 'tabler-message' },
