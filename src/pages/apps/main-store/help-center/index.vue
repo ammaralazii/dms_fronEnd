@@ -1,28 +1,50 @@
 <script setup lang="ts">
+import debounce from 'lodash.debounce'
+
 import type {
-HelpCenterArticlesOverviewType,
-HelpCenterCategoriesType,
+  HelpCenterCategoriesType,
 } from '@/@fake-db/types'
 
+import type HelpCenterArticlesOverviewType from '@/types/HelpCenterArticlesOverviewType'
+
+import AppSearchHeader from '@/views/base/AppSearchHeader.vue'
 import HelpCenterLandingArticlesOverview from '@/views/pages/help-center/HelpCenterLandingArticlesOverview.vue'
 import HelpCenterLandingFooter from '@/views/pages/help-center/HelpCenterLandingFooter.vue'
 import HelpCenterLandingKnowledgeBase from '@/views/pages/help-center/HelpCenterLandingKnowledgeBase.vue'
 import axios from '@axios'
 
 interface ApiDataType {
-  categories: HelpCenterCategoriesType[]
-  keepLearning: HelpCenterArticlesOverviewType[]
   popularArticles: HelpCenterArticlesOverviewType[]
 }
 
 const apiData = ref<ApiDataType>()
+const search = ref('search')
 
-// fetching data from the @fake-db
 const fetchHelpCenterData = () => {
-  return axios.get('/pages/help-center/landing').then(res => {
-    apiData.value = res.data
-  })
+  apiData.value = {
+    popularArticles: [
+      {
+        img: 'ph-device-mobile-speaker',
+        title: 'Devices',
+        subtitle: 'regulate IMEI devices',
+      },
+      {
+        img: 'ph-cards',
+        title: 'Cards',
+        subtitle: 'regulate SIM cards',
+      },
+      {
+        img: 'ph-shapes',
+        title: 'Accessories',
+        subtitle: 'regulate accessories for devices',
+      },
+    ],
+  }
 }
+
+// this function to search on device and cards and accessorice
+const searchVal = debounce((value: unknown, type: unknown) => {
+}, 2000)// /searchVal
 
 fetchHelpCenterData()
 </script>
@@ -30,15 +52,17 @@ fetchHelpCenterData()
 <template>
   <VCard v-if="apiData">
     <AppSearchHeader
-      title="Hello, how can we help?"
-      subtitle="Common troubleshooting topics: eCommerce, Blogging to payment"
+      v-model="search"
+      title="Hello, how can I help?"
+      subtitle="You can search by devices, cards, and accessories"
       custom-class="rounded-0"
+      @searchVal="searchVal"
     />
 
-    <!-- 👉 Popular Articles -->
+    <!-- 👉 Store materials -->
     <VCardText class="py-12">
       <h5 class="text-h5 text-center my-6">
-        Popular Articles
+        Store materials
       </h5>
 
       <HelpCenterLandingArticlesOverview :articles="apiData.popularArticles" />
@@ -56,13 +80,15 @@ fetchHelpCenterData()
     </div>
 
     <!-- 👉 Keep Learning -->
-    <VCardText class="py-12">
+    <!--
+      <VCardText class="py-12">
       <h5 class="text-h5 text-center my-6">
-        Keep Learning
+      Keep Learning
       </h5>
 
       <HelpCenterLandingArticlesOverview :articles="apiData.keepLearning" />
-    </VCardText>
+      </VCardText>
+    -->
 
     <!-- 👉 Still need help? -->
     <HelpCenterLandingFooter />
@@ -74,3 +100,4 @@ meta:
   action: manage
   subject: Auth
 </route>
+

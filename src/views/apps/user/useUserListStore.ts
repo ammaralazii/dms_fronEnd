@@ -1,14 +1,14 @@
-import type { AxiosResponse } from 'axios'
-import { defineStore } from 'pinia'
 import type { UserProperties } from '@/@fake-db/types'
 import type { UserParams } from '@/views/apps/user/types'
 import axios from '@axios'
+import type { AxiosResponse } from 'axios'
+import { defineStore } from 'pinia'
 
 export const useUserListStore = defineStore('UserListStore', {
   actions: {
 
     // 👉 Fetch users data
-    fetchUsers(params: UserParams) { return axios.get('/apps/users/list', { params }) },
+    fetchUsers(params: UserParams) { return axios.get(`user?per_page=${params.perPage}&page=${params.currentPage}`, { params }) },
 
     // 👉 Add User
     addUser(userData: UserProperties) {

@@ -14,25 +14,23 @@ interface Emit {
   (e: 'userData', value: userInfo): void
 }
 
-interface Props {
-  isDrawerOpen: boolean
-}
+const props = defineProps({
+  isDrawerOpen: {
+    required: true,
+    type: Boolean,
+  },
+  // eslint-disable-next-line vue/require-prop-types
+  userUpdateData: {
+    required: true,
+  },
+})
 
-const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
-const username = ref('')
-const email = ref('')
-const company = ref('')
-const country = ref('')
-const contact = ref('')
-const roleId = ref()
-const caseId = ref()
-const plan = ref()
-const status = ref()
 const password = ref()
+
 const showPassword = ref(false)
 
 const alert = useAlertsStore()
@@ -58,46 +56,58 @@ const cases = computed(() => {
 })// /roles
 
 const togglePasswordVisibility = () => {
-  console.log('function is working ...')
   showPassword.value = !showPassword.value
 }// /togglePasswordVisibility
+
+const userData = ref(props.userUpdateData as any) as userInfo
 
 // this function o submit reqest
 const onSubmit = () => {
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
-      console.log('case id : ', caseId.value)
+      console.log('userData : ', userData)
 
-      const userData = {
-        username: username.value,
-        password: password.value,
-        email: email.value,
-        role_id: roleId.value.RoleId,
-        case_id: caseId.value.UserCaseId,
-      }
+      const user = {
+        username: userData.value?.username,
+        email: userData.value?.email,
+        role_id: userData.value?.role?.RoleId,
+        case_id: userData.value?.user_case?.UserCaseId,
+      }// /userData
 
-      const resultAddUser = await baseService.create('user', userData) as any
+      console.log('user : ', user)
 
-      if (resultAddUser.success) {
-        const user = {
-          id: resultAddUser.data.id,
-          role: roleId.value,
-          user_case: caseId.value,
-          username: resultAddUser.data.username,
-          email: resultAddUser.data.email,
-        }// /user
+      if (password.value !== undefined)
+        userData.password = password.value
 
-        emit('userData', user)
+      const resultUpdateUser = await baseService.update('user', user, userData.value.id as string) as any
+
+      if (resultUpdateUser.success) {
+        const payload = {
+          color: 'success',
+          timeOut: 5000,
+          run: true,
+          text: 'تم تعديل المستخدم',
+          position: {
+            top: true,
+            right: false,
+            left: false,
+            bottom: false,
+          },
+          update: false,
+        }/* /payload */
+
+        alert.$state.tosts.push(payload)
         emit('update:isDrawerOpen', false)
         nextTick(() => {
           refForm.value?.reset()
           refForm.value?.resetValidation()
-        })
+        })// nextTick
       }// /if
-    }
-  })
+    }// /if
+  })// refValidate
 }// /onSubmit
 
+// /this function to close navigation drwaer whenclick on overlay
 const handleDrawerModelValueUpdate = (val: boolean) => {
   emit('update:isDrawerOpen', val)
 }
@@ -115,7 +125,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
     <!-- 👉 Title -->
     <div class="d-flex align-center pa-6 pb-1">
       <h6 class="text-h6">
-        Add User
+        Update User
       </h6>
 
       <VSpacer />
@@ -146,10 +156,10 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
             @submit.prevent="onSubmit"
           >
             <VRow>
-              <!-- 👉 Full name -->
+              <!-- 👉 username -->
               <VCol cols="12">
                 <VTextField
-                  v-model="username"
+                  v-model="userData.username"
                   :rules="[requiredValidator]"
                   label="username"
                 />
@@ -158,50 +168,16 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
               <!-- 👉 Email -->
               <VCol cols="12">
                 <VTextField
-                  v-model="email"
+                  v-model="userData.email"
                   :rules="[requiredValidator, emailValidator]"
                   label="Email"
-                />
-              </VCol>
-
-              <!-- 👉 company -->
-              <VCol
-                cols="12"
-                class="d-none"
-              >
-                <VTextField
-                  v-model="company"
-                  label="Company"
-                />
-              </VCol>
-
-              <!-- 👉 Country -->
-              <VCol
-                cols="12"
-                class="d-none"
-              >
-                <VTextField
-                  v-model="country"
-                  label="Country"
-                />
-              </VCol>
-
-              <!-- 👉 Contact -->
-              <VCol
-                cols="12"
-                class="d-none"
-              >
-                <VTextField
-                  v-model="contact"
-                  type="number"
-                  label="Contact"
                 />
               </VCol>
 
               <!-- 👉 Role -->
               <VCol cols="12">
                 <VSelect
-                  v-model="roleId"
+                  v-model="userData.role"
                   label="Select Role"
                   :items="roles"
                   :item-title="(item) => item.RoleName"
@@ -209,22 +185,10 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                 />
               </VCol>
 
-              <!-- 👉 Plan -->
-              <VCol
-                cols="12"
-                class="d-none"
-              >
-                <VSelect
-                  v-model="plan"
-                  label="Select Plan"
-                  :items="['Basic', 'Company', 'Enterprise', 'Team']"
-                />
-              </VCol>
-
               <!-- 👉 Status -->
               <VCol cols="12">
                 <VSelect
-                  v-model="caseId"
+                  v-model="userData.user_case"
                   label="Select Status"
                   :rules="[requiredValidator]"
                   :items="cases"
@@ -240,7 +204,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                   :append-inner-icon="showPassword ? 'ph-eye' : 'ph-eye-slash'"
                   :type="showPassword ? 'text' : 'password'"
                   label="Password"
-                  :rules="[passwordValidator, requiredValidator]"
+                  :rules=" [passwordValidator]"
                   @click:append-inner="togglePasswordVisibility"
                 />
               </VCol>

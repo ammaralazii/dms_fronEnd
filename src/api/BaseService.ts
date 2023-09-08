@@ -20,7 +20,7 @@ export const baseService = {
   },
   async create(url: string, data: object): Promise<object | null> {
     try {
-      const result = await axiosIns.post(`${baseUrl}api/${url}`, data)
+      const result = await axiosIns.post(url, data)
 
       return result.data
     }
@@ -33,7 +33,7 @@ export const baseService = {
 
   async update(url: string, data: object, id: string): Promise<object | null> {
     try {
-      const result = await axiosIns.put(`${baseUrl}api/${url}/${id}`, data)
+      const result = await axiosIns.put(`${url}/${id}`, data)
 
       return result.data
     }
@@ -46,7 +46,9 @@ export const baseService = {
 
   async delete(url: string, data: any): Promise<object | null> {
     try {
-      const result = await axiosIns.delete(`${baseUrl}api/${url}`, {
+      console.log('data : ', data)
+
+      const result = await axiosIns.delete(url, {
         data,
       })
 

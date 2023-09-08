@@ -29,12 +29,9 @@ const props = defineProps<Props>()
             border
           >
             <VCardText class="text-center">
-              <VImg
-                :src="article.img"
-                aspect-ratio="1"
-                width="58"
-                class="mx-auto"
-              />
+              <VIcon size="58">
+                {{ article.img }}
+              </VIcon>
 
               <h6 class="text-h6 my-3">
                 {{ article.title }}
@@ -44,14 +41,9 @@ const props = defineProps<Props>()
               </p>
 
               <VBtn
-                size="small"
                 variant="tonal"
-                :to="{
-                  name: 'pages-help-center-category-subcategory-article',
-                  params: { category: 'getting-started', subcategory: 'account', article: 'changing-your-username' },
-                }"
               >
-                Read More
+                +2000
               </VBtn>
             </VCardText>
           </VCard>

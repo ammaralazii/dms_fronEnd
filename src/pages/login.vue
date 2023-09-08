@@ -54,7 +54,6 @@ const login = () => {
       localStorage.setItem('accessToken', JSON.stringify(accessToken))
 
       // Redirect to `to` query if exist or redirect to index route
-      console.log('String(route.query.to) : ', String(route.query.to))
       router.push(route.query.to ? String(route.query.to) : '/')
     })
     .catch(e => {

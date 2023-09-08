@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useTheme } from 'vuetify'
 import { useAlertsStore } from '@/stores/index'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import { hexToRgb } from '@layouts/utils'
-import { useTheme } from 'vuetify'
 
 const { syncInitialLoaderTheme, syncVuetifyThemeWithTheme: syncConfigThemeWithVuetifyTheme, isAppRtl } = useThemeConfig()
 
@@ -12,6 +12,8 @@ const { global } = useTheme()
 // ℹ️ Sync current theme with initial loader theme
 syncInitialLoaderTheme()
 syncConfigThemeWithVuetifyTheme()
+
+alert.getAllMasterData()
 
 const tostss = computed(() => {
   return alert.$state.tosts

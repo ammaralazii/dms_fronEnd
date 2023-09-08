@@ -110,5 +110,7 @@
       }
     ]
   },
-  "nuxt.isNuxtApp": false
+  "nuxt.isNuxtApp": false,
+  "vue-i18n.i18nPaths": "src\\plugins\\i18n,src\\plugins\\i18n\\locales",
+  "vue.codeActions.enabled": false
 }
