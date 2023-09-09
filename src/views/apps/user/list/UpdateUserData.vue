@@ -65,8 +65,6 @@ const userData = ref(props.userUpdateData as any) as userInfo
 const onSubmit = () => {
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
-      console.log('userData : ', userData)
-
       const user = {
         username: userData.value?.username,
         email: userData.value?.email,
@@ -74,14 +72,17 @@ const onSubmit = () => {
         case_id: userData.value?.user_case?.UserCaseId,
       }// /userData
 
-      console.log('user : ', user)
-
       if (password.value !== undefined)
         userData.password = password.value
 
       const resultUpdateUser = await baseService.update('user', user, userData.value.id as string) as any
 
       if (resultUpdateUser.success) {
+        if (userData.value.user_case.case === 'active')
+          alert.$state.activeUserCount += 1
+        else
+          alert.$state.activeUserCount -= 1
+
         const payload = {
           color: 'success',
           timeOut: 5000,

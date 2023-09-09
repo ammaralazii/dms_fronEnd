@@ -1,5 +1,6 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
+import { Console } from 'console'
 import TableExport from 'tableexport'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
@@ -9,10 +10,8 @@ import UpdateUserData from '@/views/apps/user/list/UpdateUserData.vue'
 import { useUserListStore } from '@/views/apps/user/useUserListStore'
 import { avatarText } from '@core/utils/formatters'
 import { useAlertsStore } from '@/stores'
-import type { roles } from '@/types/interfaces/roles'
 import { baseService } from '@/api/BaseService'
 import type { userInfo } from '@/types/interfaces/user-info'
-import { user } from '@/types/enum/roles'
 
 const alert = useAlertsStore()
 
@@ -29,6 +28,8 @@ const totalUsers = ref(0)
 const users = ref<userInfo[]>([])
 const oldList = ref()
 const searchingItems = ref<any>([])
+const userCount = ref<number>()
+const refreshKey = ref(0)
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -50,13 +51,12 @@ const fetchUsers = () => {
       oldList.value = response.data.data.data
       totalPage.value = response.data.data.last_page
       totalUsers.value = response.data.data.total
+      userCount.value = response.data.data.data.length
     }// /if
   }).catch(error => {
     console.error(error)
   })
-}
-
-// watchEffect(fetchUsers)
+}// /fetchUsers
 
 // 👉 watching current page
 watchEffect(() => {
@@ -135,7 +135,9 @@ const addNewUser = (userData: userInfo) => {
   || (selectedStatus.value === null || userData?.user_case?.case === selectedStatus.value)
   )
     users.value.unshift(userData)
-
+  if (userData?.user_case?.case === 'active')
+    alert.$state.activeUserCount += 1
+  alert.$state.userCount += 1
   oldList.value.unshift(userData)
 }// /addNewUser
 
@@ -150,7 +152,11 @@ const deleteUser = async (item: any, index: number) => {
   const result = await baseService.delete('user', [item.id]) as any
 
   if (result.success) {
+    if (users.value[index].user_case.case === 'active')
+      alert.$state.activeUserCount -= 1
+
     users.value.splice(index, 1)
+    alert.$state.userCount -= 1
 
     const payload = {
       color: 'success',
@@ -196,12 +202,12 @@ const exportToExcel = async () => {
 }// /exportToExcel
 
 // 👉 List
-const userListMeta = [
+const userListMeta = ref([
   {
     icon: 'tabler-user',
     color: 'primary',
     title: 'Session',
-    stats: totalUsers.value,
+    stats: 0,
     percentage: +29,
     subtitle: 'Total Users',
   },
@@ -217,7 +223,7 @@ const userListMeta = [
     icon: 'tabler-user-check',
     color: 'success',
     title: 'Active Users',
-    stats: '19,860',
+    stats: 0,
     percentage: -14,
     subtitle: 'Last week analytics',
   },
@@ -229,7 +235,15 @@ const userListMeta = [
     percentage: +42,
     subtitle: 'Last week analytics',
   },
-]
+])
+
+watch(() => alert.$state.userCount as number, (val: number) => {
+  userListMeta.value[0].stats = val
+})// /watch
+
+watch(() => alert.$state.activeUserCount as number, (val: number) => {
+  userListMeta.value[2].stats = val
+})// /watch
 
 const getItemsByRole = (val: any, changeStatus = false) => {
   if (!selectedStatus.value || changeStatus)

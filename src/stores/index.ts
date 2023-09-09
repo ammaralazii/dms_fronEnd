@@ -3,7 +3,7 @@ import type { State } from '@/types/store/state-info'
 import { defineStore } from 'pinia'
 import { handleError } from 'vue'
 
-const baseUrl = 'http://127.0.0.1:8000/api/'
+const baseUrl = 'http://crm.project/api/'
 
 export const useAlertsStore = defineStore('alerts', {
   state: (): State => {
@@ -12,6 +12,8 @@ export const useAlertsStore = defineStore('alerts', {
 
       roles: [], // /roles,
       cases: [],
+      userCount: 0,
+      activeUserCount: 0,
     }/* /return */
   }, /* /state */
 
@@ -27,6 +29,16 @@ export const useAlertsStore = defineStore('alerts', {
 
         if (caseResult.status === 200)
           this.cases = caseResult.data.data
+
+        const userCount = await axiosIns.get(`${baseUrl}total_users`)
+
+        if (userCount.status === 200)
+          this.userCount = userCount.data.data
+
+        const activeUserCount = await axiosIns.get(`${baseUrl}active_users`)
+
+        if (activeUserCount.status === 200)
+          this.activeUserCount = activeUserCount.data.data
       }
       catch (e) {
         handleError(e)

@@ -5,4 +5,6 @@ export interface State {
   tosts: any
   roles: roles[]
   cases: cases[]
+  userCount: number
+  activeUserCount: number
 }// /state interface

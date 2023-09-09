@@ -10,12 +10,19 @@ import NavbarShortcuts from '@/layouts/components/NavbarShortcuts.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import NavSearchBar from '@/layouts/components/NavSearchBar.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
+import { useAlertsStore } from '@/stores/index'
 
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
+
+onMounted(() => {
+  const alert = useAlertsStore()
+
+  alert.getAllMasterData()
+})
 </script>
 
 <template>

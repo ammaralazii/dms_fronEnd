@@ -75,10 +75,14 @@ export default defineConfig({
   define: {
     'process.env': {
       // local
-      baseUrl: 'http://127.0.0.1:8000/api/',
+      // baseUrl: 'http://127.0.0.1:8000/api/',
 
-      // server online
+      // server online heroku server
       // baseUrl: 'https://gbslvnbackend-b0c4d2fca8f5.herokuapp.com/api/',
+
+      // server online vpn ubuntu server
+      baseUrl: 'http://crm.project/api/',
+
       PORT: '3290',
     },
   },
