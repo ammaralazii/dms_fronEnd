@@ -13,6 +13,8 @@ const { global } = useTheme()
 syncInitialLoaderTheme()
 syncConfigThemeWithVuetifyTheme()
 
+alert.getAllMasterData()
+
 const tostss = computed(() => {
   return alert.$state.tosts
 })/* /tost */
