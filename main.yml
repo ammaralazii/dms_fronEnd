@@ -3,17 +3,23 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master #your branch name
+      - main # Replace with your branch name
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Build and Deploy
-      run: |
-        git pull origin master
-        # Add your build and deployment commands here
+      - name: Set Up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14 # Change to your preferred Node.js version
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build Vue 3 Project
+        run: yarn build # Replace with your build command
