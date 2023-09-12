@@ -81,7 +81,7 @@ export default defineConfig({
       // baseUrl: 'https://gbslvnbackend-b0c4d2fca8f5.herokuapp.com/api/',
 
       // server online vpn ubuntu server
-      baseUrl: 'http://crm.project/api/',
+      baseUrl: 'https://proj.mymadinaty.com/api/',
 
       PORT: '3290',
     },

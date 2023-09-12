@@ -1,0 +1,19 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master #your branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Build and Deploy
+      run: |
+        git pull origin master
+        # Add your build and deployment commands here

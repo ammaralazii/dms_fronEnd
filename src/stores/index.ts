@@ -3,7 +3,7 @@ import type { State } from '@/types/store/state-info'
 import { defineStore } from 'pinia'
 import { handleError } from 'vue'
 
-const baseUrl = 'http://crm.project/api/'
+const baseUrl = 'https://proj.mymadinaty.com/api/'
 
 export const useAlertsStore = defineStore('alerts', {
   state: (): State => {
