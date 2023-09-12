@@ -74,7 +74,7 @@ export default defineConfig({
   ],
   define: {
     'process.env': {
-      // local
+      // local server
       // baseUrl: 'http://127.0.0.1:8000/api/',
 
       // server online heroku server
