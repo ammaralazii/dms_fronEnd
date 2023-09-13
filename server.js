@@ -13,7 +13,7 @@ app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, '/dist/index.html'))
 })/* end of function  */
 
-const port = process.env.PORT || 3011
+const port = process.env.PORT || 3012
 
 app.use(express.json())
 
@@ -23,7 +23,7 @@ app.post('/webhook', (req, res) => {
   // Verify that the push event occurred on the master branch
   if (payload.ref === 'refs/heads/master') {
     // Execute the 'git pull' command in your repository directory
-    exec('git pull', (error, stdout, stderr) => {
+    exec('git pull origin master', (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing git pull: ${error}`)
         res.status(500).send('Internal Server Error')
