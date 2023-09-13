@@ -23,7 +23,7 @@ app.post('/webhook', (req, res) => {
   // Verify that the push event occurred on the master branch
   if (payload.ref === 'refs/heads/master') {
     // Execute the 'git pull' command in your repository directory
-    exec('cd /path/to/your/repo && git pull', (error, stdout, stderr) => {
+    exec('git pull', (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing git pull: ${error}`)
         res.status(500).send('Internal Server Error')
