@@ -9,18 +9,19 @@ export default [
         action: 'manage',
         subject: 'Auth',
       },
-      {
-        title: 'eCommerce',
-        to: 'dashboards-ecommerce',
-        action: 'manage',
-        subject: 'Auth',
-      },
-      {
-        title: 'CRM',
-        to: 'dashboards-crm',
-        action: 'manage',
-        subject: 'Auth',
-      },
+
+      // {
+      //   title: 'eCommerce',
+      //   to: 'dashboards-ecommerce',
+      //   action: 'manage',
+      //   subject: 'Auth',
+      // },
+      // {
+      //   title: 'CRM',
+      //   to: 'dashboards-crm',
+      //   action: 'manage',
+      //   subject: 'Auth',
+      // },
     ],
     badgeContent: '2',
     badgeClass: 'bg-light-primary text-primary',

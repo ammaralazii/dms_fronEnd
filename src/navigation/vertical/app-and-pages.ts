@@ -32,13 +32,13 @@ export default [
   //   action: 'manage',
   //   subject: 'Auth',
   // },
-  {
-    title: 'Chat',
-    icon: { icon: 'tabler-message' },
-    to: 'apps-chat',
-    action: 'manage',
-    subject: 'Auth',
-  },
+  // {
+  //   title: 'Chat',
+  //   icon: { icon: 'tabler-message' },
+  //   to: 'apps-chat',
+  //   action: 'manage',
+  //   subject: 'Auth',
+  // },
   {
     title: 'Calendar',
     icon: { icon: 'tabler-calendar' },
