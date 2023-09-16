@@ -8,7 +8,7 @@ const baseUrl = process.env.BaseUrl
 export const baseService = {
   async get(url: string): Promise<object | null> {
     try {
-      const result = await axiosIns.get(`${baseUrl}api/${url}`)
+      const result = await axiosIns.get(url)
 
       return result.data
     }

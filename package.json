@@ -3,13 +3,12 @@
   "version": "7.0.1",
   "license": "MIT",
   "scripts": {
-    "dev": "start && npm run build:icons && vite --host",
+    "dev": "npm run build:icons && vite --host",
     "build": "npm run build:icons && vite build",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint . -c .eslintrc.js --fix --rulesdir eslint-internal-rules/ --ext .ts,.js,.vue,.tsx,.jsx",
-    "build:icons": "tsc -b src/@iconify && node src/@iconify/build-icons.js",
-    "start": "node server.js"
+    "build:icons": "tsc -b src/@iconify && node src/@iconify/build-icons.js"
   },
   "dependencies": {
     "@casl/ability": "^6.2.0",

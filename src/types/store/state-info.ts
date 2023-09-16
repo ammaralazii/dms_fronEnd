@@ -7,4 +7,5 @@ export interface State {
   cases: cases[]
   userCount: number
   activeUserCount: number
+  permissionItems: any[]
 }// /state interface

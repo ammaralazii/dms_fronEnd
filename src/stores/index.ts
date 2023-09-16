@@ -1,9 +1,12 @@
 import axiosIns from '@/plugins/axios'
 import type { State } from '@/types/store/state-info'
 import { defineStore } from 'pinia'
-import { handleError } from 'vue'
 
+// ubuntu server
 const baseUrl = 'https://proj.mymadinaty.com/api/'
+
+// local server
+// const baseUrl = 'http://127.0.0.1:8000/api/'
 
 export const useAlertsStore = defineStore('alerts', {
   state: (): State => {
@@ -14,6 +17,7 @@ export const useAlertsStore = defineStore('alerts', {
       cases: [],
       userCount: 0,
       activeUserCount: 0,
+      permissionItems: [],
     }/* /return */
   }, /* /state */
 
@@ -41,8 +45,13 @@ export const useAlertsStore = defineStore('alerts', {
           this.activeUserCount = activeUserCount.data.data
       }
       catch (e) {
-        handleError(e)
+        console.error('Error : ', e)
       }// /try catch
     }, // /getAllMasterData
+    async fetchPermissions() {
+      const permission = await axiosIns.get(`${baseUrl}permission`)
+      if (permission.status === 200)
+        return permission?.data?.data
+    },
   }, /* /action */
 })/* /useAlertsStore */
