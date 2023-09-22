@@ -22,7 +22,6 @@ jobs:
         port: 22
         script: |
           cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
-          git config --global --add safe.directory /www/www***/crm.mymadinaty.com/dms_fronEnd
           git pull origin master
           git status
     - name: Build
