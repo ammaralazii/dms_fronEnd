@@ -27,37 +27,6 @@ jobs:
             cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
+            yarn install
+            yarn build
 
-      - name: Debug Information
-        run: |
-          pwd
-          ls -al
-
-      - name: Get Node.js version
-        id: node
-        run: |
-          echo "::set-output name=version::$(node -v)"
-          echo ":: base directory" ${{ env.BASE_DIR }}
-
-      - name: Cache Node.js dependencies (node_modules)
-        uses: actions/cache@v2
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14.21.3
-
-      - name: Debug Information
-        run: |
-          pwd
-          ls -al  ${{ env.BASE_DIR }}
-          
-      - name: Install dependencies and build
-        run: |
-          ls -l
-          cd ${{ env.BASE_DIR }}
-          yarn install  # Install dependencies
-          yarn build    # Build the project
