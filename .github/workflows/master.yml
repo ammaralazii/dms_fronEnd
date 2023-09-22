@@ -29,5 +29,3 @@ jobs:
           git config --global --add safe.directory /www/www***/crm.mymadinaty.com/dms_fronEnd
           git pull origin master
           git status
-          yarn --production
-          yarn build
