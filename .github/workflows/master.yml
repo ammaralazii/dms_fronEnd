@@ -45,7 +45,7 @@ jobs:
       
       - name: Install dependencies and build
         run: |
-         ls
+         ls -l
          cd /www
          cd wwwroot
          cd crm.mymadinaty.com/dms_fronEnd
