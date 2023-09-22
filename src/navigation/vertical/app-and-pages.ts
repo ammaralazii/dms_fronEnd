@@ -2,22 +2,22 @@ export default [
   { heading: 'Apps & Pages' },
   {
     title: 'Main Store',
-    icon: { icon: 'tabler-user' },
+    icon: { icon: 'ph-database' },
     children: [
       {
-        title: 'Help Center',
+        title: 'Devices',
         to: 'apps-main-store-help-center',
         action: 'manage',
         subject: 'Auth',
       },
       {
-        title: 'List',
+        title: 'Accessories',
         to: 'apps-main-store-list',
         action: 'manage',
         subject: 'Auth',
       },
       {
-        title: 'View',
+        title: 'Card',
         to: { name: 'apps-main-store-view-id', params: { id: 21 } },
         action: 'manage',
         subject: 'Auth',
