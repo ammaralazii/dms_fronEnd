@@ -24,6 +24,10 @@ jobs:
           cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
           git pull origin master
           git status
+    - name: Debug Information
+      run: |
+        pwd
+        ls -al
     - name: Build
       working-directory: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
       run: |
