@@ -1,48 +1,49 @@
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push events to the master branch.
   push:
-    branches: [ master ]
+    branches:
+      - master
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel.
 jobs:
-  # This workflow contains a single job called "build"
+  # This workflow contains a single job called "build".
   build:
-    # The type of runner that the job will run on
+    # The type of runner that the job will run on (in this case, the latest version of Ubuntu).
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    # Steps represent a sequence of tasks that will be executed as part of the job.
     steps:
-    - name: Connect to the ssh server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
-          git pull origin master
-          git status
-    - name: Debug Information
-      run: |
-        pwd
-        ls -al
-    - name: Get node version
-      id: node
-      run: |
-        echo "::set-output name=version::$(node -v)"
+      - name: Connect to the SSH server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
+            git pull origin master
+            git status
 
-    - name: Get node_modules cache
-      uses: actions/cache@v3.0.2
-      id: node_modules
-      with:
-        path: |
-          **/node_modules
-        # Add node version as a cache key to avoid yarn recompilation for particular node as it doesn't change often
-        key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
+      - name: Debug Information
+        run: |
+          pwd
+          ls -al
 
-    - name: Build
-      run: |
-        yarn 
-        yarn build
+      - name: Get Node.js version
+        id: node
+        run: |
+          echo "::set-output name=version::$(node -v)"
+
+      - name: Cache Node.js dependencies (node_modules)
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
+      
+      - name: Install dependencies and build
+        run: |
+          yarn install  # Install dependencies
+          yarn build    # Build the project
