@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TF_DIR: terraform/${{ inputs.env }}
+      BASE_DIR: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
     # Steps represent a sequence of tasks that will be executed as part of the job.
     steps:
       - name: Connect to the SSH server
@@ -24,7 +24,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
+            cd ${{env.BASE_DIR}}
             git pull origin master
             git status
 
@@ -47,7 +47,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
       
       - name: Install dependencies and build
-        working-directory : /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
+        working-directory : ${{env.BASE_DIR}}
         run: |
          ls -l
          yarn install  # Install dependencies
