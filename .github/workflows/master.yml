@@ -45,6 +45,8 @@ jobs:
       
       - name: Install dependencies and build
         run: |
-         cd www/wwwroot/crm.mymadinaty.com/dms_fronEnd
+         cd /www
+         cd wwwroot
+         cd crm.mymadinaty.com/dms_fronEnd
          yarn install  # Install dependencies
          yarn build    # Build the project
