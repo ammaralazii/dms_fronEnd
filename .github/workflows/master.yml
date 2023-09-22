@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
       
       - name: Install dependencies and build
-        working-directory: ${{ env.TF_DIR }}
+        working-directory: /www/'wwwroot'/crm.mymadinaty.com/dms_fronEnd
         run: |
          yarn install  # Install dependencies
          yarn build    # Build the project
