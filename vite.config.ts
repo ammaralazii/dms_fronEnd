@@ -72,6 +72,7 @@ export default defineConfig({
     }),
     DefineOptions(),
   ],
+
   define: {
     'process.env': {
       // local server
