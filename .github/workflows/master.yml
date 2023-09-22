@@ -12,6 +12,8 @@ jobs:
     # The type of runner that the job will run on (in this case, the latest version of Ubuntu).
     runs-on: ubuntu-latest
 
+    env:
+      TF_DIR: terraform/${{ inputs.env }}
     # Steps represent a sequence of tasks that will be executed as part of the job.
     steps:
       - name: Connect to the SSH server
@@ -35,6 +37,7 @@ jobs:
         id: node
         run: |
           echo "::set-output name=version::$(node -v)"
+          echo ":: base diractory"  ${{ env.TF_DIR }}
 
       - name: Cache Node.js dependencies (node_modules)
         uses: actions/cache@v2
