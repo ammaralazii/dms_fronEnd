@@ -73,7 +73,6 @@ export default defineConfig({
     DefineOptions(),
   ],
 
-  // change
   define: {
     'process.env': {
       // local server
