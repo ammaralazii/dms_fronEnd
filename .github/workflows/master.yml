@@ -31,7 +31,6 @@ jobs:
     - name: Get node version
       id: node
       run: |
-        nvm use 18
         echo "::set-output name=version::$(node -v)"
 
     - name: Get node_modules cache
