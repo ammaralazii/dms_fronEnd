@@ -13,8 +13,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Print Debug Message
-      run: echo "$DEBUG_MESSAGE"
     - name: Deploy using ssh
       uses: appleboy/ssh-action@master
       with:
@@ -31,5 +29,6 @@ jobs:
       run: |
         # Add your build commands here
         # For example, if you're using yarn to build:
+        ls
         yarn install
         yarn build
