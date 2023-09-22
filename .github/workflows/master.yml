@@ -29,6 +29,7 @@ jobs:
         pwd
         ls -al
     - name: Build
+       cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
       working-directory: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
       run: |
         yarn install
