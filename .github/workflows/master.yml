@@ -46,5 +46,5 @@ jobs:
       - name: Install dependencies and build
         working-directory: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
         run: |
-          yarn install  # Install dependencies
-          yarn build    # Build the project
+         yarn install  # Install dependencies
+         yarn build    # Build the project
