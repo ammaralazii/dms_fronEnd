@@ -25,7 +25,7 @@ jobs:
           git pull origin master
           git status
     - name: Build
+      working-directory: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
       run: |
-        cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
         yarn install
         yarn build
