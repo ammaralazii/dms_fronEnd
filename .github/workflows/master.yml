@@ -28,15 +28,6 @@ jobs:
             cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
-
-      - name: Setup Node.js 14
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
+            yarn install
+            yarn build
           
-      - name: Install dependencies and build
-        working-directory: ${{ env.BASE_DIR }}
-        run: |
-          nvm use 14
-          yarn install
-          yarn build
