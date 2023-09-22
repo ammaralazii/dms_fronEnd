@@ -51,8 +51,8 @@ jobs:
           node-version: 14.21.3
           
       - name: Install dependencies and build
-        working-directory: ${{ env.BASE_DIR }}
         run: |
           ls -l
+          cd ${{ env.BASE_DIR }}
           yarn install  # Install dependencies
           yarn build    # Build the project
