@@ -45,7 +45,11 @@ jobs:
           path: |
             **/node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
-      
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.21.3
+          
       - name: Install dependencies and build
         working-directory : ${{env.BASE_DIR}}
         run: |
