@@ -28,6 +28,7 @@ jobs:
             cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
+            ecoh:"node $(node -v)"
             yarn install
             yarn build
           
