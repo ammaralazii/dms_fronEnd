@@ -13,7 +13,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Deploy using ssh
+    - name: Connect to the ssh server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -27,8 +27,6 @@ jobs:
           git status
     - name: Build
       run: |
-        # Add your build commands here
-        # For example, if you're using yarn to build:
-        ls
+        cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
         yarn install
         yarn build
