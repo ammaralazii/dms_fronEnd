@@ -27,6 +27,7 @@ jobs:
             cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
+            nvm use 14
             yarn install
             yarn build
 
