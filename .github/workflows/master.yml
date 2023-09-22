@@ -28,18 +28,18 @@ jobs:
             cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
-            - name: Set up Node.js
-              uses: actions/setup-node@v2
-              with:
-               node-version: 14
 
-            - name: Install Dependencies
-              working-directory: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
-              run: |
-              npm install # or yarn install, depending on your project
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
-            - name: Build
-               working-directory: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
-               run: |
-                npm run build # or yarn build, depending on your project
-          
+      - name: Install Dependencies
+        working-directory: ${{ env.BASE_DIR }}
+        run: |
+          npm install # or yarn install, depending on your project
+
+      - name: Build
+        working-directory: ${{ env.BASE_DIR }}
+        run: |
+          npm run build # or yarn build, depending on your project
