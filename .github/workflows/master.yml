@@ -31,6 +31,7 @@ jobs:
     - name: Get node version
       id: node
       run: |
+        nvm use 18
         echo "::set-output name=version::$(node -v)"
 
     - name: Get node_modules cache
@@ -43,8 +44,7 @@ jobs:
         key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
 
     - name: Build
-      env:
-        CHROME_BIN: /usr/bin/google-chrome
       run: |
-        npm i --g yarn #TODO:5520 the version is not fixed, shall we?
-        yarn install --frozen-lockfile # optional, --immutable
+        yarn 
+        rm dist
+        yarn build
