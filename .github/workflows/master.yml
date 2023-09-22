@@ -24,7 +24,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd ${{env.BASE_DIR}}
+            cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
 
@@ -37,7 +37,7 @@ jobs:
         id: node
         run: |
           echo "::set-output name=version::$(node -v)"
-          echo ":: base diractory"  ${{ env.TF_DIR }}
+          echo ":: base directory" ${{ env.BASE_DIR }}
 
       - name: Cache Node.js dependencies (node_modules)
         uses: actions/cache@v2
@@ -51,8 +51,8 @@ jobs:
           node-version: 14.21.3
           
       - name: Install dependencies and build
-        working-directory : ${{env.BASE_DIR}}
+        working-directory: ${{ env.BASE_DIR }}
         run: |
-         ls -l
-         yarn install  # Install dependencies
-         yarn build    # Build the project
+          ls -l
+          yarn install  # Install dependencies
+          yarn build    # Build the project
