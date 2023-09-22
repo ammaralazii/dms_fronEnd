@@ -1,5 +1,3 @@
-name: Deploy
-
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
@@ -15,9 +13,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Print Debug Message
-      run: echo "$DEBUG_MESSAGE"
-    - name: Deploy using ssh
+    - name: Connect to the ssh server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -26,6 +22,29 @@ jobs:
         port: 22
         script: |
           cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
-          git config --global --add safe.directory /www/www***/crm.mymadinaty.com/dms_fronEnd
           git pull origin master
           git status
+    - name: Debug Information
+      run: |
+        pwd
+        ls -al
+    - name: Get node version
+      id: node
+      run: |
+        echo "::set-output name=version::$(node -v)"
+
+    - name: Get node_modules cache
+      uses: actions/cache@v3.0.2
+      id: node_modules
+      with:
+        path: |
+          **/node_modules
+        # Add node version as a cache key to avoid yarn recompilation for particular node as it doesn't change often
+        key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
+
+    - name: Build
+      env:
+        CHROME_BIN: /usr/bin/google-chrome
+      run: |
+        npm i --g yarn #TODO:5520 the version is not fixed, shall we?
+        yarn install --frozen-lockfile # optional, --immutable
