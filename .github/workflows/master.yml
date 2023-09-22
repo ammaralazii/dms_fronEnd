@@ -17,7 +17,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job.
     steps:
-      - name: Connect to the SSH server
+      - name: Connect to the SSH server & Build
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
