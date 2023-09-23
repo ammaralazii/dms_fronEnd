@@ -1,32 +1,23 @@
-# Controls when the action will run.
+name: SSH Deploy
+
 on:
-  # Triggers the workflow on push events to the master branch.
   push:
     branches:
       - master
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel.
 jobs:
-  # This workflow contains a single job called "build".
-  build:
-    # The type of runner that the job will run on (in this case, the latest version of Ubuntu).
+  deploy:
     runs-on: ubuntu-latest
 
-    env:
-      BASE_DIR: /www/wwwroot/crm.mymadinaty.com/dms_fronEnd
-
-    # Steps represent a sequence of tasks that will be executed as part of the job.
     steps:
-      - name: Connect to the SSH server & Build
-        uses: appleboy/ssh-action@master  # Use a specific version for stability
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup SSH connection
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd ${{ env.BASE_DIR }}
-            git pull origin master
-            git status
-            yarn
-            yarn build
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: SSH into server and perform actions
+        run: |
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd && git pull origin master && yarn build"
