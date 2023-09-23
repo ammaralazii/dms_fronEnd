@@ -20,4 +20,5 @@ jobs:
 
       - name: SSH into server and perform actions
         run: |
+          source /www/server/nvm/nvm.sh  # Source NVM script to make it available
           ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd && git pull origin master && nvm use 14 && yarn && yarn build"
