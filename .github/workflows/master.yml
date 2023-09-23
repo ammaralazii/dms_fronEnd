@@ -37,9 +37,9 @@ jobs:
       - name: Install Dependencies
         working-directory: ${{ env.BASE_DIR }}
         run: |
-          npm install # or yarn install, depending on your project
+          yarn
 
       - name: Build
         working-directory: ${{ env.BASE_DIR }}
         run: |
-          npm run build # or yarn build, depending on your project
+          yarn build
