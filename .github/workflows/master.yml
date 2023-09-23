@@ -28,5 +28,5 @@ jobs:
             cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
-            npx yarn
-            npx yarn build
+            yarn
+            yarn build
