@@ -28,5 +28,6 @@ jobs:
             cd ${{ env.BASE_DIR }}
             git pull origin master
             git status
+            sudo nvm use 14
             sudo yarn
             sudo yarn build
