@@ -9,6 +9,7 @@ import { defineConfig } from 'vite'
 import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
 import vuetify from 'vite-plugin-vuetify'
+import baseApiUrl from './src/environment/baseApiUrl'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -76,14 +77,7 @@ export default defineConfig({
   define: {
     'process.env': {
       // local server
-      // baseUrl: 'http://127.0.0.1:8000/api/',
-
-      // server online heroku server
-      // baseUrl: 'https://gbslvnbackend-b0c4d2fca8f5.herokuapp.com/api/',
-
-      // online server
-      baseUrl: 'https://proj.mymadinaty.com/api/',
-
+      baseUrl: baseApiUrl(),
       PORT: '3290',
     },
   },

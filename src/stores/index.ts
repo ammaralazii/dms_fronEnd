@@ -2,12 +2,6 @@ import axiosIns from '@/plugins/axios'
 import type { State } from '@/types/store/state-info'
 import { defineStore } from 'pinia'
 
-// ubuntu server
-const baseUrl = 'https://proj.mymadinaty.com/api/'
-
-// local server
-// const baseUrl = 'http://127.0.0.1:8000/api/'
-
 export const useAlertsStore = defineStore('alerts', {
   state: (): State => {
     return {
@@ -24,22 +18,22 @@ export const useAlertsStore = defineStore('alerts', {
   actions: {
     async getAllMasterData() {
       try {
-        const roleResult = await axiosIns.get(`${baseUrl}role`)
+        const roleResult = await axiosIns.get('role')
 
         if (roleResult.status === 200)
           this.roles = roleResult.data.data
 
-        const caseResult = await axiosIns.get(`${baseUrl}case`)
+        const caseResult = await axiosIns.get('case')
 
         if (caseResult.status === 200)
           this.cases = caseResult.data.data
 
-        const userCount = await axiosIns.get(`${baseUrl}total_users`)
+        const userCount = await axiosIns.get('total_users')
 
         if (userCount.status === 200)
           this.userCount = userCount.data.data
 
-        const activeUserCount = await axiosIns.get(`${baseUrl}active_users`)
+        const activeUserCount = await axiosIns.get('active_users')
 
         if (activeUserCount.status === 200)
           this.activeUserCount = activeUserCount.data.data
@@ -49,9 +43,11 @@ export const useAlertsStore = defineStore('alerts', {
       }// /try catch
     }, // /getAllMasterData
     async fetchPermissions() {
-      const permission = await axiosIns.get(`${baseUrl}permission`)
+      const permission = await axiosIns.get('permission')
       if (permission.status === 200)
         return permission?.data?.data
     },
+    async fetchDevices(params: any) { return axiosIns.get(`device?per_page=${params.perPage}&page=${params.currentPage}`, { params }) }, // /fetchDevices
+    async fetchCards(params: any) { return axiosIns.get(`card?per_page=${params.perPage}&page=${params.currentPage}`, { params }) }, // /fetchDevices
   }, /* /action */
 })/* /useAlertsStore */

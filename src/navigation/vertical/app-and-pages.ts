@@ -6,19 +6,19 @@ export default [
     children: [
       {
         title: 'Devices',
-        to: 'apps-main-store-help-center',
+        to: 'apps-main-store-devices',
         action: 'manage',
         subject: 'Auth',
       },
       {
         title: 'Accessories',
-        to: 'apps-main-store-list',
+        to: 'apps-main-store-accessories',
         action: 'manage',
         subject: 'Auth',
       },
       {
         title: 'Card',
-        to: { name: 'apps-main-store-view-id', params: { id: 21 } },
+        to: { name: 'apps-main-store-cards' },
         action: 'manage',
         subject: 'Auth',
       },
