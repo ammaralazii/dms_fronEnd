@@ -1,5 +1,3 @@
-name: SSH Deploy
-
 on:
   push:
     branches:
@@ -20,4 +18,19 @@ jobs:
 
       - name: SSH into server and perform actions
         run: |
-          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd && git pull origin master &&  yarn && yarn build"
+          # Define backup folder path
+          backup_folder="/www/wwwroot/crm.mymadinaty.com/old_code"
+
+          # Define SSH command to execute on the remote server
+          ssh_command="cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd && \
+                        if [ ! -d '$backup_folder' ]; then \
+                          echo 'Creating backup folder...'; \
+                          mkdir -p '$backup_folder'; \
+                        fi && \
+                        cp -r * '$backup_folder/' && \
+                        git pull origin master && \
+                        yarn && \
+                        yarn build"
+
+          # Execute the SSH command on the remote server
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "$ssh_command"
