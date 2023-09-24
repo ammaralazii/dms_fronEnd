@@ -1,5 +1,3 @@
-name: SSH Deploy
-
 on:
   push:
     branches:
@@ -18,6 +16,21 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Check if backup folder exists and Backup old code
+        run: |
+          # Define backup folder path
+          backup_folder="/www/wwwroot/crm.mymadinaty.com/old_code"
+
+          # Check if the backup folder exists, and if not, create it
+          if [ ! -d "$backup_folder" ]; then
+            echo "Creating backup folder..."
+            mkdir -p "$backup_folder"
+          fi
+
+          # Copy the existing code to the backup folder
+          cp -r /www/wwwroot/crm.mymadinaty.com/dms_fronEnd/* "$backup_folder/"
+        # This step checks if the backup folder exists, creates it if necessary, and backs up the old code.
+
       - name: SSH into server and perform actions
         run: |
-          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd && git pull origin master &&  yarn && yarn build"
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /www/wwwroot/crm.mymadinaty.com/dms_fronEnd && git pull origin master && yarn && yarn build"
