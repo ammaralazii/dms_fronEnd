@@ -15,6 +15,8 @@ const props = defineProps({
   },
 })
 
+const notFoundData = ref(false)
+const loading = ref(true)
 const dialog = ref(false)
 
 watch(() => dialog.value, val => {
@@ -23,6 +25,8 @@ watch(() => dialog.value, val => {
     axiosIns.get(props.id, { responseType: 'arraybuffer' })
       .then((response: any) => {
         if (response.status === 200) {
+          loading.value = false
+
           const contentType = response.headers['content-type']
           const fileBlob = new Blob([response.data], { type: contentType })
           const content = document.getElementsByClassName('content')[0] as HTMLDivElement
@@ -67,13 +71,17 @@ watch(() => dialog.value, val => {
           }
           else {
             console.error('Unsupported file type:', contentType)
+            notFoundData.value = true
           }
         }
         else {
           console.error('Failed to fetch file:', response.statusText)
+          notFoundData.value = true
         }
       })
       .catch((error: any) => {
+        loading.value = false
+        notFoundData.value = true
         console.error('Error fetching file:', error)
       })
   }
@@ -81,6 +89,12 @@ watch(() => dialog.value, val => {
     dialog.value = val
   }// /if
 })
+
+const close = () => {
+  dialog.value = false
+  loading.value = true
+  notFoundData.value = false
+}
 </script>
 
 <template>
@@ -107,12 +121,29 @@ watch(() => dialog.value, val => {
             variant="text"
             icon="ph-x"
             color="primary"
-            @click="dialog = false"
+            @click="close"
           />
         </VCardTitle>
         <VCardText>
-          <div class="content">
+          <div
+            v-if="!loading && notFoundData"
+            class="content"
+          >
             not data avalibale
+          </div>
+
+          <div
+            class="content"
+          />
+
+          <div
+            v-if="loading"
+            class="text-center"
+          >
+            <VProgressCircular
+              indeterminate
+              color="primary"
+            />
           </div>
         </VCardText>
       </VCard>

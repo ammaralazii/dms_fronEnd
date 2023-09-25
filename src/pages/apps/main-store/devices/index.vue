@@ -192,6 +192,12 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
           <VDivider />
 
           <PerfectScrollbar>
+            <VProgressLinear
+              v-if="!devices.length"
+              color="primary"
+              indeterminate
+              reverse
+            />
             <VTable
               id="myTable"
               class="text-no-wrap"
