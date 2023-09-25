@@ -23,6 +23,7 @@ const devices = ref<deviceInfo[]>([])
 const oldList = ref()
 const userCount = ref<number>()
 const files = ref([])
+const device_attachment = ref()
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -80,9 +81,10 @@ const paginationData = computed(() => {
 })
 
 // 👉 Display file drawer
-const openFileDrawer = (deviceFiles: any, check: boolean) => {
+const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean) => {
   isFileDrawerVisible.value = check
   files.value = deviceFiles
+  device_attachment.value = attachmentDevice
 }// /openFileDrawer
 </script>
 
@@ -337,7 +339,7 @@ const openFileDrawer = (deviceFiles: any, check: boolean) => {
                       v-if="device?.files?.length"
                       class="text-lowercase blak-text"
                       variant="text"
-                      @click="openFileDrawer(device.files, true)"
+                      @click="openFileDrawer(device.files, device.DeviceAttachment, true)"
                     >
                       get files
                     </VBtn>
@@ -434,6 +436,7 @@ const openFileDrawer = (deviceFiles: any, check: boolean) => {
     <FileDialog
       v-model:isDrawerFileOpen="isFileDrawerVisible"
       :files="files"
+      :device_attachment="device_attachment"
     />
   </section>
 </template>

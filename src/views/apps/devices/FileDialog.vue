@@ -3,6 +3,11 @@ import moment from 'moment'
 import DispalyFile from '@/views/base/DispalyFile.vue'
 import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteFileDialog from '@/views/apps/devices/file-attachment/DeleteFileDialog.vue'
+import { useAlertsStore } from '@/stores'
+import { baseService } from '@/api/BaseService'
+import axiosIns from '@/plugins/axios'
+import hundlerErorr from '@/helper/hundlerErorr'
+import sortByDate from '@/helper/sortByDate'
 
 interface File {
   FileId: string
@@ -10,7 +15,7 @@ interface File {
   FileExtension: string
   device_attachment: string
   created_at: Date | string
-}// /file interface
+} // /file interface
 
 const props = defineProps({
   isDrawerFileOpen: {
@@ -22,24 +27,135 @@ const props = defineProps({
     type: Array as () => File[],
     required: true,
   },
-})// /props
+  // eslint-disable-next-line vue/prop-name-casing
+  device_attachment: {
+    required: true,
+    type: String,
+  },
+})
 
-const emit = defineEmits(['update:isDrawerFileOpen'])
+const emit = defineEmits(['update:isDrawerFileOpen'])// /props
+
+const fileInput = ref<HTMLInputElement | null>(null)
+
+const fileList = ref<File[]>([])
+const itemId = ref()
+
+watch(() => props.files, (val: any) => {
+  fileList.value = sortByDate(val, 'created_at') as any
+})
+
+const alert = useAlertsStore()
+
+const payload = {
+  color: '',
+  timeOut: 5000,
+  run: true,
+  text: '',
+  position: {
+    top: true,
+    right: false,
+    left: false,
+    bottom: false,
+  },
+  update: false,
+}/* /payload */
 
 const deleteItem = ref(false)
+
+const checkFileAddClicked = () => {
+  console.log('fileInput.value : ', fileInput.value)
+  if (fileInput.value)
+    fileInput.value.click()
+}
 
 const handleDrawerModelValueUpdate = (val: boolean) => {
   emit('update:isDrawerFileOpen', val)
 }
 
-const deleteItemConfirmed = () => {
-  deleteItem.value = false
-  alert('The necessary requirements are being added to the server now')
-}// /deleteItemConfirmed
+// this function to delete item from server
+const removeItem = (fileId: string) => {
+  deleteItem.value = true
+  itemId.value = fileId
+}
 
-const addFile = () => {
-  alert('The necessary requirements are being added to the server now')
+const deleteItemConfirmed = async () => {
+  deleteItem.value = false
+  fileList.value = fileList.value.filter(item => item.FileId !== itemId.value)
+  payload.color = 'success'
+  payload.text = 'File deleted successfully.'
+  alert.$state.tosts.push(payload)
+}
+
+const addFile = async (event: any, device_attachment: string) => {
+  const file = event.target.files[0]
+  const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.xlsx', '.xls']
+  const fileName = file.name
+  const fileExtension = fileName.split('.').pop().toLowerCase()
+
+  // check the file is valid or no
+  if (allowedExtensions.includes(`.${fileExtension}`) && device_attachment) {
+    try {
+      const fileData = new FormData()
+
+      fileData.append('file', file)
+      fileData.append('device_attachment', device_attachment)
+
+      const result = await axiosIns.post('file', fileData) as any
+
+      if (result.status === 200) {
+        const uploadedFile = result.data.data
+
+        fileList.value.unshift(uploadedFile)
+        payload.color = 'success'
+        payload.text = 'file added successfly .'
+        alert.$state.tosts.push(payload)
+      }// /if
+    }
+    catch (e) {
+      hundlerErorr(e)
+    }// /try catch
+  }
+  else {
+    payload.color = 'warning'
+    payload.text = 'invalid file type'
+    alert.$state.tosts.push(payload)
+  }// if
 }// /addFile
+
+const updateFile = async (event: any, fileId: string, index: number) => {
+  const file = event.target.files[0]
+  const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.xlsx', '.xls']
+  const fileName = file.name
+  const fileExtension = fileName.split('.').pop().toLowerCase()
+
+  // check the file is valid or no
+  if (allowedExtensions.includes(`.${fileExtension}`) && fileId) {
+    try {
+      const fileData = new FormData()
+
+      fileData.append('file', file)
+
+      const result = await axiosIns.post(`file/${fileId}`, fileData) as any
+
+      if (result.status === 200) {
+        fileList.value[index].FileOriginalName = fileName
+        fileList.value[index].FileExtension = fileExtension
+        payload.color = 'success'
+        payload.text = 'file uploaded successfly .'
+        alert.$state.tosts.push(payload)
+      }// /if
+    }
+    catch (e) {
+      hundlerErorr(e)
+    }// /try catch
+  }
+  else {
+    payload.color = 'warning'
+    payload.text = 'invalid file type'
+    alert.$state.tosts.push(payload)
+  }// if
+}// /updateFile
 </script>
 
 <template>
@@ -91,10 +207,16 @@ const addFile = () => {
               variant="tonal"
               color="primary"
               prepend-icon="ph-plus"
-              @click="addFile"
+              @click="checkFileAddClicked"
             >
               Add File
             </VBtn>
+            <input
+              ref="fileInput"
+              type="file"
+              hidden
+              @change="addFile($event, device_attachment)"
+            >
           </VCol>
         </VRow>
       </VCardText>
@@ -133,7 +255,7 @@ const addFile = () => {
       <!-- 👉 table body -->
       <tbody v-if="files">
         <tr
-          v-for="(file, index) in files"
+          v-for="(file, index) in fileList"
           :key="index"
           style="height: 3.75rem;"
         >
@@ -147,29 +269,38 @@ const addFile = () => {
             {{ moment(file.created_at).format('YYYY-MM-DD LT') }}
           </td>
           <td
-            style="width: 10rem;gap: 10px;"
+            style="width: 10rem;"
             class="text-center"
           >
             <DispalyFile
               :id="`file/${file.FileId}`"
               page-title="display information file"
             />
+            <input
+              :id="`${index}file`"
+              :name="`${index}file`"
+              type="file"
+              hidden
+              accept=".pdf, .jpg, .jpeg, .png, .xlsx, .xls"
+              @change="updateFile($event, file.FileId, index)"
+            >
+            <label :for="`${index}file`"><VIcon
+              style="cursor: pointer;"
+              size="22"
+              icon="ph-pencil-simple-line"
+              color="success"
+              variant="text"
+            /></label>
             <VBtn
               icon
               size="x-small"
               color="error"
               variant="text"
-              @click="deleteItem = true"
+              @click="removeItem(file.FileId)"
             >
               <VIcon
                 size="22"
                 icon="tabler-trash"
-              />
-              <DeleteFileDialog
-                :dialog="deleteItem"
-                title="Are you sure to delete this item ?"
-                @close="() => deleteItem = false"
-                @confirm="deleteItemConfirmed"
               />
             </VBtn>
           </td>
@@ -188,6 +319,13 @@ const addFile = () => {
         </tr>
       </tfoot>
     </VTable>
+    <DeleteFileDialog
+      :dialog="deleteItem"
+      :file-id="itemId"
+      title="Are you sure to delete this item ?"
+      @close="() => deleteItem = false"
+      @confirm="deleteItemConfirmed"
+    />
   </VNavigationDrawer>
 </template>
 

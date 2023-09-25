@@ -1,10 +1,16 @@
 <script setup lang="ts">
+import { baseService } from '@/api/BaseService'
+
 const props = defineProps({
   dialog: {
     required: true,
     type: Boolean,
   },
   title: {
+    required: true,
+    type: String,
+  },
+  fileId: {
     required: true,
     type: String,
   },
@@ -16,9 +22,12 @@ const closeDialog = () => {
   emit('close')
 }
 
-const deleteItem = () => {
-  emit('confirm')
-}
+const deleteItem = async () => {
+  const result = await baseService.delete(`file/${props.fileId}`, null) as any
+
+  if (result && result.success === true)
+    emit('confirm')
+}// /deleteItem
 </script>
 
 <template>
