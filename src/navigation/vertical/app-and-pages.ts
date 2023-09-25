@@ -17,7 +17,7 @@ export default [
         subject: 'Auth',
       },
       {
-        title: 'Card',
+        title: 'SIM Card',
         to: { name: 'apps-main-store-cards' },
         action: 'manage',
         subject: 'Auth',
