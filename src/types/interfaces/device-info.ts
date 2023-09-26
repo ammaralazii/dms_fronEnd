@@ -1,16 +1,15 @@
 export interface deviceInfo {
   DeviceId?: string
-  BoxNoMain?: string | number
-  BoxNoSub?: string | number
-  DeviceSerialNumber?: string
-  DeviceMAC?: string
-  FWVersion?: string
+  BoxNoMain: string | number
+  BoxNoSub: string | number
+  DeviceSerialNumber: string
+  DeviceMAC: string
+  FWVersion: string
   DeciveImportDate?: Date
-  DeviceRecivedDate?: Date
+  DeviceRecivedDate: Date
   AgreementCMC?: string
-  DeviceAttachment?: string
   DeviceType?: string
-  DeviceManufctur?: string
+  DeviceManufctur: string
   CostomerGroup?: string
   StatusLVN?: string
   created_at?: Date
@@ -18,4 +17,5 @@ export interface deviceInfo {
   files?: any[]
   accessories?: any[]
   IMEI: string | number
+  DeviceCode?: string
 }

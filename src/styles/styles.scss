@@ -7,3 +7,16 @@
     inline-size: 50px;
   }
 }
+
+.required {
+  &::before {
+    color: red; // Change the color to your preference
+    content: "*";
+    margin-block: 0;
+    margin-inline: 2px; // Adjust the spacing between the label text and the star
+  }
+}
+
+.flatpickr-calendar {
+  z-index: 222222 !important;
+}

@@ -5,6 +5,7 @@ import FileDialog from '@/views/apps/devices/FileDialog.vue'
 import { useAlertsStore } from '@/stores'
 import type { deviceInfo } from '@/types/interfaces/device-info'
 import { exportToExcel } from '@/helper/exportToExcel'
+import DeleteDeviceDialog from '@/views/apps/devices/list/DeleteDeviceDialog.vue'
 
 const alert = useAlertsStore()
 
@@ -22,6 +23,8 @@ const oldList = ref()
 const userCount = ref<number>()
 const files = ref([])
 const device_attachment = ref()
+const dialog = ref(false)
+const deleteItems = ref<any>([])
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -84,6 +87,24 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
   files.value = deviceFiles
   device_attachment.value = attachmentDevice
 }// /openFileDrawer
+
+const deleteDialog = (id: any) => {
+  deleteItems.value.push(id)
+  dialog.value = true
+}// /deleteDialog
+
+const closeDeleteDialog = () => {
+  deleteItems.value = []
+  dialog.value = false
+}
+
+const confermDeleteDialog = (ids: any) => {
+  deleteItems.value = []
+  dialog.value = false
+  ids.forEach((id: any) => {
+    devices.value = devices.value.filter(item => item.DeviceId !== id)
+  })
+}
 </script>
 
 <template>
@@ -179,8 +200,8 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
 
               <!-- 👉 Add new device -->
               <VBtn
-                prepend-icon="tabler-plus"
-                @click="isAddFileDrawerVisable = true"
+                to="/apps/main-store/devices/add"
+                link
               >
                 Add New Device
               </VBtn>
@@ -202,6 +223,12 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             <!-- 👉 table head -->
             <thead>
               <tr>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Code
+                </th>
                 <th
                   scope="col"
                   class="text-center"
@@ -308,6 +335,9 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
                 style="height: 3.75rem;"
               >
                 <td>
+                  {{ device.DeviceCode }}
+                </td>
+                <td>
                   {{ device.BoxNoMain || 'not found' }}
                 </td>
                 <td>
@@ -402,6 +432,7 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
                     size="x-small"
                     color="default"
                     variant="text"
+                    @click="deleteDialog(device.DeviceId)"
                   >
                     <VIcon
                       size="22"
@@ -448,6 +479,14 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
       v-model:isDrawerFileOpen="isFileDrawerVisible"
       :files="files"
       :device_attachment="device_attachment"
+    />
+
+    <DeleteDeviceDialog
+      :dialog="dialog"
+      :data="deleteItems"
+      title="Delete Device"
+      @close="closeDeleteDialog"
+      @confirm="confermDeleteDialog"
     />
   </section>
 </template>

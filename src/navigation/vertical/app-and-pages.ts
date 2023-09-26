@@ -6,9 +6,20 @@ export default [
     children: [
       {
         title: 'Devices',
-        to: 'apps-main-store-devices',
-        action: 'manage',
-        subject: 'Auth',
+        children: [
+          {
+            title: 'List',
+            to: 'apps-main-store-devices-list',
+            action: 'manage',
+            subject: 'Auth',
+          },
+          {
+            title: 'Add',
+            to: 'apps-main-store-devices-add',
+            action: 'manage',
+            subject: 'Auth',
+          },
+        ],
       },
       {
         title: 'Accessories',

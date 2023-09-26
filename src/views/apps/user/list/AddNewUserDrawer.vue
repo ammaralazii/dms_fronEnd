@@ -31,7 +31,6 @@ const contact = ref('')
 const roleId = ref()
 const caseId = ref()
 const plan = ref()
-const status = ref()
 const password = ref()
 const showPassword = ref(false)
 
@@ -66,8 +65,6 @@ const togglePasswordVisibility = () => {
 const onSubmit = () => {
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
-      console.log('case id : ', caseId.value)
-
       const userData = {
         username: username.value,
         password: password.value,
