@@ -1,10 +1,8 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { ref } from 'vue'
 import FileDialog from '@/views/apps/devices/FileDialog.vue'
 import { useAlertsStore } from '@/stores'
-import { baseService } from '@/api/BaseService'
 import type { deviceInfo } from '@/types/interfaces/device-info'
 import { exportToExcel } from '@/helper/exportToExcel'
 
@@ -191,234 +189,241 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
 
           <VDivider />
 
-          <PerfectScrollbar>
-            <VProgressLinear
-              v-if="!devices.length"
-              color="primary"
-              indeterminate
-              reverse
-            />
-            <VTable
-              id="myTable"
-              class="text-no-wrap"
-            >
-              <!-- 👉 table head -->
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Main box number
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Secondary fund number
-                  </th>
-                  <th
-                    class="text-center"
-                    scope="col"
-                  >
-                    Serial number
-                  </th>
-                  <th
-                    class="text-center"
-                    scope="col"
-                  >
-                    MAC
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    FW version
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Import date
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Recived date
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Agreement CMC
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Type
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Manufctur
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Costomer group
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Status LVN
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Files
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Accessories
-                  </th>
-                  <th
-                    scope="col"
-                    class="text-center"
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <!-- 👉 table body -->
-              <tbody v-if="devices.length > 0">
-                <tr
-                  v-for="(device, index) in devices"
-                  :key="index"
-                  style="height: 3.75rem;"
+          <VProgressLinear
+            v-if="!devices.length"
+            color="primary"
+            indeterminate
+            reverse
+          />
+          <VTable
+            id="myTable"
+            class="text-no-wrap"
+          >
+            <!-- 👉 table head -->
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                  class="text-center"
                 >
-                  <td>
-                    {{ device.BoxNoMain || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.BoxNoSub || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.DeviceSerialNumber || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.DeviceMAC || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.FWVersion || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.DeciveImportDate || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.DeviceRecivedDate || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.AgreementCMC || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.DeviceType || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.DeviceManufctur || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.CostomerGroup || 'not found' }}
-                  </td>
-                  <td>
-                    {{ device.StatusLVN || 'not found' }}
-                  </td>
-                  <td>
-                    <VBtn
-                      v-if="device?.files?.length"
-                      class="text-lowercase blak-text"
-                      variant="text"
-                      @click="openFileDrawer(device.files, device.DeviceAttachment, true)"
-                    >
-                      get files
-                    </VBtn>
-
-                    <VBtn
-                      v-else
-                      class="text-lowercase text-error"
-                      variant="text"
-                    >
-                      not found
-                    </VBtn>
-                  </td>
-                  <td>
-                    <VBtn
-                      v-if="device?.accessories?.length"
-                      class="text-lowercase blak-text"
-                      variant="text"
-                      @click="isFileDrawerVisible = true"
-                    >
-                      get accessories
-                    </VBtn>
-                    <VBtn
-                      v-else
-                      class="text-lowercase text-error"
-                      variant="text"
-                    >
-                      not found
-                    </VBtn>
-                  </td>
-                  <td
-                    class="text-center"
-                    style="width: 5rem;"
+                  Main box number
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Secondary fund number
+                </th>
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  IMEI
+                </th>
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Serial number
+                </th>
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  MAC
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  FW version
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Import date
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Recived date
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Agreement CMC
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Type
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Manufctur
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Costomer group
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Status LVN
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Files
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Accessories
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <!-- 👉 table body -->
+            <tbody v-if="devices.length > 0">
+              <tr
+                v-for="(device, index) in devices"
+                :key="index"
+                style="height: 3.75rem;"
+              >
+                <td>
+                  {{ device.BoxNoMain || 'not found' }}
+                </td>
+                <td>
+                  {{ device.BoxNoSub || 'not found' }}
+                </td>
+                <td>
+                  {{ device.IMEI || 'not found' }}
+                </td>
+                <td>
+                  {{ device.DeviceSerialNumber || 'not found' }}
+                </td>
+                <td>
+                  {{ device.DeviceMAC || 'not found' }}
+                </td>
+                <td>
+                  {{ device.FWVersion || 'not found' }}
+                </td>
+                <td>
+                  {{ device.DeciveImportDate || 'not found' }}
+                </td>
+                <td>
+                  {{ device.DeviceRecivedDate || 'not found' }}
+                </td>
+                <td>
+                  {{ device.AgreementCMC || 'not found' }}
+                </td>
+                <td>
+                  {{ device.DeviceType || 'not found' }}
+                </td>
+                <td>
+                  {{ device.DeviceManufctur || 'not found' }}
+                </td>
+                <td>
+                  {{ device.CostomerGroup || 'not found' }}
+                </td>
+                <td>
+                  {{ device.StatusLVN || 'not found' }}
+                </td>
+                <td>
+                  <VBtn
+                    v-if="device?.files?.length"
+                    class="text-lowercase blak-text"
+                    variant="text"
+                    @click="openFileDrawer(device.files, device.DeviceAttachment, true)"
                   >
-                    <VBtn
-                      icon
-                      size="x-small"
-                      color="default"
-                      variant="text"
-                    >
-                      <VIcon
-                        size="22"
-                        icon="tabler-edit"
-                      />
-                    </VBtn>
+                    get files
+                  </VBtn>
 
-                    <VBtn
-                      icon
-                      size="x-small"
-                      color="default"
-                      variant="text"
-                    >
-                      <VIcon
-                        size="22"
-                        icon="tabler-trash"
-                      />
-                    </VBtn>
-                  </td>
-                </tr>
-              </tbody>
-
-              <!-- 👉 table footer  -->
-              <tfoot v-if="devices.length === 0">
-                <tr>
-                  <td
-                    colspan="7"
-                    class="text-center"
+                  <VBtn
+                    v-else
+                    class="text-lowercase text-error"
+                    variant="text"
                   >
-                    No data available
-                  </td>
-                </tr>
-              </tfoot>
-            </VTable>
-          </PerfectScrollbar>
+                    not found
+                  </VBtn>
+                </td>
+                <td>
+                  <VBtn
+                    v-if="device?.accessories?.length"
+                    class="text-lowercase blak-text"
+                    variant="text"
+                    @click="isFileDrawerVisible = true"
+                  >
+                    get accessories
+                  </VBtn>
+                  <VBtn
+                    v-else
+                    class="text-lowercase text-error"
+                    variant="text"
+                  >
+                    not found
+                  </VBtn>
+                </td>
+                <td
+                  class="text-center"
+                  style="width: 5rem;"
+                >
+                  <VBtn
+                    icon
+                    size="x-small"
+                    color="default"
+                    variant="text"
+                  >
+                    <VIcon
+                      size="22"
+                      icon="tabler-edit"
+                    />
+                  </VBtn>
+
+                  <VBtn
+                    icon
+                    size="x-small"
+                    color="default"
+                    variant="text"
+                  >
+                    <VIcon
+                      size="22"
+                      icon="tabler-trash"
+                    />
+                  </VBtn>
+                </td>
+              </tr>
+            </tbody>
+
+            <!-- 👉 table footer  -->
+            <tfoot v-if="devices.length === 0">
+              <tr>
+                <td
+                  colspan="7"
+                  class="text-center"
+                >
+                  No data available
+                </td>
+              </tr>
+            </tfoot>
+          </VTable>
 
           <VDivider />
 

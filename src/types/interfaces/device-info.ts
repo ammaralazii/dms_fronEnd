@@ -17,4 +17,5 @@ export interface deviceInfo {
   updated_at?: Date
   files?: any[]
   accessories?: any[]
+  IMEI: string | number
 }
