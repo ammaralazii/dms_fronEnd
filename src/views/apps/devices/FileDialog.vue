@@ -32,16 +32,20 @@ const props = defineProps({
     required: true,
     type: String,
   },
+  edit: {
+    type: Boolean,
+  },
+
 })
 
-const emit = defineEmits(['update:isDrawerFileOpen'])// /props
+const emit = defineEmits(['update:isDrawerFileOpen', 'close'])// /props
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const fileList = ref<File[]>([])
 const itemId = ref()
 
-watch(() => props.files, (val: any) => {
+watch(() => props.files, async (val: any) => {
   fileList.value = sortByDate(val, 'created_at') as any
 })
 

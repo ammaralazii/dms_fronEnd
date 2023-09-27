@@ -8,6 +8,7 @@ import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDeviceDialog from '@/views/apps/devices/list/DeleteDeviceDialog.vue'
 
 const alert = useAlertsStore()
+const router = useRouter()
 
 // 👉 Store
 const searchQuery = ref('')
@@ -105,6 +106,17 @@ const confermDeleteDialog = (ids: any) => {
     devices.value = devices.value.filter(item => item.DeviceId !== id)
   })
 }
+
+const goToEditPage = (id: any) => {
+  console.log('id : ', id)
+  router.push({
+    name: 'apps-main-store-devices-view-id',
+    params: {
+      id,
+    },
+    query: { edit: true as any },
+  })
+}// /goToEditPage
 </script>
 
 <template>
@@ -420,6 +432,7 @@ const confermDeleteDialog = (ids: any) => {
                     size="x-small"
                     color="default"
                     variant="text"
+                    @click="goToEditPage(device.DeviceId)"
                   >
                     <VIcon
                       size="22"

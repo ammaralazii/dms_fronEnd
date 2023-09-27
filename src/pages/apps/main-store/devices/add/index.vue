@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Console } from 'console'
 import { VForm } from 'vuetify/components'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'

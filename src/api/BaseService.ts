@@ -33,6 +33,19 @@ export const baseService = {
 
   async update(url: string, data: object, id: string): Promise<object | null> {
     try {
+      const result = await axiosIns.post(`${url}/${id}`, data)
+
+      return result.data
+    }
+    catch (e) {
+      hundlerErorr(e)
+
+      return []
+    }/* /try catch */
+  },
+
+  async put(url: string, data: object, id: string): Promise<object | null> {
+    try {
       const result = await axiosIns.put(`${url}/${id}`, data)
 
       return result.data
