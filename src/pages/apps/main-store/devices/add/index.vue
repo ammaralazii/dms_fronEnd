@@ -66,8 +66,6 @@ const onSubmit = async () => {
 
     const mergedObject = { ...requiredFields.value, ...optionalFields.value }
 
-    console.log('mergedObject : ', mergedObject)
-
     const formData = objectToFormData(mergedObject)
     const result = await baseService.create('device', formData) as any
 
@@ -347,6 +345,7 @@ const onSubmit = async () => {
           <VBtn
             type="submit"
             class="mt-3"
+            :loading="loading"
           >
             Submit
           </VBtn>

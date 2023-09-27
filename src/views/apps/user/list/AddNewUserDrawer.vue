@@ -33,6 +33,7 @@ const caseId = ref()
 const plan = ref()
 const password = ref()
 const showPassword = ref(false)
+const loading = ref(false)
 
 const alert = useAlertsStore()
 
@@ -65,6 +66,8 @@ const togglePasswordVisibility = () => {
 const onSubmit = () => {
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
+      loading.value = true
+
       const userData = {
         username: username.value,
         password: password.value,
@@ -75,6 +78,7 @@ const onSubmit = () => {
 
       const resultAddUser = await baseService.create('user', userData) as any
 
+      loading.value = false
       if (resultAddUser.success) {
         const user = {
           id: resultAddUser.data.id,
@@ -247,6 +251,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                 <VBtn
                   type="submit"
                   class="me-3"
+                  :loading="loading"
                 >
                   Submit
                 </VBtn>
