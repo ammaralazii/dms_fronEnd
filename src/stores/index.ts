@@ -47,7 +47,9 @@ export const useAlertsStore = defineStore('alerts', {
       if (permission.status === 200)
         return permission?.data?.data
     },
-    async fetchDevices(params: any) { return axiosIns.get(`device?per_page=${params.perPage}&page=${params.currentPage}`, { params }) }, // /fetchDevices
-    async fetchCards(params: any) { return axiosIns.get(`card?per_page=${params.perPage}&page=${params.currentPage}`, { params }) }, // /fetchDevices
+    async fetchDevices(params: any) {
+      return axiosIns.get('device', { params })
+    }, // /fetchDevices
+    async fetchCards(params: any) { return axiosIns.get('card', { params }) }, // /fetchDevices
   }, /* /action */
 })/* /useAlertsStore */

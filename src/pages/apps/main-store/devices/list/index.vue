@@ -1,20 +1,19 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
 import { ref } from 'vue'
+import debounce from 'lodash/debounce'
+import FilterDevice from '@/views/apps/devices/list/FilterDevice.vue'
 import FileDialog from '@/views/apps/devices/FileDialog.vue'
 import { useAlertsStore } from '@/stores'
 import type { deviceInfo } from '@/types/interfaces/device-info'
 import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDeviceDialog from '@/views/apps/devices/list/DeleteDeviceDialog.vue'
+import { baseService } from '@/api/BaseService'
 
 const alert = useAlertsStore()
 const router = useRouter()
 
 // 👉 Store
-const searchQuery = ref('')
-const selectedRole = ref()
-const selectedPlan = ref()
-const selectedStatus = ref()
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
@@ -26,6 +25,32 @@ const files = ref([])
 const device_attachment = ref()
 const dialog = ref(false)
 const deleteItems = ref<any>([])
+const excelInput = ref()
+const loadingUpload = ref(false)
+const selectedDevices = ref([])
+const selectAll = ref(false)
+const loadingGetDiveces = ref<boolean>(false)
+const searchCode = ref()
+
+const params = ref({
+  perPage: rowPerPage.value,
+  currentPage: currentPage.value,
+  code: null,
+})
+
+const payload = {
+  color: '',
+  timeOut: 5000,
+  run: true,
+  text: '',
+  position: {
+    top: true,
+    right: false,
+    left: false,
+    bottom: false,
+  },
+  update: false,
+}/* /payload */
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -34,10 +59,8 @@ onMounted(() => {
 
 // 👉 Fetching users
 const fetchDevices = () => {
-  alert.fetchDevices({
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-  }).then(response => {
+  loadingGetDiveces.value = true
+  alert.fetchDevices(params.value).then(response => {
     if (response.data?.success) {
       devices.value = response.data.data.data
       oldList.value = response.data.data.data
@@ -47,7 +70,7 @@ const fetchDevices = () => {
     }// /if
   }).catch(error => {
     console.error(error)
-  })
+  }).finally(() => loadingGetDiveces.value = false)
 }// /fetchUsers
 
 // 👉 watching current page
@@ -56,17 +79,7 @@ watchEffect(() => {
     currentPage.value = totalPage.value
 })
 
-const rolesItems = computed(() => {
-  return alert.$state.roles
-})/* /tost */
-
-// this computed to get cases from server
-const casesItem = computed(() => {
-  return alert.$state.cases
-})// /roles
-
 const isFileDrawerVisible = ref(false)
-const isAddFileDrawerVisable = ref(false)
 
 // 👉 watching current page
 watchEffect(() => {
@@ -90,7 +103,10 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
 }// /openFileDrawer
 
 const deleteDialog = (id: any) => {
-  deleteItems.value.push(id)
+  if (selectedDevices.value.length > 0)
+    deleteItems.value = selectedDevices.value
+  else
+    deleteItems.value.push(id)
   dialog.value = true
 }// /deleteDialog
 
@@ -99,12 +115,20 @@ const closeDeleteDialog = () => {
   dialog.value = false
 }
 
-const confermDeleteDialog = (ids: any) => {
+const confermDeleteDialog = (ids?: any) => {
   deleteItems.value = []
   dialog.value = false
-  ids.forEach((id: any) => {
-    devices.value = devices.value.filter(item => item.DeviceId !== id)
-  })
+  if (selectedDevices.value.length > 0) {
+    devices.value = devices.value.filter((item: any) => {
+      if (!selectedDevices.value.includes(item.DeviceId as never))
+        return item
+    })
+  }
+  else {
+    ids.forEach((id: any) => {
+      devices.value = devices.value.filter(item => item.DeviceId !== id)
+    })
+  }
 }
 
 const goToEditPage = (id: any) => {
@@ -117,6 +141,67 @@ const goToEditPage = (id: any) => {
     query: { edit: true as any },
   })
 }// /goToEditPage
+
+const openExcelDialog = () => {
+  if (excelInput.value)
+    excelInput.value.click()
+}// /openExcelDialog
+
+const uploadExcelFile = async (event: any) => {
+  const excelFile = event.target.files[0]
+
+  loadingUpload.value = true
+
+  const formData = new FormData()
+
+  formData.append('file', excelFile)
+
+  const result = await baseService.create('upload_excel_device', formData) as any
+
+  loadingUpload.value = false
+
+  if (result.success) {
+    payload.color = 'success'
+    payload.text = 'file uploaded successfly .'
+    alert.$state.tosts.push(payload)
+  }// /if
+}// /uploadExcelFile
+
+// this function to add all device id to selectedDevices
+
+watch(() => selectAll.value, (val: boolean) => {
+  if (val)
+    selectedDevices.value = devices.value.map(device => device.DeviceId) as any
+  else selectedDevices.value = []
+})// /watch
+
+// this to add hash if the checkbox is not all checked
+const isIndeterminate = computed(() => {
+  return selectedDevices.value.length > 0 && selectedDevices.value.length < devices.value.length
+})// /isIndeterminate
+
+const selectAllDevices = () => {
+  if (!selectAll.value)
+    selectedDevices.value = []
+
+  else
+    selectedDevices.value = devices.value.map(device => device.DeviceId) as any
+}// /selectAllDevices
+
+// this funnction to do filter on device table
+const dataFiltering = (data: any) => {
+  params.value = { ...params.value, ...data }
+  fetchDevices()
+}// /filter
+
+const searchQuery = debounce((val: string) => {
+  params.value.code = val as any
+  fetchDevices()
+}, 2000)
+
+watch(() => searchCode.value, (val: string) => {
+  searchQuery(val)
+})// /watch
 </script>
 
 <template>
@@ -126,54 +211,8 @@ const goToEditPage = (id: any) => {
         <VCard title="Search Filter">
           <!-- 👉 Filters -->
           <VCardText>
-            <VRow>
-              <!-- 👉 Select Role -->
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <VSelect
-                  v-model="selectedRole"
-                  label="Select Role"
-                  :items="rolesItems"
-                  clearable
-                  clear-icon="tabler-x"
-                  :item-title="(item) => item.RoleName"
-                />
-              </VCol>
-              <!-- 👉 Select Plan -->
-              <VCol
-                cols="12"
-                sm="4"
-                class="d-none"
-              >
-                <VSelect
-                  v-model="selectedPlan"
-                  label="Select Plan"
-                  :items="[]"
-                  clearable
-                  clear-icon="tabler-x"
-                />
-              </VCol>
-
-              <!-- 👉 Select Status -->
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <VSelect
-                  v-model="selectedStatus"
-                  label="Select Status"
-                  :items="casesItem"
-                  :item-title="(item) => item.case"
-                  clearable
-                  clear-icon="tabler-x"
-                />
-              </VCol>
-            </VRow>
+            <FilterDevice @dataFiltering="dataFiltering" />
           </VCardText>
-
-          <VDivider />
 
           <VCardText class="d-flex flex-wrap py-4 gap-4">
             <div
@@ -181,9 +220,10 @@ const goToEditPage = (id: any) => {
               style="width: 80px;"
             >
               <!-- 👉 Search  -->
-              <div style="width: 10rem;">
+              <div style="width: 10.3rem;">
                 <VTextField
-                  v-model="searchQuery"
+                  v-model="searchCode"
+                  clearable
                   placeholder="Search"
                   density="compact"
                 />
@@ -194,6 +234,15 @@ const goToEditPage = (id: any) => {
 
             <div class=" d-flex align-center flex-wrap gap-4">
               <!-- 👉 Export button -->
+              <VBtn
+                v-if="selectedDevices.length > 0"
+                variant="tonal"
+                color="secondary"
+                prepend-icon="ph-trash"
+                @click="deleteDialog"
+              >
+                Delete
+              </VBtn>
               <VBtn
                 variant="tonal"
                 color="secondary"
@@ -206,10 +255,18 @@ const goToEditPage = (id: any) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-in"
+                :loading="loadingUpload"
+                @click="openExcelDialog"
               >
                 Import
               </VBtn>
-
+              <input
+                ref="excelInput"
+                type="file"
+                hidden
+                accept=".xlsx, .xls, .csv"
+                @change="uploadExcelFile($event)"
+              >
               <!-- 👉 Add new device -->
               <VBtn
                 to="/apps/main-store/devices/add"
@@ -223,7 +280,7 @@ const goToEditPage = (id: any) => {
           <VDivider />
 
           <VProgressLinear
-            v-if="!devices.length"
+            v-if="loadingGetDiveces"
             color="primary"
             indeterminate
             reverse
@@ -235,6 +292,17 @@ const goToEditPage = (id: any) => {
             <!-- 👉 table head -->
             <thead>
               <tr>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  <!-- check all -->
+                  <VCheckbox
+                    v-model="selectAll"
+                    :indeterminate="isIndeterminate"
+                    @change="selectAllDevices"
+                  />
+                </th>
                 <th
                   scope="col"
                   class="text-center"
@@ -347,6 +415,12 @@ const goToEditPage = (id: any) => {
                 style="height: 3.75rem;"
               >
                 <td>
+                  <VCheckbox
+                    v-model="selectedDevices"
+                    :value="device.DeviceId"
+                  />
+                </td>
+                <td>
                   {{ device.DeviceCode }}
                 </td>
                 <td>
@@ -445,6 +519,7 @@ const goToEditPage = (id: any) => {
                     size="x-small"
                     color="default"
                     variant="text"
+                    :disabled="selectedDevices.length > 0 ? true : false"
                     @click="deleteDialog(device.DeviceId)"
                   >
                     <VIcon

@@ -15,4 +15,5 @@ export interface cardInfo {
   CardImportDate?: Date
   CostomerGroup?: string
   StatusLVN?: string
+  CardCode?: string
 }

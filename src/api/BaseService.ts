@@ -33,7 +33,7 @@ export const baseService = {
 
   async update(url: string, data: object, id: string): Promise<object | null> {
     try {
-      const result = await axiosIns.post(`${url}/${id}`, data)
+      const result = await axiosIns.put(`${url}/${id}`, data)
 
       return result.data
     }
@@ -44,9 +44,9 @@ export const baseService = {
     }/* /try catch */
   },
 
-  async put(url: string, data: object, id: string): Promise<object | null> {
+  async updateAsPost(url: string, data: object, id: string): Promise<object | null> {
     try {
-      const result = await axiosIns.put(`${url}/${id}`, data)
+      const result = await axiosIns.post(`${url}/${id}`, data)
 
       return result.data
     }

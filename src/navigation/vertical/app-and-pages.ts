@@ -29,9 +29,14 @@ export default [
       },
       {
         title: 'SIM Card',
-        to: { name: 'apps-main-store-cards' },
-        action: 'manage',
-        subject: 'Auth',
+        children: [
+          {
+            title: 'List',
+            to: { name: 'apps-main-store-cards-list' },
+            action: 'manage',
+            subject: 'Auth',
+          },
+        ],
       },
     ],
   },

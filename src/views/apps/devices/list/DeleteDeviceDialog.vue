@@ -24,8 +24,6 @@ const closeDialog = () => {
 }
 
 const deleteItem = async () => {
-  console.log('props.data : ', props.data)
-
   try {
     const result = await axiosIns.delete('device', {
       data: props.data as any,

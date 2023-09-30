@@ -91,7 +91,7 @@ const onSubmit = async () => {
     console.log('deivceItem.value : ', deivceItem.value)
 
     const formData = objectToFormData(deivceItem.value)
-    const result = await baseService.update('device', formData, deivceItem.value.DeviceId) as any
+    const result = await baseService.updateAsPost('device', formData, deivceItem.value.DeviceId) as any
 
     loading.value = false
     if (result.success) {
