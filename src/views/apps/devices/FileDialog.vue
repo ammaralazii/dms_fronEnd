@@ -105,7 +105,8 @@ const addFile = async (event: any, device_attachment: string) => {
       fileData.append('file', file)
       fileData.append('device_attachment', device_attachment)
 
-      const result = await axiosIns.post('file', fileData) as any
+      let result = null
+      result = await axiosIns.post('file', fileData) as any
 
       if (result.status === 200) {
         const uploadedFile = result.data.data
@@ -139,8 +140,8 @@ const updateFile = async (event: any, fileId: string, index: number) => {
       const fileData = new FormData()
 
       fileData.append('file', file)
-
-      const result = await axiosIns.post(`file/${fileId}`, fileData) as any
+      let result = null
+      result = await axiosIns.post(`file/${fileId}`, fileData) as any
 
       if (result.status === 200) {
         fileList.value[index].FileOriginalName = fileName

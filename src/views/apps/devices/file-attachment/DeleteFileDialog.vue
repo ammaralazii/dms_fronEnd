@@ -23,7 +23,8 @@ const closeDialog = () => {
 }
 
 const deleteItem = async () => {
-  const result = await baseService.delete(`file/${props.fileId}`, null) as any
+  let result = null
+  result = await baseService.delete(`file/${props.fileId}`, null) as any
 
   if (result && result.success === true)
     emit('confirm')

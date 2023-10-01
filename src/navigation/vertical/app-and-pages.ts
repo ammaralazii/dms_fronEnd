@@ -36,6 +36,12 @@ export default [
             action: 'manage',
             subject: 'Auth',
           },
+          {
+            title: 'Add',
+            to: { name: 'apps-main-store-cards-add' },
+            action: 'manage',
+            subject: 'Auth',
+          },
         ],
       },
     ],

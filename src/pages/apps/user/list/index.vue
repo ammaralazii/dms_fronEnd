@@ -149,7 +149,8 @@ const updateUser = (userData: userInfo) => {
 
 // 👉 delete the user
 const deleteUser = async (item: any, index: number) => {
-  const result = await baseService.delete('user', [item.id]) as any
+  let result = null
+  result = await baseService.delete('user', [item.id]) as any
 
   if (result.success) {
     if (users.value[index].user_case.case === 'active')

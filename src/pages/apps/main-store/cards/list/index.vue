@@ -3,21 +3,19 @@
 import TableExport from 'tableexport'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
-
 import { ref } from 'vue'
-import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
-import UpdateUserData from '@/views/apps/user/list/UpdateUserData.vue'
+import debounce from 'lodash/debounce'
+import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
 import type { cardInfo } from '@/types/interfaces/card-info'
+import FilterDate from '@/views/base/FilterDate.vue'
 
 const alert = useAlertsStore()
+const router = useRouter()
 
 // 👉 Store
-const searchQuery = ref('')
-const selectedRole = ref()
-const selectedPlan = ref()
-const selectedStatus = ref()
+const searchCode = ref()
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
@@ -25,19 +23,25 @@ const totalCards = ref(0)
 const cards = ref<cardInfo[]>([])
 const oldList = ref()
 const userCount = ref<number>()
+const loadCards = ref(false)
+const selectedCards = ref([])
+const selectAll = ref(false)
+const deleteItems = ref([])
+const dialog = ref(false)
+const loadingUpload = ref(false)
+const excelInput = ref()
 
-onMounted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  fetchCards()
+const params = ref({
+  perPage: rowPerPage.value,
+  currentPage: currentPage.value,
+  code: null,
 })
 
 // 👉 Fetching cards
 const fetchCards = () => {
-  alert.fetchCards({
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-  }).then(response => {
-    console.log('response : ', response)
+  loadCards.value = true
+  alert.fetchCards(params.value).then(response => {
+    loadCards.value = false
     if (response.data?.success) {
       cards.value = response.data.data.data
       oldList.value = response.data.data.data
@@ -50,24 +54,17 @@ const fetchCards = () => {
   })
 }// /fetchCards
 
+onMounted(() => {
+  fetchCards()
+})
+
 // 👉 watching current page
 watchEffect(() => {
   if (currentPage.value > totalPage.value)
     currentPage.value = totalPage.value
 })
 
-const rolesItems = computed(() => {
-  return alert.$state.roles
-})/* /tost */
-
-// this computed to get cases from server
-const casesItem = computed(() => {
-  return alert.$state.cases
-})// /roles
-
 const isAddNewUserDrawerVisible = ref(false)
-const isUpdateUserDrawerVisible = ref(false)
-const userUpdateData = ref()
 
 // 👉 watching current page
 watchEffect(() => {
@@ -107,6 +104,109 @@ const exportToExcel = async () => {
     saveAs(blob, 'exported-data.xlsx')
   }
 }// /exportToExcel
+
+// this function to add all card id to selectedCards
+
+watch(() => selectAll.value, (val: boolean) => {
+  if (val)
+    selectedCards.value = cards.value.map(card => card.CardId) as any
+  else selectedCards.value = []
+})// /watch
+
+// this to add hash if the checkbox is not all checked
+const isIndeterminate = computed(() => {
+  return selectedCards.value.length > 0 && selectedCards.value.length < cards.value.length
+})// /isIndeterminate
+
+const selectAllcards = () => {
+  if (!selectAll.value)
+    selectedCards.value = []
+
+  else
+    selectedCards.value = cards.value.map(card => card.CardId) as any
+}// /selectAllcards
+
+// this function to delete cards
+const deleteCards = (ids?: any) => {
+  if (selectedCards.value.length > 0)
+    deleteItems.value = selectedCards.value
+  else
+    deleteItems.value.push(ids as never)
+  dialog.value = true
+}// /deleteCards
+
+const closeDeleteDialog = () => {
+  deleteItems.value = []
+  dialog.value = false
+}// /closeDeleteDialog
+
+const confermDeleteDialog = (ids?: any) => {
+  deleteItems.value = []
+  dialog.value = false
+  if (selectedCards.value.length > 0) {
+    cards.value = cards.value.filter((item: any) => {
+      if (!selectedCards.value.includes(item.CardId as never))
+        return item
+    })
+  }
+  else {
+    ids.forEach((id: any) => {
+      cards.value = cards.value.filter(item => item.CardId !== id)
+    })
+  }
+}// /confermDeleteDialog
+
+// this funnction to do filter on device table
+const dataFiltering = (data: any) => {
+  params.value = { ...params.value, ...data }
+  fetchCards()
+}// /filter
+
+const searchQuery = debounce((val: string) => {
+  params.value.code = val as any
+  fetchCards()
+}, 2000)
+
+watch(() => searchCode.value, (val: string) => {
+  searchQuery(val)
+})// /watch
+
+const openExcelDialog = () => {
+  if (excelInput.value)
+    excelInput.value.click()
+}// /openExcelDialog
+
+const uploadExcelFile = async (event: any) => {
+  const excelFile = event.target.files[0]
+
+  loadingUpload.value = true
+
+  const formData = new FormData()
+
+  formData.append('file', excelFile)
+
+  let result = null
+  result = await baseService.create('card/upload_excel_file', formData) as any
+
+  loadingUpload.value = false
+
+  if (result.success) {
+    payload.color = 'success'
+    payload.text = 'file uploaded successfly .'
+    alert.$state.tosts.push(payload)
+  }// /if
+}// /uploadExcelFile
+
+const goToEditPage = (id: string) => {
+  console.log('id : ', id)
+  router.push({
+    name: 'apps-main-store-cards-view-id',
+    params: {
+      id,
+    },
+    query: { edit: true as any },
+  })
+}// /goToEditPage
 </script>
 
 <template>
@@ -115,52 +215,11 @@ const exportToExcel = async () => {
       <VCol cols="12">
         <VCard title="Search Filter">
           <!-- 👉 Filters -->
-          <VCardText>
-            <VRow>
-              <!-- 👉 Select Role -->
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <VSelect
-                  v-model="selectedRole"
-                  label="Select Role"
-                  :items="rolesItems"
-                  clearable
-                  clear-icon="tabler-x"
-                  :item-title="(item) => item.RoleName"
-                />
-              </VCol>
-              <!-- 👉 Select Plan -->
-              <VCol
-                cols="12"
-                sm="4"
-                class="d-none"
-              >
-                <VSelect
-                  v-model="selectedPlan"
-                  label="Select Plan"
-                  :items="[]"
-                  clearable
-                  clear-icon="tabler-x"
-                />
-              </VCol>
-
-              <!-- 👉 Select Status -->
-              <VCol
-                cols="12"
-                sm="4"
-              >
-                <VSelect
-                  v-model="selectedStatus"
-                  label="Select Status"
-                  :items="casesItem"
-                  :item-title="(item) => item.case"
-                  clearable
-                  clear-icon="tabler-x"
-                />
-              </VCol>
-            </VRow>
+          <VCardText v-if="$can('get', 'card')">
+            <FilterDate
+              type="card"
+              @dataFiltering="dataFiltering"
+            />
           </VCardText>
 
           <VDivider />
@@ -171,9 +230,12 @@ const exportToExcel = async () => {
               style="width: 80px;"
             >
               <!-- 👉 Search  -->
-              <div style="width: 10rem;">
+              <div
+                v-if="$can('get', 'card')"
+                style="width: 10rem;"
+              >
                 <VTextField
-                  v-model="searchQuery"
+                  v-model="searchCode"
                   placeholder="Search"
                   density="compact"
                 />
@@ -183,6 +245,16 @@ const exportToExcel = async () => {
             <VSpacer />
 
             <div class=" d-flex align-center flex-wrap gap-4">
+              <!-- 👉 Export button -->
+              <VBtn
+                v-if="selectedCards.length > 0 && $can('delete', 'card')"
+                variant="tonal"
+                color="secondary"
+                prepend-icon="ph-trash"
+                @click="deleteCards"
+              >
+                Delete
+              </VBtn>
               <!-- 👉 Export button -->
               <VBtn
                 variant="tonal"
@@ -196,12 +268,22 @@ const exportToExcel = async () => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-in"
+                :loading="loadingUpload"
+                @click="openExcelDialog"
               >
                 Import
               </VBtn>
+              <input
+                ref="excelInput"
+                type="file"
+                hidden
+                accept=".xlsx, .xls, .csv"
+                @change="uploadExcelFile($event)"
+              >
 
               <!-- 👉 Add user button -->
               <VBtn
+                v-if="$can('create', 'card')"
                 prepend-icon="tabler-plus"
                 @click="isAddNewUserDrawerVisible = true"
               >
@@ -211,6 +293,12 @@ const exportToExcel = async () => {
           </VCardText>
 
           <VDivider />
+          <VProgressLinear
+            v-if="loadCards"
+            color="primary"
+            indeterminate
+            reverse
+          />
 
           <VTable
             id="myTable"
@@ -219,6 +307,17 @@ const exportToExcel = async () => {
             <!-- 👉 table head -->
             <thead>
               <tr>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  <!-- check all -->
+                  <VCheckbox
+                    v-model="selectAll"
+                    :indeterminate="isIndeterminate"
+                    @change="selectAllcards"
+                  />
+                </th>
                 <th scope="col">
                   Code
                 </th>
@@ -232,13 +331,11 @@ const exportToExcel = async () => {
                   CRM ACCT Code
                 </th>
                 <th
-                  class="d-none"
                   scope="col"
                 >
                   Prepost Paid
                 </th>
                 <th
-                  class="d-none"
                   scope="col"
                 >
                   Status
@@ -273,7 +370,10 @@ const exportToExcel = async () => {
                 <th scope="col">
                   Status LVN
                 </th>
-                <th scope="col">
+                <th
+                  v-if="$can('update', 'card') || $can('delete', 'card')"
+                  scope="col"
+                >
                   Actions
                 </th>
               </tr>
@@ -285,6 +385,12 @@ const exportToExcel = async () => {
                 :key="index"
                 style="height: 3.75rem;"
               >
+                <td>
+                  <VCheckbox
+                    v-model="selectedCards"
+                    :value="card.CardId"
+                  />
+                </td>
                 <td>
                   {{ card.CardCode || 'not found' }}
                 </td>
@@ -334,14 +440,17 @@ const exportToExcel = async () => {
                   {{ card.StatusLVN || 'not found' }}
                 </td>
                 <td
+                  v-if="$can('update', 'card') || $can('delete', 'card')"
                   class="text-center"
                   style="width: 5rem;"
                 >
                   <VBtn
+                    v-if="$can('update', 'card') "
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
+                    @click="goToEditPage(card.CardId)"
                   >
                     <VIcon
                       size="22"
@@ -350,10 +459,12 @@ const exportToExcel = async () => {
                   </VBtn>
 
                   <VBtn
+                    v-if="$can('delete', 'card') "
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
+                    @click="deleteCards(card.CardId)"
                   >
                     <VIcon
                       size="22"
@@ -394,18 +505,13 @@ const exportToExcel = async () => {
         </VCard>
       </VCol>
     </VRow>
-
-    <!-- 👉 Add New User -->
-    <AddNewUserDrawer
-      v-model:isDrawerOpen="isAddNewUserDrawerVisible"
-      @user-data="addNewUser"
-    />
-
-    <UpdateUserData
-      v-if="isUpdateUserDrawerVisible"
-      v-model:is-drawer-open="isUpdateUserDrawerVisible"
-      :user-update-data="userUpdateData"
-      @user-data="updateUser"
+    <DeleteDialog
+      title="Are you sure you want to delete the card?"
+      url="card"
+      :data="deleteItems"
+      :dialog="dialog"
+      @close="closeDeleteDialog"
+      @confirm="confermDeleteDialog"
     />
   </section>
 </template>

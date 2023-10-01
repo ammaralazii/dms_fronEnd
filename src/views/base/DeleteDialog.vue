@@ -15,6 +15,10 @@ const props = defineProps({
     required: true,
     type: Array,
   },
+  url: {
+    required: true,
+    type: String,
+  },
 })// /props
 
 const emit = defineEmits(['close', 'confirm'])
@@ -25,7 +29,8 @@ const closeDialog = () => {
 
 const deleteItem = async () => {
   try {
-    const result = await axiosIns.delete('device', {
+    let result = null
+    result = await axiosIns.delete(props.url, {
       data: props.data as any,
     }) as any
 

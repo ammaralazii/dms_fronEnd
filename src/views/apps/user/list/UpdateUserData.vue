@@ -75,7 +75,8 @@ const onSubmit = () => {
       if (password.value !== undefined)
         userData.password = password.value
 
-      const resultUpdateUser = await baseService.update('user', user, userData.value.id as string) as any
+      let resultUpdateUser = null
+      resultUpdateUser = await baseService.update('user', user, userData.value.id as string) as any
 
       if (resultUpdateUser.success) {
         if (userData.value.user_case.case === 'active')

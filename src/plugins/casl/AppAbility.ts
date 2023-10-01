@@ -1,9 +1,9 @@
 import type { AbilityClass } from '@casl/ability'
 import { Ability } from '@casl/ability'
 
-export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage'
+export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage' | 'get'
 
-export type Subjects = 'Auth' | 'Admin' | 'AclDemo' | 'all'
+export type Subjects = 'Auth' | 'device' | 'card'
 
 export type AppAbility = Ability<[Actions, Subjects]>
 

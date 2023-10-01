@@ -66,7 +66,8 @@ const onSubmit = async () => {
     const mergedObject = { ...requiredFields.value, ...optionalFields.value }
 
     const formData = objectToFormData(mergedObject)
-    const result = await baseService.create('device', formData) as any
+    let result = null
+    result = await baseService.create('device', formData) as any
 
     loading.value = false
     if (result.success) {

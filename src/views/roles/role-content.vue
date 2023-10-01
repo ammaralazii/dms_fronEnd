@@ -57,9 +57,9 @@ const individualChecked = (event: any, permissionId: any, checkboxIndex: any) =>
 const saveData = async () => {
   loading.value = true
 
-  console.log('loadOldCheckedPermission : ', loadOldCheckedPermission(newCheckedItems.value, permissions.value))
+  let result = null
 
-  const result = await baseService.update('role', {
+  result = await baseService.update('role', {
     permissions: loadOldCheckedPermission(newCheckedItems.value, permissions.value),
   }, roleName) as any
 

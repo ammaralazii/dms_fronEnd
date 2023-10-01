@@ -76,7 +76,8 @@ const onSubmit = () => {
         case_id: caseId.value.UserCaseId,
       }
 
-      const resultAddUser = await baseService.create('user', userData) as any
+      let resultAddUser = null
+      resultAddUser = await baseService.create('user', userData) as any
 
       loading.value = false
       if (resultAddUser.success) {

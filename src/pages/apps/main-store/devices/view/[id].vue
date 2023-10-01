@@ -91,14 +91,15 @@ const onSubmit = async () => {
     console.log('deivceItem.value : ', deivceItem.value)
 
     const formData = objectToFormData(deivceItem.value)
-    const result = await baseService.updateAsPost('device', formData, deivceItem.value.DeviceId) as any
+    let result = null
+    result = await baseService.updateAsPost('device', formData, deivceItem.value.DeviceId) as any
 
     loading.value = false
     if (result.success) {
       if (deviceFiles.value.length > 0) {
         dialog.value = true
-
-        const fileResult = await baseService.get(`file/get/${deivceItem.value.DeviceAttachment}`) as any
+        let fileResult = null
+        fileResult = await baseService.get(`file/get/${deivceItem.value.DeviceAttachment}`) as any
         if (fileResult.success) {
           dialog.value = false
           device.value.files = sortByDate(fileResult?.data, 'created_at') as any

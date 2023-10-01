@@ -2,12 +2,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import debounce from 'lodash/debounce'
-import FilterDevice from '@/views/apps/devices/list/FilterDevice.vue'
+import FilterDate from '@/views/base/FilterDate.vue'
 import FileDialog from '@/views/apps/devices/FileDialog.vue'
 import { useAlertsStore } from '@/stores'
 import type { deviceInfo } from '@/types/interfaces/device-info'
 import { exportToExcel } from '@/helper/exportToExcel'
-import DeleteDeviceDialog from '@/views/apps/devices/list/DeleteDeviceDialog.vue'
+import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import { baseService } from '@/api/BaseService'
 
 const alert = useAlertsStore()
@@ -57,7 +57,7 @@ onMounted(() => {
   fetchDevices()
 })
 
-// 👉 Fetching users
+// 👉 Fetching devices
 const fetchDevices = () => {
   loadingGetDiveces.value = true
   alert.fetchDevices(params.value).then(response => {
@@ -129,10 +129,9 @@ const confermDeleteDialog = (ids?: any) => {
       devices.value = devices.value.filter(item => item.DeviceId !== id)
     })
   }
-}
+}// /confermDeleteDialog
 
 const goToEditPage = (id: any) => {
-  console.log('id : ', id)
   router.push({
     name: 'apps-main-store-devices-view-id',
     params: {
@@ -156,7 +155,8 @@ const uploadExcelFile = async (event: any) => {
 
   formData.append('file', excelFile)
 
-  const result = await baseService.create('upload_excel_device', formData) as any
+  let result = null
+  result = await baseService.create('upload_excel_device', formData) as any
 
   loadingUpload.value = false
 
@@ -211,7 +211,10 @@ watch(() => searchCode.value, (val: string) => {
         <VCard title="Search Filter">
           <!-- 👉 Filters -->
           <VCardText>
-            <FilterDevice @dataFiltering="dataFiltering" />
+            <FilterDate
+              type="device"
+              @dataFiltering="dataFiltering"
+            />
           </VCardText>
 
           <VCardText class="d-flex flex-wrap py-4 gap-4">
@@ -569,10 +572,11 @@ watch(() => searchCode.value, (val: string) => {
       :device_attachment="device_attachment"
     />
 
-    <DeleteDeviceDialog
+    <DeleteDialog
       :dialog="dialog"
       :data="deleteItems"
       title="Delete Device"
+      url="device"
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
     />
