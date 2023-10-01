@@ -238,7 +238,7 @@ const uploadExcelFile = async (event: any) => {
   formData.append('file', excelFile)
 
   let result = null
-  result = await baseService.create('accessory/upload_excel_file', formData) as any
+  result = await baseService.create('accessory/upload_excel', formData) as any
 
   loadingUpload.value = false
 
