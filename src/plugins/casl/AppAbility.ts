@@ -3,7 +3,7 @@ import { Ability } from '@casl/ability'
 
 export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage' | 'get'
 
-export type Subjects = 'Auth' | 'device' | 'card'
+export type Subjects = 'Auth' | 'device' | 'card' | 'accessory'
 
 export type AppAbility = Ability<[Actions, Subjects]>
 

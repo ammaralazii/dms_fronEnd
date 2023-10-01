@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(['dataFiltering'])
 
-const index = props.type
+const index = props.type as any
 
 const columnIndex = ref<any>([])
 
@@ -24,12 +24,17 @@ columnIndex.value.device = {
   import: 'DeciveImportDate',
 }
 
+columnIndex.value.accessory = {
+  recive: 'AccessoryRecivedDate',
+  import: 'AccessoryImportDate',
+}
+
 const fromDate = ref<Date>()
 const toDate = ref<Date>()
-const type = ref(null)
+const type = ref()
 
 const dateTimePickerConfig = computed(() => {
-  return { enableTime: true, dateFormat: 'Y-m-d H:i' }
+  return { enableTime: true, dateFormat: 'Y-m-d H:m:s' } as any
 })
 
 const types = [
@@ -72,7 +77,6 @@ watch(() => type.value, () => sendData())
     >
       <VLabel>From : </VLabel>
       <AppDateTimePicker
-        :key="JSON.stringify(dateTimePickerConfig)"
         v-model:model-value="fromDate"
         clearable
         :config="dateTimePickerConfig"
@@ -88,7 +92,6 @@ watch(() => type.value, () => sendData())
     >
       <VLabel>To : </VLabel>
       <AppDateTimePicker
-        :key="JSON.stringify(dateTimePickerConfig)"
         v-model:model-value="toDate"
         clearable
         :config="dateTimePickerConfig"

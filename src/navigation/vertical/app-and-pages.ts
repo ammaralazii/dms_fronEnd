@@ -5,6 +5,25 @@ export default [
     icon: { icon: 'ph-database' },
     children: [
       {
+        title: 'Accessories',
+        children: [
+          {
+            title: 'List',
+            to: { name: 'apps-main-store-accessories-list' },
+            action: 'manage',
+            subject: 'Auth',
+          },
+          {
+            title: 'Add',
+            to: { name: 'apps-main-store-accessories-add' },
+            action: 'manage',
+            subject: 'Auth',
+          },
+        ],
+        action: 'manage',
+        subject: 'Auth',
+      },
+      {
         title: 'Devices',
         children: [
           {
@@ -20,10 +39,6 @@ export default [
             subject: 'Auth',
           },
         ],
-      },
-      {
-        title: 'Accessories',
-        to: 'apps-main-store-accessories',
         action: 'manage',
         subject: 'Auth',
       },
@@ -43,6 +58,8 @@ export default [
             subject: 'Auth',
           },
         ],
+        action: 'manage',
+        subject: 'Auth',
       },
     ],
   },

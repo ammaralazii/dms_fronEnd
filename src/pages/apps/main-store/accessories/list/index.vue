@@ -8,8 +8,9 @@ import debounce from 'lodash/debounce'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
-import type { cardInfo } from '@/types/interfaces/card-info'
+import type { accessoryInfo } from '@/types/interfaces/accessory-info'
 import FilterDate from '@/views/base/FilterDate.vue'
+import filterNull from '@/helper/filterNull'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -19,17 +20,23 @@ const searchCode = ref()
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
-const totalCards = ref(0)
-const cards = ref<cardInfo[]>([])
+const totalaccessories = ref(0)
+const accessories = ref<accessoryInfo[]>([])
 const oldList = ref()
 const userCount = ref<number>()
-const loadCards = ref(false)
-const selectedCards = ref([])
+const loadaccessories = ref(false)
+const selectedaccessories = ref([])
 const selectAll = ref(false)
 const deleteItems = ref([])
 const dialog = ref(false)
 const loadingUpload = ref(false)
 const excelInput = ref()
+const deviceId = ref()
+
+const route = useRoute()
+
+if (route.query.deviceId)
+  deviceId.value = route.query.deviceId
 
 const params = ref({
   perPage: rowPerPage.value,
@@ -51,25 +58,50 @@ const payload = {
   update: false,
 }/* /payload */
 
-// 👉 Fetching cards
-const fetchCards = () => {
-  loadCards.value = true
-  alert.fetchCards(params.value).then(response => {
-    loadCards.value = false
+// 👉 Fetching accessories
+const fetchaccessories = () => {
+  loadaccessories.value = true
+  alert.fetchaccessories(filterNull(params.value)).then(response => {
+    loadaccessories.value = false
     if (response.data?.success) {
-      cards.value = response.data.data.data
+      accessories.value = response.data.data.data
+      console.log('accessories.value : ', accessories.value)
       oldList.value = response.data.data.data
       totalPage.value = response.data.data.last_page
-      totalCards.value = response.data.data.total
+      totalaccessories.value = response.data.data.total
       userCount.value = response.data.data.data.length
     }// /if
   }).catch(error => {
     console.error(error)
   })
-}// /fetchCards
+}// /fetchaccessories
+
+// 👉 Fetching fetchaccessories device Id
+const fetchaccessoriesById = () => {
+  loadaccessories.value = true
+  params.value.id = alert.$state.deviceId
+
+  alert.fetchaccessoriesById(filterNull(params.value)).then(response => {
+    console.log('response : ', response)
+    loadaccessories.value = false
+    if (response.data?.success) {
+      accessories.value = response.data.data.data
+      oldList.value = response.data.data.data
+      totalPage.value = response.data.data.last_page
+      totalaccessories.value = response.data.data.total
+      userCount.value = response.data.data.data.length
+    }// /if
+  }).catch(error => {
+    console.error(error)
+  })
+}// /fetchaccessories
 
 onMounted(() => {
-  fetchCards()
+  console.log('alert.$state.deviceId : ', alert.$state.deviceId)
+  if (deviceId.value)
+    fetchaccessoriesById()
+  else
+    fetchaccessories()
 })
 
 // 👉 watching current page
@@ -77,8 +109,6 @@ watchEffect(() => {
   if (currentPage.value > totalPage.value)
     currentPage.value = totalPage.value
 })
-
-const isAddNewUserDrawerVisible = ref(false)
 
 // 👉 watching current page
 watchEffect(() => {
@@ -88,10 +118,10 @@ watchEffect(() => {
 
 // 👉 Computing pagination dat
 const paginationData = computed(() => {
-  const firstIndex = cards.value.length ? ((currentPage.value - 1) * rowPerPage.value) + 1 : 0
-  const lastIndex = cards.value.length + ((currentPage.value - 1) * rowPerPage.value)
+  const firstIndex = accessories.value.length ? ((currentPage.value - 1) * rowPerPage.value) + 1 : 0
+  const lastIndex = accessories.value.length + ((currentPage.value - 1) * rowPerPage.value)
 
-  return `Showing ${firstIndex} to ${lastIndex} of ${totalCards.value} entries`
+  return `Showing ${firstIndex} to ${lastIndex} of ${totalaccessories.value} entries`
 })
 
 // 👉 Export To Excel
@@ -119,35 +149,34 @@ const exportToExcel = async () => {
   }
 }// /exportToExcel
 
-// this function to add all card id to selectedCards
-
+// this function to add all accessory id to selectedaccessories
 watch(() => selectAll.value, (val: boolean) => {
   if (val)
-    selectedCards.value = cards.value.map(card => card.CardId) as any
-  else selectedCards.value = []
+    selectedaccessories.value = accessories.value.map(accessory => accessory.AccessoryId) as any
+  else selectedaccessories.value = []
 })// /watch
 
 // this to add hash if the checkbox is not all checked
 const isIndeterminate = computed(() => {
-  return selectedCards.value.length > 0 && selectedCards.value.length < cards.value.length
+  return selectedaccessories.value.length > 0 && selectedaccessories.value.length < accessories.value.length
 })// /isIndeterminate
 
-const selectAllcards = () => {
+const selectAllaccessories = () => {
   if (!selectAll.value)
-    selectedCards.value = []
+    selectedaccessories.value = []
 
   else
-    selectedCards.value = cards.value.map(card => card.CardId) as any
-}// /selectAllcards
+    selectedaccessories.value = accessories.value.map(accessory => accessory.AccessoryId) as any
+}// /selectAllaccessories
 
-// this function to delete cards
-const deleteCards = (ids?: any) => {
-  if (selectedCards.value.length > 0)
-    deleteItems.value = selectedCards.value
+// this function to delete accessories
+const deleteaccessories = (ids?: any) => {
+  if (selectedaccessories.value.length > 0)
+    deleteItems.value = selectedaccessories.value
   else
     deleteItems.value.push(ids as never)
   dialog.value = true
-}// /deleteCards
+}// /deleteaccessories
 
 const closeDeleteDialog = () => {
   deleteItems.value = []
@@ -157,15 +186,15 @@ const closeDeleteDialog = () => {
 const confermDeleteDialog = (ids?: any) => {
   deleteItems.value = []
   dialog.value = false
-  if (selectedCards.value.length > 0) {
-    cards.value = cards.value.filter((item: any) => {
-      if (!selectedCards.value.includes(item.CardId as never))
+  if (selectedaccessories.value.length > 0) {
+    accessories.value = accessories.value.filter((item: any) => {
+      if (!selectedaccessories.value.includes(item.AccessoryId as never))
         return item
     })
   }
   else {
     ids.forEach((id: any) => {
-      cards.value = cards.value.filter(item => item.CardId !== id)
+      accessories.value = accessories.value.filter(item => item.AccessoryId !== id)
     })
   }
 }// /confermDeleteDialog
@@ -176,13 +205,18 @@ const dataFiltering = (data: any) => {
     delete data.type
     delete params.value.type
   }
-  params.value = { ...params.value, ...data }
-  fetchCards()
+  if (deviceId.value)
+    fetchaccessoriesById()
+  else
+    fetchaccessories()
 }// /filter
 
 const searchQuery = debounce((val: string) => {
   params.value.code = val as any
-  fetchCards()
+  if (deviceId.value)
+    fetchaccessoriesById()
+  else
+    fetchaccessories()
 }, 2000)
 
 watch(() => searchCode.value, (val: string) => {
@@ -204,7 +238,7 @@ const uploadExcelFile = async (event: any) => {
   formData.append('file', excelFile)
 
   let result = null
-  result = await baseService.create('card/upload_excel_file', formData) as any
+  result = await baseService.create('accessory/upload_excel_file', formData) as any
 
   loadingUpload.value = false
 
@@ -216,15 +250,23 @@ const uploadExcelFile = async (event: any) => {
 }// /uploadExcelFile
 
 const goToEditPage = (id: string) => {
-  console.log('id : ', id)
   router.push({
-    name: 'apps-main-store-cards-view-id',
+    name: 'apps-main-store-accessories-view-id',
     params: {
       id,
     },
     query: { edit: true as any },
   })
 }// /goToEditPage
+
+const goToDevicePage = id => {
+  router.push({
+    name: 'apps-main-store-devices-view-id',
+    params: {
+      id,
+    },
+  })
+}// /goToDevicePage
 </script>
 
 <template>
@@ -233,9 +275,9 @@ const goToEditPage = (id: string) => {
       <VCol cols="12">
         <VCard title="Search Filter">
           <!-- 👉 Filters -->
-          <VCardText v-if="$can('get', 'card')">
+          <VCardText v-if="$can('get', 'accessory')">
             <FilterDate
-              type="card"
+              type="accessory"
               @dataFiltering="dataFiltering"
             />
           </VCardText>
@@ -249,13 +291,14 @@ const goToEditPage = (id: string) => {
             >
               <!-- 👉 Search  -->
               <div
-                v-if="$can('get', 'card')"
+                v-if="$can('get', 'accessory')"
                 style="width: 10rem;"
               >
                 <VTextField
                   v-model="searchCode"
                   placeholder="Search"
                   density="compact"
+                  clearable
                 />
               </div>
             </div>
@@ -265,11 +308,11 @@ const goToEditPage = (id: string) => {
             <div class=" d-flex align-center flex-wrap gap-4">
               <!-- 👉 Export button -->
               <VBtn
-                v-if="selectedCards.length > 0 && $can('delete', 'card')"
+                v-if="selectedaccessories.length > 0 && $can('delete', 'accessory')"
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-trash"
-                @click="deleteCards"
+                @click="deleteaccessories"
               >
                 Delete
               </VBtn>
@@ -301,18 +344,18 @@ const goToEditPage = (id: string) => {
 
               <!-- 👉 Add user button -->
               <VBtn
-                v-if="$can('create', 'card')"
+                v-if="$can('create', 'accessory')"
                 prepend-icon="tabler-plus"
-                @click="isAddNewUserDrawerVisible = true"
+                @click="$router.push('/apps/main-store/accessories/add')"
               >
-                Add New Cards
+                Add New accessories
               </VBtn>
             </div>
           </VCardText>
 
           <VDivider />
           <VProgressLinear
-            v-if="loadCards"
+            v-if="loadaccessories"
             color="primary"
             indeterminate
             reverse
@@ -333,63 +376,45 @@ const goToEditPage = (id: string) => {
                   <VCheckbox
                     v-model="selectAll"
                     :indeterminate="isIndeterminate"
-                    @change="selectAllcards"
+                    @change="selectAllaccessories"
                   />
                 </th>
                 <th scope="col">
                   Code
                 </th>
                 <th scope="col">
-                  Contr Number
+                  Type
                 </th>
                 <th scope="col">
-                  Subnumber
+                  Serial Number
                 </th>
                 <th scope="col">
-                  CRM ACCT Code
+                  MAC
                 </th>
                 <th
                   scope="col"
                 >
-                  Prepost Paid
+                  Manufctur
                 </th>
                 <th
                   scope="col"
                 >
-                  Status
-                </th>
-                <th scope="col">
-                  Substate Reson
-                </th>
-                <th scope="col">
-                  Active Date
-                </th>
-                <th scope="col">
-                  Treiff Profile
-                </th>
-                <th scope="col">
-                  Card Name
-                </th>
-                <th scope="col">
-                  Card Number
-                </th>
-                <th scope="col">
-                  ICCID
-                </th>
-                <th scope="col">
-                  Recived Date
-                </th>
-                <th scope="col">
                   Import Date
                 </th>
                 <th scope="col">
-                  Costomer group
+                  Recive Date
                 </th>
                 <th scope="col">
-                  Status LVN
+                  Costomer Group
+                </th>
+                <th scope="col">
+                  StatusLVN
+                </th>
+                <th scope="col">
+                  device
                 </th>
                 <th
-                  v-if="$can('update', 'card') || $can('delete', 'card')"
+                  v-if="$can('update', 'accessory') || $can('delete', 'accessory')"
                   scope="col"
                 >
                   Actions
@@ -397,78 +422,75 @@ const goToEditPage = (id: string) => {
               </tr>
             </thead>
             <!-- 👉 table body -->
-            <tbody v-if="cards.length > 0">
+            <tbody v-if="accessories.length > 0">
               <tr
-                v-for="(card, index) in cards"
+                v-for="(accessory, index) in accessories"
                 :key="index"
                 style="height: 3.75rem;"
               >
                 <td>
                   <VCheckbox
-                    v-model="selectedCards"
-                    :value="card.CardId"
+                    v-model="selectedaccessories"
+                    :value="accessory.AccessoryId"
                   />
                 </td>
                 <td>
-                  {{ card.CardCode || 'not found' }}
+                  {{ accessory.AccessoryCode || 'not found' }}
                 </td>
                 <td>
-                  {{ card.ContrNo || 'not found' }}
+                  {{ accessory.AccessoryType || 'not found' }}
                 </td>
                 <td>
-                  {{ card.SubNo || 'not found' }}
+                  {{ accessory.AccessorSerialNumber || 'not found' }}
                 </td>
                 <td>
-                  {{ card.CRM_ACCT_Code || 'not found' }}
+                  {{ accessory.AccessoryMAC || 'not found' }}
                 </td>
                 <td>
-                  {{ card.PrePostPaid || 'not found' }}
+                  {{ accessory.AccessoryManufctur || 'not found' }}
                 </td>
                 <td>
-                  {{ card.CradStatus || 'not found' }}
+                  {{ accessory.AccessoryImportDate || 'not found' }}
                 </td>
                 <td>
-                  {{ card.SubStateReson || 'not found' }}
+                  {{ accessory.AccessoryRecivedDate || 'not found' }}
                 </td>
                 <td>
-                  {{ card.ActiveDate || 'not found' }}
+                  {{ accessory.CostomerGroup || 'not found' }}
                 </td>
                 <td>
-                  {{ card.TreiffProfile || 'not found' }}
+                  {{ accessory.StatusLVN || 'not found' }}
                 </td>
                 <td>
-                  {{ card.CardName || 'not found' }}
+                  <VBtn
+                    v-if="accessory.device_id"
+                    variant="text"
+                    class="text-lowercase"
+                    @click="goToDevicePage(accessory.device_id)"
+                  >
+                    get device
+                  </VBtn>
+                  <VBtn
+                    v-else
+                    variant="text"
+                    class="text-error text-lowercase"
+                  >
+                    not found
+                  </VBtn>
                 </td>
-                <td>
-                  {{ card.CardNo || 'not found' }}
-                </td>
-                <td>
-                  {{ card.ICCID || 'not found' }}
-                </td>
-                <td>
-                  {{ card.CardRecivedDate || 'not found' }}
-                </td>
-                <td>
-                  {{ card.CardImportDate || 'not found' }}
-                </td>
-                <td>
-                  {{ card.CostomerGroup || 'not found' }}
-                </td>
-                <td>
-                  {{ card.StatusLVN || 'not found' }}
-                </td>
+
                 <td
-                  v-if="$can('update', 'card') || $can('delete', 'card')"
+                  v-if="$can('update', 'accessory') || $can('delete', 'accessory')"
                   class="text-center"
                   style="width: 5rem;"
                 >
                   <VBtn
-                    v-if="$can('update', 'card') "
+                    v-if="$can('update', 'accessory') "
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="goToEditPage(card.CardId)"
+                    @click="goToEditPage(accessory.AccessoryId)"
                   >
                     <VIcon
                       size="22"
@@ -477,12 +499,12 @@ const goToEditPage = (id: string) => {
                   </VBtn>
 
                   <VBtn
-                    v-if="$can('delete', 'card') "
+                    v-if="$can('delete', 'accessory') "
                     icon
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="deleteCards(card.CardId)"
+                    @click="deleteaccessories(accessory.AccessoryId)"
                   >
                     <VIcon
                       size="22"
@@ -494,7 +516,7 @@ const goToEditPage = (id: string) => {
             </tbody>
 
             <!-- 👉 table footer  -->
-            <tfoot v-if="cards.length === 0">
+            <tfoot v-else>
               <tr>
                 <td
                   colspan="7"
@@ -508,7 +530,10 @@ const goToEditPage = (id: string) => {
 
           <VDivider />
 
-          <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3 px-5">
+          <VCardText
+            v-if="accessories.length > 0"
+            class="d-flex align-center flex-wrap justify-space-between gap-4 py-3 px-5"
+          >
             <span class="text-sm text-disabled">
               {{ paginationData }}
             </span>
@@ -524,8 +549,8 @@ const goToEditPage = (id: string) => {
       </VCol>
     </VRow>
     <DeleteDialog
-      title="Are you sure you want to delete the card?"
-      url="card"
+      title="Are you sure you want to delete the accessory?"
+      url="accessory"
       :data="deleteItems"
       :dialog="dialog"
       @close="closeDeleteDialog"

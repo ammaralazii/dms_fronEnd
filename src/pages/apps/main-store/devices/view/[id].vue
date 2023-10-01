@@ -23,7 +23,8 @@ const device_attachment = ref('')
 const deivceItem = ref()
 const dialog = ref(false)
 
-formDisabled.value = !JSON.parse(route.query.edit)
+if (route.query.edit)
+  formDisabled.value = !JSON.parse(route.query.edit)
 
 const deviceId = route.params.id || ''
 

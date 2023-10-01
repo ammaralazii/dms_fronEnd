@@ -141,6 +141,15 @@ const goToEditPage = (id: any) => {
   })
 }// /goToEditPage
 
+const getAccessories = (id: string) => {
+  router.push({
+    name: 'apps-main-store-accessories-list',
+    query: {
+      deviceId: id,
+    },
+  })
+}// /getAccessories
+
 const openExcelDialog = () => {
   if (excelInput.value)
     excelInput.value.click()
@@ -190,6 +199,10 @@ const selectAllDevices = () => {
 
 // this funnction to do filter on device table
 const dataFiltering = (data: any) => {
+  if (!data.type) {
+    delete data.type
+    delete params.value.type
+  }
   params.value = { ...params.value, ...data }
   fetchDevices()
 }// /filter
@@ -488,7 +501,7 @@ watch(() => searchCode.value, (val: string) => {
                     v-if="device?.accessories?.length"
                     class="text-lowercase blak-text"
                     variant="text"
-                    @click="isFileDrawerVisible = true"
+                    @click="getAccessories(device.DeviceId)"
                   >
                     get accessories
                   </VBtn>

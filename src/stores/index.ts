@@ -42,14 +42,20 @@ export const useAlertsStore = defineStore('alerts', {
         console.error('Error : ', e)
       }// /try catch
     }, // /getAllMasterData
+
     async fetchPermissions() {
       const permission = await axiosIns.get('permission')
       if (permission.status === 200)
         return permission?.data?.data
     },
+
     async fetchDevices(params: any) {
       return axiosIns.get('device', { params })
     }, // /fetchDevices
+
     async fetchCards(params: any) { return axiosIns.get('card', { params }) }, // /fetchDevices
+
+    async fetchaccessories(params: any) { return axiosIns.get('accessory', { params }) },
+    async fetchaccessoriesById(params: any) { return axiosIns.get('accessorByDeviceId', { params }) },
   }, /* /action */
 })/* /useAlertsStore */
