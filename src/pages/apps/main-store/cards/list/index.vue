@@ -303,7 +303,7 @@ const goToEditPage = (id: string) => {
               <VBtn
                 v-if="$can('create', 'card')"
                 prepend-icon="tabler-plus"
-                @click="isAddNewUserDrawerVisible = true"
+                @click="$router.push('/apps/main-store/cards/add')"
               >
                 Add New Cards
               </VBtn>
