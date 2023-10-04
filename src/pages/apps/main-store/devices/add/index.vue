@@ -347,7 +347,7 @@ const onSubmit = async () => {
             class="mt-3"
             :loading="loading"
           >
-            Submit
+            Add
           </VBtn>
         </VCol>
       </VRow>

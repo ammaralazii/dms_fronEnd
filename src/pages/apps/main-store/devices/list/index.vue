@@ -446,7 +446,7 @@ const godisplayEditPage = (id: string) => {
                 :key="index"
                 style="height: 3.75rem;"
                 class="tableHover"
-                @click="godisplayEditPage(device.DeviceId)"
+                @dblclick="godisplayEditPage(device.DeviceId)"
               >
                 <td>
                   <VCheckbox

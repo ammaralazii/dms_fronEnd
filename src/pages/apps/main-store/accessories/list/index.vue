@@ -336,7 +336,7 @@ const goToDevicePage = (id: string) => {
                 prepend-icon="tabler-plus"
                 @click="$router.push('/apps/main-store/accessories/add')"
               >
-                Add New accessories
+                Add New accessory
               </VBtn>
             </div>
           </VCardText>
@@ -416,7 +416,7 @@ const goToDevicePage = (id: string) => {
                 :key="index"
                 style="height: 3.75rem;"
                 class="tableHover"
-                @click="godisplayEditPage(accessory.AccessoryId)"
+                @dblclick="godisplayEditPage(accessory.AccessoryId)"
               >
                 <td>
                   <VCheckbox

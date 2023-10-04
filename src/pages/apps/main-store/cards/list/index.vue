@@ -295,7 +295,7 @@ const godisplayEditPage = (id: string) => {
                 prepend-icon="tabler-plus"
                 @click="$router.push('/apps/main-store/cards/add')"
               >
-                Add New Cards
+                Add New Card
               </VBtn>
             </div>
           </VCardText>
@@ -393,7 +393,7 @@ const godisplayEditPage = (id: string) => {
                 :key="index"
                 style="height: 3.75rem;"
                 class="tableHover"
-                @click="godisplayEditPage(card.CardId)"
+                @dblclick="godisplayEditPage(card.CardId)"
               >
                 <td>
                   <VCheckbox
