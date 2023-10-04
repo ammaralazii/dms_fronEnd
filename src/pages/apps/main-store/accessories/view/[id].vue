@@ -14,7 +14,8 @@ const isFormValid = ref(false)
 const loading = ref(false)
 const formDisabled = ref(true)
 
-formDisabled.value = !JSON.parse(route.query.edit)
+if (route.query.edit)
+  formDisabled.value = !JSON.parse(route.query.edit)
 
 const accessoryId = route.params.id || ''
 

@@ -1,4 +1,6 @@
 // Write your overrides
+@import "./variables/vuetify" ;
+
 .layout-vertical-nav .nav-header {
   margin-inline: 10px !important;
 
@@ -19,4 +21,12 @@
 
 .flatpickr-calendar {
   z-index: 222222 !important;
+}
+
+.tableHover {
+  cursor: pointer;
+
+  &:hover {
+    background-color: $snackbar-color !important;
+  }
 }

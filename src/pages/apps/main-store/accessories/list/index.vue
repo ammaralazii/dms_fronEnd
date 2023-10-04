@@ -238,6 +238,15 @@ const goToEditPage = (id: string) => {
   })
 }// /goToEditPage
 
+const godisplayEditPage = (id: string) => {
+  router.push({
+    name: 'apps-main-store-accessories-view-id',
+    params: {
+      id,
+    },
+  })
+}// /goToEditPage
+
 const goToDevicePage = (id: string) => {
   router.push({
     name: 'apps-main-store-devices-view-id',
@@ -406,6 +415,8 @@ const goToDevicePage = (id: string) => {
                 v-for="(accessory, index) in accessories"
                 :key="index"
                 style="height: 3.75rem;"
+                class="tableHover"
+                @click="godisplayEditPage(accessory.AccessoryId)"
               >
                 <td>
                   <VCheckbox

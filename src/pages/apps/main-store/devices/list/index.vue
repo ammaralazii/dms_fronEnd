@@ -222,6 +222,15 @@ const searchQuery = debounce((val: string) => {
 watch(() => searchCode.value, (val: string) => {
   searchQuery(val)
 })// /watch
+
+const godisplayEditPage = (id: string) => {
+  router.push({
+    name: 'apps-main-store-devices-view-id',
+    params: {
+      id,
+    },
+  })
+}// /goToEditPage
 </script>
 
 <template>
@@ -436,6 +445,8 @@ watch(() => searchCode.value, (val: string) => {
                 v-for="(device, index) in devices"
                 :key="index"
                 style="height: 3.75rem;"
+                class="tableHover"
+                @click="godisplayEditPage(device.DeviceId)"
               >
                 <td>
                   <VCheckbox

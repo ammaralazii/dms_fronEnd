@@ -206,6 +206,15 @@ const goToEditPage = (id: string) => {
     query: { edit: true as any },
   })
 }// /goToEditPage
+
+const godisplayEditPage = (id: string) => {
+  router.push({
+    name: 'apps-main-store-cards-view-id',
+    params: {
+      id,
+    },
+  })
+}// /goToEditPage
 </script>
 
 <template>
@@ -383,6 +392,8 @@ const goToEditPage = (id: string) => {
                 v-for="(card, index) in cards"
                 :key="index"
                 style="height: 3.75rem;"
+                class="tableHover"
+                @click="godisplayEditPage(card.CardId)"
               >
                 <td>
                   <VCheckbox
