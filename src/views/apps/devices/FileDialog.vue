@@ -204,7 +204,7 @@ const updateFile = async (event: any, fileId: string, index: number) => {
               color="secondary"
               prepend-icon="ph-arrow-square-out"
               class="mx-3"
-              @click="exportToExcel('myFilesTable')"
+              @click="exportToExcel('myFilesTable', 'file')"
             >
               Export
             </VBtn>

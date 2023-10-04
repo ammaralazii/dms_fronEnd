@@ -9,6 +9,7 @@ import type { deviceInfo } from '@/types/interfaces/device-info'
 import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import { baseService } from '@/api/BaseService'
+import DownloadDialog from '@/views/base/DownloadDialog.vue'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -31,6 +32,7 @@ const selectedDevices = ref([])
 const selectAll = ref(false)
 const loadingGetDiveces = ref<boolean>(false)
 const searchCode = ref()
+const downloadDialog = ref(false)
 
 const params = ref({
   perPage: rowPerPage.value,
@@ -151,8 +153,12 @@ const getAccessories = (id: string) => {
 }// /getAccessories
 
 const openExcelDialog = () => {
-  if (excelInput.value)
+  const hasDeviceFileStrctuer: string = localStorage.getItem('hasDeviceFile') as string
+
+  if (JSON.parse(hasDeviceFileStrctuer) && excelInput.value)
     excelInput.value.click()
+  else
+    downloadDialog.value = true
 }// /openExcelDialog
 
 const uploadExcelFile = async (event: any) => {
@@ -168,6 +174,7 @@ const uploadExcelFile = async (event: any) => {
   result = await baseService.create('upload_excel_device', formData) as any
 
   loadingUpload.value = false
+  excelInput.value.value = ''
 
   if (result.success) {
     payload.color = 'success'
@@ -263,7 +270,7 @@ watch(() => searchCode.value, (val: string) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel('myTable')"
+                @click="exportToExcel('myTable', 'device', [0, 16, 17, 18], 20)"
               >
                 Export
               </VBtn>
@@ -592,6 +599,13 @@ watch(() => searchCode.value, (val: string) => {
       url="device"
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
+    />
+    <DownloadDialog
+      :dialog="downloadDialog"
+      has-file="hasDeviceFile"
+      content="It appears that you do not have the basic version of the device file to import !"
+      filename="device_strctuer"
+      @close="downloadDialog = !downloadDialog"
     />
   </section>
 </template>

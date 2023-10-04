@@ -1,16 +1,15 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import TableExport from 'tableexport'
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
 import { ref } from 'vue'
 import debounce from 'lodash/debounce'
+import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
 import type { accessoryInfo } from '@/types/interfaces/accessory-info'
 import FilterDate from '@/views/base/FilterDate.vue'
 import filterNull from '@/helper/filterNull'
+import DownloadDialog from '@/views/base/DownloadDialog.vue'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -32,6 +31,7 @@ const dialog = ref(false)
 const loadingUpload = ref(false)
 const excelInput = ref()
 const deviceId = ref()
+const downloadDialog = ref(false)
 
 const route = useRoute()
 
@@ -124,31 +124,6 @@ const paginationData = computed(() => {
   return `Showing ${firstIndex} to ${lastIndex} of ${totalaccessories.value} entries`
 })
 
-// 👉 Export To Excel
-const exportToExcel = async () => {
-  const myTable = document.getElementById('myTable') as HTMLElement
-  const table = myTable.querySelector('table')
-
-  if (table) {
-    // Convert the table to a worksheet
-    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(table)
-
-    // Create a new workbook and add the worksheet to it
-    const wb: XLSX.WorkBook = XLSX.utils.book_new()
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-
-    // Generate the Excel file as an array buffer
-    const arrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' })
-
-    // Convert the array buffer to a Blob
-    const blob = new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-    // Use FileSaver.js to trigger the download
-    saveAs(blob, 'exported-data.xlsx')
-  }
-}// /exportToExcel
-
 // this function to add all accessory id to selectedaccessories
 watch(() => selectAll.value, (val: boolean) => {
   if (val)
@@ -224,8 +199,12 @@ watch(() => searchCode.value, (val: string) => {
 })// /watch
 
 const openExcelDialog = () => {
-  if (excelInput.value)
+  const hasAccessoryFileStrctuer: string = localStorage.getItem('hasAccessoryFile') as string
+
+  if (JSON.parse(hasAccessoryFileStrctuer) && excelInput.value)
     excelInput.value.click()
+  else
+    downloadDialog.value = true
 }// /openExcelDialog
 
 const uploadExcelFile = async (event: any) => {
@@ -241,7 +220,7 @@ const uploadExcelFile = async (event: any) => {
   result = await baseService.create('accessory/upload_excel', formData) as any
 
   loadingUpload.value = false
-
+  excelInput.value.value = ''
   if (result.success) {
     payload.color = 'success'
     payload.text = 'file uploaded successfly .'
@@ -259,7 +238,7 @@ const goToEditPage = (id: string) => {
   })
 }// /goToEditPage
 
-const goToDevicePage = id => {
+const goToDevicePage = (id: string) => {
   router.push({
     name: 'apps-main-store-devices-view-id',
     params: {
@@ -321,7 +300,7 @@ const goToDevicePage = id => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel"
+                @click="exportToExcel('myTable', 'accessories', [0, 11], 20)"
               >
                 Export
               </VBtn>
@@ -555,6 +534,13 @@ const goToDevicePage = id => {
       :dialog="dialog"
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
+    />
+    <DownloadDialog
+      :dialog="downloadDialog"
+      has-file="hasAccessoryFile"
+      content="It appears that you do not have the basic version of the accessory file to import !"
+      filename="accessory_strctuer"
+      @close="downloadDialog = !downloadDialog"
     />
   </section>
 </template>

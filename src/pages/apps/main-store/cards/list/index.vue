@@ -10,6 +10,8 @@ import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
 import type { cardInfo } from '@/types/interfaces/card-info'
 import FilterDate from '@/views/base/FilterDate.vue'
+import DownloadDialog from '@/views/base/DownloadDialog.vue'
+import { exportToExcel } from '@/helper/exportToExcel'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -30,6 +32,7 @@ const deleteItems = ref([])
 const dialog = ref(false)
 const loadingUpload = ref(false)
 const excelInput = ref()
+const downloadDialog = ref(false)
 
 const params = ref({
   perPage: rowPerPage.value,
@@ -78,8 +81,6 @@ watchEffect(() => {
     currentPage.value = totalPage.value
 })
 
-const isAddNewUserDrawerVisible = ref(false)
-
 // 👉 watching current page
 watchEffect(() => {
   if (currentPage.value > totalPage.value)
@@ -93,31 +94,6 @@ const paginationData = computed(() => {
 
   return `Showing ${firstIndex} to ${lastIndex} of ${totalCards.value} entries`
 })
-
-// 👉 Export To Excel
-const exportToExcel = async () => {
-  const myTable = document.getElementById('myTable') as HTMLElement
-  const table = myTable.querySelector('table')
-
-  if (table) {
-    // Convert the table to a worksheet
-    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(table)
-
-    // Create a new workbook and add the worksheet to it
-    const wb: XLSX.WorkBook = XLSX.utils.book_new()
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-
-    // Generate the Excel file as an array buffer
-    const arrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' })
-
-    // Convert the array buffer to a Blob
-    const blob = new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-    // Use FileSaver.js to trigger the download
-    saveAs(blob, 'exported-data.xlsx')
-  }
-}// /exportToExcel
 
 // this function to add all card id to selectedCards
 
@@ -190,8 +166,12 @@ watch(() => searchCode.value, (val: string) => {
 })// /watch
 
 const openExcelDialog = () => {
-  if (excelInput.value)
+  const hasCardFileStrctuer: string = localStorage.getItem('hasCardyFile') as string
+
+  if (JSON.parse(hasCardFileStrctuer) && excelInput.value)
     excelInput.value.click()
+  else
+    downloadDialog.value = true
 }// /openExcelDialog
 
 const uploadExcelFile = async (event: any) => {
@@ -207,6 +187,7 @@ const uploadExcelFile = async (event: any) => {
   result = await baseService.create('card/upload_excel_file', formData) as any
 
   loadingUpload.value = false
+  excelInput.value.value = ''
 
   if (result.success) {
     payload.color = 'success'
@@ -278,7 +259,7 @@ const goToEditPage = (id: string) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel"
+                @click="exportToExcel('myTable', 'card', [0, 17], 20)"
               >
                 Export
               </VBtn>
@@ -530,6 +511,13 @@ const goToEditPage = (id: string) => {
       :dialog="dialog"
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
+    />
+    <DownloadDialog
+      :dialog="downloadDialog"
+      has-file="hasCardFile"
+      content="It appears that you do not have the basic version of the card file to import !"
+      filename="card_strctuer"
+      @close="downloadDialog = !downloadDialog"
     />
   </section>
 </template>

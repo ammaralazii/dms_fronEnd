@@ -40,7 +40,7 @@ const tostss = computed(() => {
               color="pink"
               variant="text"
               icon="ph-x"
-              @click="tost.run = false"
+              @click="tost.run = false && removeTost(index)"
             />
           </template>
         </VSnackbar>

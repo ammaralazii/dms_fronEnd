@@ -1,10 +1,6 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import { Console } from 'console'
-import TableExport from 'tableexport'
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
-import type { UserProperties } from '@/@fake-db/types'
+import { exportToExcel } from '@/helper/exportToExcel'
 import AddNewUserDrawer from '@/views/apps/user/list/AddNewUserDrawer.vue'
 import UpdateUserData from '@/views/apps/user/list/UpdateUserData.vue'
 import { useUserListStore } from '@/views/apps/user/useUserListStore'
@@ -176,31 +172,6 @@ const deleteUser = async (item: any, index: number) => {
     alert.$state.tosts.push(payload)
   }// /if
 }// /deleteUser
-
-// 👉 Export To Excel
-const exportToExcel = async () => {
-  const myTable = document.getElementById('myTable') as HTMLElement
-  const table = myTable.querySelector('table')
-
-  if (table) {
-    // Convert the table to a worksheet
-    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(table)
-
-    // Create a new workbook and add the worksheet to it
-    const wb: XLSX.WorkBook = XLSX.utils.book_new()
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-
-    // Generate the Excel file as an array buffer
-    const arrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' })
-
-    // Convert the array buffer to a Blob
-    const blob = new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-    // Use FileSaver.js to trigger the download
-    saveAs(blob, 'exported-data.xlsx')
-  }
-}// /exportToExcel
 
 // 👉 List
 const userListMeta = ref([
@@ -425,7 +396,7 @@ watch(() => selectedStatus.value, (val: any) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="tabler-screen-share"
-                @click="exportToExcel"
+                @click="exportToExcel('myTable', 'user')"
               >
                 Export
               </VBtn>
