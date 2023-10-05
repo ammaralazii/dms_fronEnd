@@ -104,8 +104,6 @@ const onSubmit = async () => {
         if (fileResult.success) {
           dialog.value = false
           device.value.files = sortByDate(fileResult?.data, 'created_at') as any
-
-          console.log(' device.files : ', device.value.files)
         }
       }
       payload.color = 'success'
@@ -154,14 +152,12 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel
-              class="required"
-            >
+            <VLabel>
               Main box number
             </VLabel>
             <VTextField
               v-model="device.BoxNoMain"
-              :rules="[requiredValidator, integerValidator]"
+              :rules="[integerValidator]"
             />
           </VCol>
 
@@ -173,14 +169,12 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel
-              class="required"
-            >
+            <VLabel>
               Secondary fund number
             </VLabel>
             <VTextField
               v-model="device.BoxNoSub"
-              :rules="[requiredValidator, integerValidator]"
+              :rules="[integerValidator]"
             />
           </VCol>
 
@@ -192,14 +186,11 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel
-              class="required"
-            >
+            <VLabel>
               IMEI
             </VLabel>
             <VTextField
               v-model="device.IMEI"
-              :rules="[requiredValidator]"
             />
           </VCol>
 
@@ -211,14 +202,11 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel
-              class="required"
-            >
+            <VLabel>
               Serial number
             </VLabel>
             <VTextField
               v-model="device.DeviceSerialNumber"
-              :rules="[requiredValidator]"
             />
           </VCol>
 
@@ -230,14 +218,11 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel
-              class="required"
-            >
+            <VLabel>
               MAC
             </VLabel>
             <VTextField
               v-model="device.DeviceMAC"
-              :rules="[requiredValidator]"
             />
           </VCol>
 
@@ -285,13 +270,12 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
+            <VLabel>
               Recive date
             </VLabel>
             <AppDateTimePicker
               :key="JSON.stringify(dateTimePickerConfig)"
               v-model:model-value="device.DeviceRecivedDate"
-              :rules="[requiredValidator]"
               :config="dateTimePickerConfig"
             />
           </VCol>
@@ -306,8 +290,13 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel>type</VLabel>
-            <VTextField v-model="device.DeviceType" />
+            <VLabel class="required">
+              type
+            </VLabel>
+            <VTextField
+              v-model="device.DeviceType"
+              :rules="[requiredValidator]"
+            />
           </VCol>
 
           <!-- 👉 Agreement CMC -->
@@ -318,8 +307,13 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel>Agreement CMC</VLabel>
-            <VTextField v-model="device.AgreementCMC" />
+            <VLabel class="required">
+              Agreement CMC
+            </VLabel>
+            <VTextField
+              v-model="device.AgreementCMC"
+              :rules="[requiredValidator]"
+            />
           </VCol>
           <!-- 👉 Costomer Group -->
           <VCol
@@ -353,13 +347,14 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel>
+            <VLabel class="required">
               Import date
             </VLabel>
             <AppDateTimePicker
               :key="JSON.stringify(dateTimePickerConfig)"
               v-model:model-value="device.DeciveImportDate"
               :config="dateTimePickerConfig"
+              :rules="[requiredValidator]"
             />
           </VCol>
 
@@ -371,13 +366,14 @@ const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean)
             sm="12"
             xs="12"
           >
-            <VLabel>
+            <VLabel class="required">
               Attachment
               <VBtn
                 v-if="device.files?.length > 0 && can('get', 'file')"
                 class="text-capitalize blak-text"
                 variant="text"
                 :disabled="false"
+                :rules="[required]"
                 @click="openFileDrawer(device.files, device.DeviceAttachment, true)"
               >
                 get files

@@ -14,23 +14,25 @@ const isFormValid = ref(false)
 const loading = ref(false)
 
 const requiredFields = ref<deviceInfo>({
+
+  DeciveImportDate: '',
+  AgreementCMC: '',
+  DeviceType: '',
+  files: [],
+  DeviceManufctur: '',
+
+})
+
+const optionalFields = ref<any>({
+  CostomerGroup: '',
+  StatusLVN: '',
   BoxNoMain: '',
   BoxNoSub: '',
   DeviceSerialNumber: '',
   DeviceMAC: '',
   FWVersion: '',
-  DeviceManufctur: '',
   DeviceRecivedDate: '',
   IMEI: '',
-})
-
-const optionalFields = ref<any>({
-  DeciveImportDate: '',
-  AgreementCMC: '',
-  DeviceType: '',
-  CostomerGroup: '',
-  StatusLVN: '',
-  files: [],
 })
 
 // /props
@@ -61,7 +63,7 @@ const onSubmit = async () => {
   ) {
     loading.value = true
 
-    optionalFields.value.file = optionalFields.value.files[0]
+    requiredFields.value.file = requiredFields.value.files[0]
 
     const mergedObject = { ...requiredFields.value, ...optionalFields.value }
 
@@ -78,7 +80,7 @@ const onSubmit = async () => {
       nextTick(() => {
         refForm.value?.reset()
         refForm.value?.resetValidation()
-        optionalFields.value.files = []
+        requiredFields.value.files = []
       })
     }// /if
   }// /validation
@@ -112,14 +114,12 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel
-            class="required"
-          >
+          <VLabel>
             Main box number
           </VLabel>
           <VTextField
-            v-model="requiredFields.BoxNoMain"
-            :rules="[requiredValidator, integerValidator]"
+            v-model="optionalFields.BoxNoMain"
+            :rules="[integerValidator]"
           />
         </VCol>
 
@@ -131,14 +131,12 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel
-            class="required"
-          >
+          <VLabel>
             Secondary fund number
           </VLabel>
           <VTextField
-            v-model="requiredFields.BoxNoSub"
-            :rules="[requiredValidator, integerValidator]"
+            v-model="optionalFields.BoxNoSub"
+            :rules="[integerValidator]"
           />
         </VCol>
 
@@ -150,14 +148,11 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel
-            class="required"
-          >
+          <VLabel>
             IMEI
           </VLabel>
           <VTextField
-            v-model="requiredFields.IMEI"
-            :rules="[requiredValidator]"
+            v-model="optionalFields.IMEI"
           />
         </VCol>
 
@@ -169,14 +164,11 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel
-            class="required"
-          >
+          <VLabel>
             Serial number
           </VLabel>
           <VTextField
-            v-model="requiredFields.DeviceSerialNumber"
-            :rules="[requiredValidator]"
+            v-model="optionalFields.DeviceSerialNumber"
           />
         </VCol>
 
@@ -188,14 +180,11 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel
-            class="required"
-          >
+          <VLabel>
             MAC
           </VLabel>
           <VTextField
-            v-model="requiredFields.DeviceMAC"
-            :rules="[requiredValidator]"
+            v-model="optionalFields.DeviceMAC"
           />
         </VCol>
 
@@ -230,7 +219,7 @@ const onSubmit = async () => {
             FW version
           </VLabel>
           <VTextField
-            v-model="requiredFields.FWVersion"
+            v-model="optionalFields.FWVersion"
             :rules="[requiredValidator]"
           />
         </VCol>
@@ -243,13 +232,12 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Recive date
           </VLabel>
           <AppDateTimePicker
             :key="JSON.stringify(dateTimePickerConfig)"
-            v-model:model-value="requiredFields.DeviceRecivedDate"
-            :rules="[requiredValidator]"
+            v-model:model-value="optionalFields.DeviceRecivedDate"
             :config="dateTimePickerConfig"
           />
         </VCol>
@@ -264,8 +252,13 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel>type</VLabel>
-          <VTextField v-model="optionalFields.DeviceType" />
+          <VLabel class="required">
+            type
+          </VLabel>
+          <VTextField
+            v-model="requiredFields.DeviceType"
+            :rules="[requiredValidator]"
+          />
         </VCol>
 
         <!-- 👉 Agreement CMC -->
@@ -276,8 +269,13 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel>Agreement CMC</VLabel>
-          <VTextField v-model="optionalFields.AgreementCMC" />
+          <VLabel class="required">
+            Agreement CMC
+          </VLabel>
+          <VTextField
+            v-model="requiredFields.AgreementCMC"
+            :rules="[requiredValidator]"
+          />
         </VCol>
         <!-- 👉 Costomer Group -->
         <VCol
@@ -311,13 +309,14 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel>
+          <VLabel class="required">
             Import date
           </VLabel>
           <AppDateTimePicker
             :key="JSON.stringify(dateTimePickerConfig)"
-            v-model:model-value="optionalFields.DeciveImportDate"
+            v-model:model-value="requiredFields.DeciveImportDate"
             :config="dateTimePickerConfig"
+            :rules="[requiredValidator]"
           />
         </VCol>
 
@@ -329,14 +328,15 @@ const onSubmit = async () => {
           sm="12"
           xs="12"
         >
-          <VLabel>
+          <VLabel class="required">
             Attachment
           </VLabel>
           <VFileInput
-            v-model="optionalFields.files"
+            v-model="requiredFields.files"
             append-icon=""
             prepend-icon=""
             prepend-inner-icon="ph-file"
+            :rules="[requiredValidator]"
           />
         </VCol>
       </VRow>

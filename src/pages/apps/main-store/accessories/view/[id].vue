@@ -118,12 +118,11 @@ const onSubmit = async () => {
             xs="12"
             sm="12"
           >
-            <VLabel class="required">
+            <VLabel>
               Type
             </VLabel>
             <VTextField
               v-model="accessoryFields.AccessoryType"
-              :rules="[requiredValidator]"
             />
           </VCol>
           <VCol
@@ -133,12 +132,11 @@ const onSubmit = async () => {
             xs="12"
             sm="12"
           >
-            <VLabel class="required">
+            <VLabel>
               Serial Number
             </VLabel>
             <VTextField
               v-model="accessoryFields.AccessorSerialNumber"
-              :rules="[requiredValidator]"
             />
           </VCol>
 
@@ -149,12 +147,11 @@ const onSubmit = async () => {
             xs="12"
             sm="12"
           >
-            <VLabel class="required">
+            <VLabel>
               MAC
             </VLabel>
             <VTextField
               v-model="accessoryFields.AccessoryMAC"
-              :rules="[requiredValidator]"
             />
           </VCol>
         </VRow>
@@ -173,6 +170,7 @@ const onSubmit = async () => {
               v-model="accessoryFields.AccessoryImportDate"
               :config="dateTimePickerConfig"
               append-inner-icon="ph-calendar"
+              :rules="[requiredValidator]"
             />
           </VCol>
           <VCol
@@ -182,9 +180,12 @@ const onSubmit = async () => {
             xs="12"
             sm="12"
           >
-            <VLabel>Manufacture</VLabel>
+            <VLabel class="required">
+              Manufacture
+            </VLabel>
             <VTextField
               v-model="accessoryFields.AccessoryManufctur"
+              :rules="[requiredValidator]"
             />
           </VCol>
           <VCol
@@ -194,13 +195,14 @@ const onSubmit = async () => {
             xs="12"
             sm="12"
           >
-            <VLabel>
+            <VLabel class="required">
               Recive Date
             </VLabel>
             <AppDateTimePicker
               v-model="accessoryFields.AccessoryRecivedDate"
               :config="dateTimePickerConfig"
               append-inner-icon="ph-calendar"
+              :rules="[requiredValidator]"
             />
           </VCol>
         </VRow>

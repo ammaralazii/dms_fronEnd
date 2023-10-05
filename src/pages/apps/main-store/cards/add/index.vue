@@ -3,6 +3,7 @@ import { VForm } from 'vuetify/components'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
 import { requiredValidator } from '@validators'
+import filterNull from '@/helper/filterNull'
 
 const emit = defineEmits(['update:isDrawerAddcardOpen'])
 
@@ -56,7 +57,7 @@ const onSubmit = async () => {
     loading.value = true
 
     let result = null
-    result = await baseService.create('card', cardFields.value) as any
+    result = await baseService.create('card', filterNull(cardFields.value)) as any
 
     loading.value = false
     if (result.success) {
@@ -98,12 +99,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Contr Number
           </VLabel>
           <VTextField
             v-model="cardFields.ContrNo"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -113,12 +113,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Subnumber
           </VLabel>
           <VTextField
             v-model="cardFields.SubNo"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -128,12 +127,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             CRM ACCT Code
           </VLabel>
           <VTextField
             v-model="cardFields.CRM_ACCT_Code"
-            :rules="[requiredValidator]"
           />
         </VCol>
 
@@ -144,12 +142,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             PrePost Paid
           </VLabel>
           <VTextField
             v-model="cardFields.PrePostPaid"
-            :rules="[requiredValidator]"
           />
         </VCol>
       </VRow>
@@ -162,12 +159,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Status
           </VLabel>
           <VTextField
             v-model="cardFields.CradStatus"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -177,12 +173,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             SubState Reson
           </VLabel>
           <VTextField
             v-model="cardFields.SubStateReson"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -192,7 +187,7 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Active Date
           </VLabel>
           <AppDateTimePicker
@@ -208,12 +203,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Treiff Profile
           </VLabel>
           <VTextField
             v-model="cardFields.TreiffProfile"
-            :rules="[requiredValidator]"
           />
         </VCol>
       </VRow>
@@ -225,12 +219,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Card Name
           </VLabel>
           <VTextField
             v-model="cardFields.CardName"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -240,12 +233,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Card Number
           </VLabel>
           <VTextField
             v-model="cardFields.CardNo"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -255,12 +247,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             ICCID
           </VLabel>
           <VTextField
             v-model="cardFields.ICCID"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -277,6 +268,7 @@ const onSubmit = async () => {
             v-model="cardFields.CardRecivedDate"
             :conf="dateTimePickerConfig"
             append-inner-icon="ph-calendar"
+            :rules="[requiredValidator]"
           />
         </VCol>
       </VRow>
@@ -306,12 +298,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Costomer Group
           </VLabel>
           <VTextField
             v-model="cardFields.CostomerGroup"
-            :rules="[requiredValidator]"
           />
         </VCol>
         <VCol
@@ -321,12 +312,11 @@ const onSubmit = async () => {
           sm="12"
           ms="12"
         >
-          <VLabel class="required">
+          <VLabel>
             Status LVN
           </VLabel>
           <VTextField
             v-model="cardFields.StatusLVN"
-            :rules="[requiredValidator]"
           />
         </VCol>
       </VRow>
