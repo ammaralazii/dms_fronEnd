@@ -9,7 +9,7 @@ import { baseService } from '@/api/BaseService'
 import type { accessoryInfo } from '@/types/interfaces/accessory-info'
 import FilterDate from '@/views/base/FilterDate.vue'
 import filterNull from '@/helper/filterNull'
-import DownloadDialog from '@/views/base/DownloadDialog.vue'
+import ImportDialog from '@/views/base/ImportDialog.vue'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -31,7 +31,7 @@ const dialog = ref(false)
 const loadingUpload = ref(false)
 const excelInput = ref()
 const deviceId = ref()
-const downloadDialog = ref(false)
+const importDialog = ref(false)
 
 const route = useRoute()
 
@@ -199,34 +199,8 @@ watch(() => searchCode.value, (val: string) => {
 })// /watch
 
 const openExcelDialog = () => {
-  const hasAccessoryFileStrctuer: string = localStorage.getItem('hasAccessoryFile') as string
-
-  if (JSON.parse(hasAccessoryFileStrctuer) && excelInput.value)
-    excelInput.value.click()
-  else
-    downloadDialog.value = true
+  importDialog.value = true
 }// /openExcelDialog
-
-const uploadExcelFile = async (event: any) => {
-  const excelFile = event.target.files[0]
-
-  loadingUpload.value = true
-
-  const formData = new FormData()
-
-  formData.append('file', excelFile)
-
-  let result = null
-  result = await baseService.create('accessory/upload_excel', formData) as any
-
-  loadingUpload.value = false
-  excelInput.value.value = ''
-  if (result.success) {
-    payload.color = 'success'
-    payload.text = 'file uploaded successfly .'
-    alert.$state.tosts.push(payload)
-  }// /if
-}// /uploadExcelFile
 
 const goToEditPage = (id: string) => {
   router.push({
@@ -322,14 +296,6 @@ const goToDevicePage = (id: string) => {
               >
                 Import
               </VBtn>
-              <input
-                ref="excelInput"
-                type="file"
-                hidden
-                accept=".xlsx, .xls, .csv"
-                @change="uploadExcelFile($event)"
-              >
-
               <!-- 👉 Add user button -->
               <VBtn
                 v-if="$can('create', 'accessory')"
@@ -546,12 +512,14 @@ const goToDevicePage = (id: string) => {
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
     />
-    <DownloadDialog
-      :dialog="downloadDialog"
-      has-file="hasAccessoryFile"
-      content="It appears that you do not have the basic version of the accessory file to import !"
+    <ImportDialog
+      :dialog="importDialog"
+      url="accessory/upload_excel"
       filename="accessory_strctuer"
-      @close="downloadDialog = !downloadDialog"
+      @close="() => {
+        importDialog = !importDialog
+        fetchaccessories()
+      }"
     />
   </section>
 </template>

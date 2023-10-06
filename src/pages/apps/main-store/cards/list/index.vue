@@ -10,7 +10,7 @@ import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
 import type { cardInfo } from '@/types/interfaces/card-info'
 import FilterDate from '@/views/base/FilterDate.vue'
-import DownloadDialog from '@/views/base/DownloadDialog.vue'
+import ImportDialog from '@/views/base/ImportDialog.vue'
 import { exportToExcel } from '@/helper/exportToExcel'
 
 const alert = useAlertsStore()
@@ -32,7 +32,7 @@ const deleteItems = ref([])
 const dialog = ref(false)
 const loadingUpload = ref(false)
 const excelInput = ref()
-const downloadDialog = ref(false)
+const importDialog = ref(false)
 
 const params = ref({
   perPage: rowPerPage.value,
@@ -166,35 +166,8 @@ watch(() => searchCode.value, (val: string) => {
 })// /watch
 
 const openExcelDialog = () => {
-  const hasCardFileStrctuer: string = localStorage.getItem('hasCardyFile') as string
-
-  if (JSON.parse(hasCardFileStrctuer) && excelInput.value)
-    excelInput.value.click()
-  else
-    downloadDialog.value = true
+  importDialog.value = true
 }// /openExcelDialog
-
-const uploadExcelFile = async (event: any) => {
-  const excelFile = event.target.files[0]
-
-  loadingUpload.value = true
-
-  const formData = new FormData()
-
-  formData.append('file', excelFile)
-
-  let result = null
-  result = await baseService.create('card/upload_excel_file', formData) as any
-
-  loadingUpload.value = false
-  excelInput.value.value = ''
-
-  if (result.success) {
-    payload.color = 'success'
-    payload.text = 'file uploaded successfly .'
-    alert.$state.tosts.push(payload)
-  }// /if
-}// /uploadExcelFile
 
 const goToEditPage = (id: string) => {
   console.log('id : ', id)
@@ -281,13 +254,6 @@ const godisplayEditPage = (id: string) => {
               >
                 Import
               </VBtn>
-              <input
-                ref="excelInput"
-                type="file"
-                hidden
-                accept=".xlsx, .xls, .csv"
-                @change="uploadExcelFile($event)"
-              >
 
               <!-- 👉 Add user button -->
               <VBtn
@@ -523,12 +489,14 @@ const godisplayEditPage = (id: string) => {
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
     />
-    <DownloadDialog
-      :dialog="downloadDialog"
-      has-file="hasCardFile"
-      content="It appears that you do not have the basic version of the card file to import !"
+    <ImportDialog
+      :dialog="importDialog"
+      url="card/upload_excel_file"
       filename="card_strctuer"
-      @close="downloadDialog = !downloadDialog"
+      @close="() => {
+        importDialog = !importDialog
+        fetchCards()
+      }"
     />
   </section>
 </template>

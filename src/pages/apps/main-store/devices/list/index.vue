@@ -8,8 +8,7 @@ import { useAlertsStore } from '@/stores'
 import type { deviceInfo } from '@/types/interfaces/device-info'
 import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
-import { baseService } from '@/api/BaseService'
-import DownloadDialog from '@/views/base/DownloadDialog.vue'
+import ImportDialog from '@/views/base/ImportDialog.vue'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -32,27 +31,13 @@ const selectedDevices = ref([])
 const selectAll = ref(false)
 const loadingGetDiveces = ref<boolean>(false)
 const searchCode = ref()
-const downloadDialog = ref(false)
+const importDialog = ref(false)
 
 const params = ref({
   perPage: rowPerPage.value,
   currentPage: currentPage.value,
   code: null,
 })
-
-const payload = {
-  color: '',
-  timeOut: 5000,
-  run: true,
-  text: '',
-  position: {
-    top: true,
-    right: false,
-    left: false,
-    bottom: false,
-  },
-  update: false,
-}/* /payload */
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -153,35 +138,8 @@ const getAccessories = (id: string) => {
 }// /getAccessories
 
 const openExcelDialog = () => {
-  const hasDeviceFileStrctuer: string = localStorage.getItem('hasDeviceFile') as string
-
-  if (JSON.parse(hasDeviceFileStrctuer) && excelInput.value)
-    excelInput.value.click()
-  else
-    downloadDialog.value = true
+  importDialog.value = true
 }// /openExcelDialog
-
-const uploadExcelFile = async (event: any) => {
-  const excelFile = event.target.files[0]
-
-  loadingUpload.value = true
-
-  const formData = new FormData()
-
-  formData.append('file', excelFile)
-
-  let result = null
-  result = await baseService.create('upload_excel_device', formData) as any
-
-  loadingUpload.value = false
-  excelInput.value.value = ''
-
-  if (result.success) {
-    payload.color = 'success'
-    payload.text = 'file uploaded successfly .'
-    alert.$state.tosts.push(payload)
-  }// /if
-}// /uploadExcelFile
 
 // this function to add all device id to selectedDevices
 
@@ -611,12 +569,15 @@ const godisplayEditPage = (id: string) => {
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
     />
-    <DownloadDialog
-      :dialog="downloadDialog"
-      has-file="hasDeviceFile"
-      content="It appears that you do not have the basic version of the device file to import !"
+
+    <ImportDialog
+      :dialog="importDialog"
+      url="upload_excel_device"
       filename="device_strctuer"
-      @close="downloadDialog = !downloadDialog"
+      @close="() => {
+        importDialog = false
+        fetchDevices()
+      }"
     />
   </section>
 </template>
