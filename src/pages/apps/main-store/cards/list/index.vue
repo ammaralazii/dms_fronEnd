@@ -1,13 +1,9 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import TableExport from 'tableexport'
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
 import { ref } from 'vue'
 import debounce from 'lodash/debounce'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import { useAlertsStore } from '@/stores'
-import { baseService } from '@/api/BaseService'
 import type { cardInfo } from '@/types/interfaces/card-info'
 import FilterDate from '@/views/base/FilterDate.vue'
 import ImportDialog from '@/views/base/ImportDialog.vue'
@@ -31,7 +27,6 @@ const selectAll = ref(false)
 const deleteItems = ref([])
 const dialog = ref(false)
 const loadingUpload = ref(false)
-const excelInput = ref()
 const importDialog = ref(false)
 
 const params = ref({
@@ -241,7 +236,10 @@ const godisplayEditPage = (id: string) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel('myTable', 'card', [0, 17], 20)"
+                @click="exportToExcel(cards.filter((card) => {
+                  if (selectedCards.includes(card.CardId))
+                    return card
+                }), 'myTable', 'card', [0, 17], 20)"
               >
                 Export
               </VBtn>

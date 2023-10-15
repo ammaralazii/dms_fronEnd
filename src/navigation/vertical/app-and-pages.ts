@@ -63,6 +63,30 @@ export default [
       },
     ],
   },
+  {
+    title: 'Customers',
+    icon: { icon: 'ph-users-three' },
+    children: [
+      {
+        title: 'Personal',
+        to: { name: 'apps-customers-personal' },
+        action: 'manage',
+        subject: 'Auth',
+      },
+      {
+        title: 'Company',
+        to: { name: 'apps-customers-company' },
+        action: 'manage',
+        subject: 'Auth',
+      },
+      {
+        title: 'Foreign',
+        to: { name: 'apps-customers-foreign' },
+        action: 'manage',
+        subject: 'Auth',
+      },
+    ],
+  },
 
   // hhhh
   // {

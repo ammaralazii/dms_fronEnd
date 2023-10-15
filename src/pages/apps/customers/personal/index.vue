@@ -2,10 +2,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import debounce from 'lodash/debounce'
+import moment from 'moment'
 import FilterDate from '@/views/base/FilterDate.vue'
-import FileDialog from '@/views/apps/devices/FileDialog.vue'
 import { useAlertsStore } from '@/stores'
-import type { deviceInfo } from '@/types/interfaces/device-info'
+import type { personalInfo } from '@/types/interfaces/personal-info'
 import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import ImportDialog from '@/views/base/ImportDialog.vue'
@@ -17,17 +17,15 @@ const router = useRouter()
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
-const totalDevices = ref(0)
-const devices = ref<deviceInfo[]>([])
+const totalpersonals = ref(0)
+const personals = ref<personalInfo[]>([])
 const oldList = ref()
-const userCount = ref<number>()
-const files = ref([])
-const device_attachment = ref()
+const personalCount = ref<number>()
 const dialog = ref(false)
 const deleteItems = ref<any>([])
 const excelInput = ref()
 const loadingUpload = ref(false)
-const selectedDevices = ref([])
+const selectedpersonals = ref([])
 const selectAll = ref(false)
 const loadingGetDiveces = ref<boolean>(false)
 const searchCode = ref()
@@ -41,19 +39,19 @@ const params = ref({
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  fetchDevices()
+  fetchpersonals()
 })
 
-// 👉 Fetching devices
-const fetchDevices = () => {
+// 👉 Fetching personals
+const fetchpersonals = () => {
   loadingGetDiveces.value = true
-  alert.fetchDevices(params.value).then(response => {
+  alert.fetchpersonals(params.value).then(response => {
     if (response.data?.success) {
-      devices.value = response.data.data.data
+      personals.value = response.data.data.data
       oldList.value = response.data.data.data
       totalPage.value = response.data.data.last_page
-      totalDevices.value = response.data.data.total
-      userCount.value = response.data.data.data.length
+      totalpersonals.value = response.data.data.total
+      personalCount.value = response.data.data.data.length
     }// /if
   }).catch(error => {
     console.error(error)
@@ -66,8 +64,6 @@ watchEffect(() => {
     currentPage.value = totalPage.value
 })
 
-const isFileDrawerVisible = ref(false)
-
 // 👉 watching current page
 watchEffect(() => {
   if (currentPage.value > totalPage.value)
@@ -76,24 +72,18 @@ watchEffect(() => {
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = devices.value.length ? ((currentPage.value - 1) * rowPerPage.value) + 1 : 0
-  const lastIndex = devices.value.length + ((currentPage.value - 1) * rowPerPage.value)
+  const firstIndex = personals.value.length ? ((currentPage.value - 1) * rowPerPage.value) + 1 : 0
+  const lastIndex = personals.value.length + ((currentPage.value - 1) * rowPerPage.value)
 
-  return `Showing ${firstIndex} to ${lastIndex} of ${totalDevices.value} entries`
+  return `Showing ${firstIndex} to ${lastIndex} of ${totalpersonals.value} entries`
 })
 
-// 👉 Display file drawer
-const openFileDrawer = (deviceFiles: any, attachmentDevice: any, check: boolean) => {
-  isFileDrawerVisible.value = check
-  files.value = deviceFiles
-  device_attachment.value = attachmentDevice
-}// /openFileDrawer
-
 const deleteDialog = (id: any) => {
-  if (selectedDevices.value.length > 0)
-    deleteItems.value = selectedDevices.value
+  if (selectedpersonals.value.length > 0)
+    deleteItems.value = selectedpersonals.value
   else
     deleteItems.value.push(id)
+
   dialog.value = true
 }// /deleteDialog
 
@@ -105,22 +95,22 @@ const closeDeleteDialog = () => {
 const confermDeleteDialog = (ids?: any) => {
   deleteItems.value = []
   dialog.value = false
-  if (selectedDevices.value.length > 0) {
-    devices.value = devices.value.filter((item: any) => {
-      if (!selectedDevices.value.includes(item.DeviceId as never))
+  if (selectedpersonals.value.length > 0) {
+    personals.value = personals.value.filter((item: any) => {
+      if (!selectedpersonals.value.includes(item.PersonalId as never))
         return item
     })
   }
   else {
     ids.forEach((id: any) => {
-      devices.value = devices.value.filter(item => item.DeviceId !== id)
+      personals.value = personals.value.filter(item => item.PersonalId !== id)
     })
   }
 }// /confermDeleteDialog
 
 const goToEditPage = (id: any) => {
   router.push({
-    name: 'apps-main-store-devices-view-id',
+    name: 'apps-customers-personal-view-id',
     params: {
       id,
     },
@@ -128,53 +118,44 @@ const goToEditPage = (id: any) => {
   })
 }// /goToEditPage
 
-const getAccessories = (id: string) => {
-  router.push({
-    name: 'apps-main-store-accessories-list',
-    query: {
-      deviceId: id,
-    },
-  })
-}// /getAccessories
-
 const openExcelDialog = () => {
   importDialog.value = true
 }// /openExcelDialog
 
-// this function to add all device id to selectedDevices
+// this function to add all personal id to selectedpersonals
 
 watch(() => selectAll.value, (val: boolean) => {
   if (val)
-    selectedDevices.value = devices.value.map(device => device.DeviceId) as any
-  else selectedDevices.value = []
+    selectedpersonals.value = personals.value.map(personal => personal.personalId) as any
+  else selectedpersonals.value = []
 })// /watch
 
 // this to add hash if the checkbox is not all checked
 const isIndeterminate = computed(() => {
-  return selectedDevices.value.length > 0 && selectedDevices.value.length < devices.value.length
+  return selectedpersonals.value.length > 0 && selectedpersonals.value.length < personals.value.length
 })// /isIndeterminate
 
-const selectAllDevices = () => {
+const selectAllpersonals = () => {
   if (!selectAll.value)
-    selectedDevices.value = []
+    selectedpersonals.value = []
 
   else
-    selectedDevices.value = devices.value.map(device => device.DeviceId) as any
-}// /selectAllDevices
+    selectedpersonals.value = personals.value.map(personal => personal.personalId) as any
+}// /selectAllpersonals
 
-// this funnction to do filter on device table
+// this funnction to do filter on personal table
 const dataFiltering = (data: any) => {
   if (!data.type) {
     delete data.type
     delete params.value.type
   }
   params.value = { ...params.value, ...data }
-  fetchDevices()
+  fetchpersonals()
 }// /filter
 
 const searchQuery = debounce((val: string) => {
   params.value.code = val as any
-  fetchDevices()
+  fetchpersonals()
 }, 2000)
 
 watch(() => searchCode.value, (val: string) => {
@@ -183,7 +164,7 @@ watch(() => searchCode.value, (val: string) => {
 
 const godisplayEditPage = (id: string) => {
   router.push({
-    name: 'apps-main-store-devices-view-id',
+    name: 'apps-customers-personal-view-id',
     params: {
       id,
     },
@@ -197,12 +178,14 @@ const godisplayEditPage = (id: string) => {
       <VCol cols="12">
         <VCard title="Search Filter">
           <!-- 👉 Filters -->
-          <VCardText>
+          <!--
+            <VCardText>
             <FilterDate
-              type="device"
-              @dataFiltering="dataFiltering"
+            type="personal"
+            @dataFiltering="dataFiltering"
             />
-          </VCardText>
+            </VCardText>
+          -->
 
           <VCardText class="d-flex flex-wrap py-4 gap-4">
             <div
@@ -225,7 +208,7 @@ const godisplayEditPage = (id: string) => {
             <div class=" d-flex align-center flex-wrap gap-4">
               <!-- 👉 Export button -->
               <VBtn
-                v-if="selectedDevices.length > 0"
+                v-if="selectedpersonals.length > 0"
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-trash"
@@ -237,10 +220,10 @@ const godisplayEditPage = (id: string) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel(devices.filter((device) => {
-                  if (selectedDevices.includes(device.DeviceId))
-                    return device
-                }), 'myTable', 'device', [0, 16, 17, 18], 20)"
+                @click="exportToExcel(personals.filter((personal) => {
+                  if (selectedpersonals.includes(personal.PersonalId))
+                    return personal
+                }), 'myTable', 'personal', [0, 12], 20)"
               >
                 Export
               </VBtn>
@@ -260,12 +243,12 @@ const godisplayEditPage = (id: string) => {
                 accept=".xlsx, .xls, .csv"
                 @change="uploadExcelFile($event)"
               >
-              <!-- 👉 Add new device -->
+              <!-- 👉 Add new personal -->
               <VBtn
-                to="/apps/main-store/devices/add"
+                to="/apps/customers/personal/add"
                 link
               >
-                Add New Device
+                Add New personal
               </VBtn>
             </div>
           </VCardText>
@@ -293,104 +276,80 @@ const godisplayEditPage = (id: string) => {
                   <VCheckbox
                     v-model="selectAll"
                     :indeterminate="isIndeterminate"
-                    @change="selectAllDevices"
+                    @change="selectAllpersonals"
                   />
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Code
+                  First Name
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Main box number
+                  Second Name
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Secondary fund number
+                  Third Name
                 </th>
                 <th
                   class="text-center"
                   scope="col"
                 >
-                  IMEI
+                  ID number
                 </th>
                 <th
                   class="text-center"
                   scope="col"
                 >
-                  Serial number
+                  Birth Date
                 </th>
                 <th
                   class="text-center"
                   scope="col"
                 >
-                  MAC
+                  Ethnic
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  FW version
+                  Marital Status
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Import date
+                  Gender
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Recived date
+                  Residency Card ID
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Agreement CMC
+                  Phone Number
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Type
+                  Phone Number 2
                 </th>
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Manufctur
-                </th>
-                <th
-                  scope="col"
-                  class="text-center"
-                >
-                  Costomer group
-                </th>
-                <th
-                  scope="col"
-                  class="text-center"
-                >
-                  Status LVN
-                </th>
-                <th
-                  scope="col"
-                  class="text-center"
-                >
-                  Files
-                </th>
-                <th
-                  scope="col"
-                  class="text-center"
-                >
-                  Accessories
+                  Email
                 </th>
                 <th
                   scope="col"
@@ -401,96 +360,55 @@ const godisplayEditPage = (id: string) => {
               </tr>
             </thead>
             <!-- 👉 table body -->
-            <tbody v-if="devices.length > 0">
+            <tbody v-if="personals.length > 0">
               <tr
-                v-for="(device, index) in devices"
+                v-for="(personal, index) in personals"
                 :key="index"
                 style="height: 3.75rem;"
                 class="tableHover"
-                @dblclick="godisplayEditPage(device.DeviceId)"
+                @dblclick="godisplayEditPage(personal.PersonalId)"
               >
                 <td>
                   <VCheckbox
-                    v-model="selectedDevices"
-                    :value="device.DeviceId"
+                    v-model="selectedpersonals"
+                    :value="personal.PersonalId"
                   />
                 </td>
                 <td>
-                  {{ device.DeviceCode }}
+                  {{ personal.personalFirstName || 'not found' }}
                 </td>
                 <td>
-                  {{ device.BoxNoMain || 'not found' }}
+                  {{ personal.personalSecondName || 'not found' }}
                 </td>
                 <td>
-                  {{ device.BoxNoSub || 'not found' }}
+                  {{ personal.personalTirdName || 'not found' }}
                 </td>
                 <td>
-                  {{ device.IMEI || 'not found' }}
+                  {{ personal.personalIdNumber || 'not found' }}
                 </td>
                 <td>
-                  {{ device.DeviceSerialNumber || 'not found' }}
+                  {{ moment(personal.personalBirthDate).format('YYYY/MM/DD') || 'not found' }}
                 </td>
                 <td>
-                  {{ device.DeviceMAC || 'not found' }}
+                  {{ personal.personalEthnic || 'not found' }}
                 </td>
                 <td>
-                  {{ device.FWVersion || 'not found' }}
+                  {{ personal.personalMaritalStatus || 'not found' }}
                 </td>
                 <td>
-                  {{ device.DeciveImportDate || 'not found' }}
+                  {{ personal.personalGender || 'not found' }}
                 </td>
                 <td>
-                  {{ device.DeviceRecivedDate || 'not found' }}
+                  {{ personal.personalResidencyCardID || 'not found' }}
                 </td>
                 <td>
-                  {{ device.AgreementCMC || 'not found' }}
+                  {{ personal.personalPhoneNumber || 'not found' }}
                 </td>
                 <td>
-                  {{ device.DeviceType || 'not found' }}
+                  {{ personal.personalPhoneNumber2 || 'not found' }}
                 </td>
                 <td>
-                  {{ device.DeviceManufctur || 'not found' }}
-                </td>
-                <td>
-                  {{ device.CostomerGroup || 'not found' }}
-                </td>
-                <td>
-                  {{ device.StatusLVN || 'not found' }}
-                </td>
-                <td>
-                  <VBtn
-                    v-if="device?.files?.length"
-                    class="text-lowercase blak-text"
-                    variant="text"
-                    @click="openFileDrawer(device.files, device.DeviceAttachment, true)"
-                  >
-                    get files
-                  </VBtn>
-
-                  <VBtn
-                    v-else
-                    class="text-lowercase text-error"
-                    variant="text"
-                  >
-                    not found
-                  </VBtn>
-                </td>
-                <td>
-                  <VBtn
-                    v-if="device?.accessories?.length"
-                    class="text-lowercase blak-text"
-                    variant="text"
-                    @click="getAccessories(device.DeviceId)"
-                  >
-                    get accessories
-                  </VBtn>
-                  <VBtn
-                    v-else
-                    class="text-lowercase text-error"
-                    variant="text"
-                  >
-                    not found
-                  </VBtn>
+                  {{ personal.PersonalEmail || 'not found' }}
                 </td>
                 <td
                   class="text-center"
@@ -501,7 +419,7 @@ const godisplayEditPage = (id: string) => {
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="goToEditPage(device.DeviceId)"
+                    @click="goToEditPage(personal.PersonalId)"
                   >
                     <VIcon
                       size="22"
@@ -514,8 +432,8 @@ const godisplayEditPage = (id: string) => {
                     size="x-small"
                     color="default"
                     variant="text"
-                    :disabled="selectedDevices.length > 0 ? true : false"
-                    @click="deleteDialog(device.DeviceId)"
+                    :disabled="selectedpersonals.length > 0 ? true : false"
+                    @click="deleteDialog(personal.PersonalId)"
                   >
                     <VIcon
                       size="22"
@@ -527,7 +445,7 @@ const godisplayEditPage = (id: string) => {
             </tbody>
 
             <!-- 👉 table footer  -->
-            <tfoot v-if="devices.length === 0">
+            <tfoot v-if="personals.length === 0">
               <tr>
                 <td
                   colspan="7"
@@ -557,29 +475,22 @@ const godisplayEditPage = (id: string) => {
       </VCol>
     </VRow>
 
-    <!-- 👉 Add New User -->
-    <FileDialog
-      v-model:isDrawerFileOpen="isFileDrawerVisible"
-      :files="files"
-      :device_attachment="device_attachment"
-    />
-
     <DeleteDialog
       :dialog="dialog"
       :data="deleteItems"
-      title="Delete Device"
-      url="device"
+      title="Delete personal"
+      url="personal"
       @close="closeDeleteDialog"
       @confirm="confermDeleteDialog"
     />
 
     <ImportDialog
       :dialog="importDialog"
-      url="upload_excel_device"
-      filename="device_strctuer"
+      url="upload_excel_personal"
+      filename="personal_strctuer"
       @close="() => {
         importDialog = false
-        fetchDevices()
+        fetchpersonals()
       }"
     />
   </section>

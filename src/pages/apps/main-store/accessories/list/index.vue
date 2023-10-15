@@ -62,7 +62,6 @@ const payload = {
 const fetchaccessories = () => {
   loadaccessories.value = true
   alert.fetchaccessories(filterNull(params.value)).then(response => {
-    loadaccessories.value = false
     if (response.data?.success) {
       accessories.value = response.data.data.data
       console.log('accessories.value : ', accessories.value)
@@ -73,7 +72,7 @@ const fetchaccessories = () => {
     }// /if
   }).catch(error => {
     console.error(error)
-  })
+  }).finally(() => { loadaccessories.value = false })
 }// /fetchaccessories
 
 // 👉 Fetching fetchaccessories device Id
@@ -283,7 +282,10 @@ const goToDevicePage = (id: string) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel('myTable', 'accessories', [0, 11], 20)"
+                @click="exportToExcel(accessories.filter((accessory) => {
+                  if (selectedaccessories.includes(accessory.AccessoryId))
+                    return accessories
+                }), 'myTable', 'accessories', selectedaccessories.length === 0 ? [0, 11] : ['AccessoryId', 'device_id'], 20)"
               >
                 Export
               </VBtn>

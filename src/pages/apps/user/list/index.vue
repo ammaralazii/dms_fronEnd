@@ -396,7 +396,7 @@ watch(() => selectedStatus.value, (val: any) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="tabler-screen-share"
-                @click="exportToExcel('myTable', 'user', [3], 15)"
+                @click="exportToExcel([], 'myTable', 'user', [3], 15)"
               >
                 Export
               </VBtn>
