@@ -13,6 +13,8 @@ import '@core/scss/template/index.scss'
 import '@styles/styles.scss'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
+import { Skeletor } from 'vue-skeletor'
+import 'vue-skeletor/dist/vue-skeletor.css'
 
 loadFonts()
 
@@ -20,6 +22,7 @@ loadFonts()
 const app = createApp(App)
 
 // Use plugins
+app.component(Skeletor.name, Skeletor)
 app.use(vuetify)
 app.use(createPinia())
 app.use(router)

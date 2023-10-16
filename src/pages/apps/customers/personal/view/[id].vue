@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Console } from 'console'
 import { VForm } from 'vuetify/components'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
@@ -18,6 +17,7 @@ const isFormValid = ref(false)
 const loading = ref(false)
 const formDisabled = ref(true)
 const personalItem = ref()
+const LoadingForGetData = ref(true)
 
 if (route.query.edit)
   formDisabled.value = !JSON.parse(route.query.edit)
@@ -48,8 +48,10 @@ onMounted(async () => {
   if (personalId) {
     const personalItem = await baseService.get(`personal/${personalId}`) as any
 
-    if (personalItem.data)
+    if (personalItem.data) {
       personal.value = personalItem.data
+      LoadingForGetData.value = false
+    }
   }
 })
 
@@ -100,6 +102,7 @@ const onSubmit = async () => {
       height="auto"
     >
       <strong
+        v-if="!LoadingForGetData"
         class="pa-3"
         style="text-decoration: underline;"
       >
@@ -121,13 +124,21 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              First Name
-            </VLabel>
-            <VTextField
-              v-model="personal.personalFirstName"
-              :rules="[requiredValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                First Name
+              </VLabel>
+              <VTextField
+                v-model="personal.personalFirstName"
+                :rules="[requiredValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Second Name -->
@@ -138,13 +149,21 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Second Name
-            </VLabel>
-            <VTextField
-              v-model="personal.personalSecondName"
-              :rules="[requiredValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Second Name
+              </VLabel>
+              <VTextField
+                v-model="personal.personalSecondName"
+                :rules="[requiredValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Third Name -->
@@ -155,13 +174,21 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Third Name
-            </VLabel>
-            <VTextField
-              v-model="personal.personalTirdName"
-              :rules="[requiredValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Third Name
+              </VLabel>
+              <VTextField
+                v-model="personal.personalTirdName"
+                :rules="[requiredValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 ID number -->
@@ -172,13 +199,23 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              ID number
-            </VLabel>
-            <VTextField
-              v-model="personal.personalIdNumber"
-              :rules="[requiredValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                ID number
+              </VLabel>
+              <VTextField
+                v-model="personal.personalIdNumber"
+                :rules="[requiredValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 ID Date Issued -->
@@ -189,16 +226,26 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              ID Date Issued
-            </VLabel>
-            <AppDateTimePicker
-              :key="JSON.stringify(dateTimePickerConfig)"
-              v-model:model-value="personal.PersonalIDDateIssued"
-              :config="dateTimePickerConfig"
-              :rules="[requiredValidator]"
-              append-inner-icon="ph-calendar"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                ID Date Issued
+              </VLabel>
+              <AppDateTimePicker
+                :key="JSON.stringify(dateTimePickerConfig)"
+                v-model:model-value="personal.PersonalIDDateIssued"
+                :config="dateTimePickerConfig"
+                :rules="[requiredValidator]"
+                append-inner-icon="ph-calendar"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Date of Birth  -->
@@ -209,16 +256,26 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Date of Birth
-            </VLabel>
-            <AppDateTimePicker
-              :key="JSON.stringify(dateTimePickerConfig)"
-              v-model:model-value="personal.personalBirthDate"
-              :config="dateTimePickerConfig"
-              :rules="[requiredValidator]"
-              append-inner-icon="ph-calendar"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Date of Birth
+              </VLabel>
+              <AppDateTimePicker
+                :key="JSON.stringify(dateTimePickerConfig)"
+                v-model:model-value="personal.personalBirthDate"
+                :config="dateTimePickerConfig"
+                :rules="[requiredValidator]"
+                append-inner-icon="ph-calendar"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Ethnic  -->
@@ -229,16 +286,26 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel
-              class="required"
-            >
-              Ethnic
-            </VLabel>
-            <VAutocomplete
-              v-model="personal.personalEthnic"
-              :rules="[requiredValidator]"
-              :items="ethnic"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel
+                class="required"
+              >
+                Ethnic
+              </VLabel>
+              <VAutocomplete
+                v-model="personal.personalEthnic"
+                :rules="[requiredValidator]"
+                :items="ethnic"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Marital Status  -->
@@ -249,13 +316,23 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Marital Status
-            </VLabel>
-            <VTextField
-              v-model="personal.personalMaritalStatus"
-              :rules="[requiredValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Marital Status
+              </VLabel>
+              <VTextField
+                v-model="personal.personalMaritalStatus"
+                :rules="[requiredValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
         </VRow>
 
@@ -268,14 +345,24 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Gender
-            </VLabel>
-            <VAutocomplete
-              v-model="personal.personalGender"
-              :items="gender"
-              :rules="[requiredValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Gender
+              </VLabel>
+              <VAutocomplete
+                v-model="personal.personalGender"
+                :items="gender"
+                :rules="[requiredValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Residency Card ID  -->
@@ -286,13 +373,23 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Residency Card ID
-            </VLabel>
-            <VTextField
-              v-model="personal.personalResidencyCardID"
-              :rules="[requiredValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Residency Card ID
+              </VLabel>
+              <VTextField
+                v-model="personal.personalResidencyCardID"
+                :rules="[requiredValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
           <!-- 👉 Phone number -->
           <VCol
@@ -302,13 +399,23 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Phone number
-            </VLabel>
-            <VTextField
-              v-model="personal.personalPhoneNumber"
-              :rules="[requiredValidator, integerValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Phone number
+              </VLabel>
+              <VTextField
+                v-model="personal.personalPhoneNumber"
+                :rules="[requiredValidator, integerValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Phone number 2 -->
@@ -319,13 +426,23 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel>
-              Phone number 2
-            </VLabel>
-            <VTextField
-              v-model="personal.personalPhoneNumber2"
-              :rules="[integerValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel>
+                Phone number 2
+              </VLabel>
+              <VTextField
+                v-model="personal.personalPhoneNumber2"
+                :rules="[integerValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
 
           <!-- 👉 Email -->
@@ -336,35 +453,62 @@ const onSubmit = async () => {
             sm="12"
             xs="12"
           >
-            <VLabel class="required">
-              Email
-            </VLabel>
-            <VTextField
-              v-model="personal.PersonalEmail"
-              :rules="[requiredValidator, emailValidator]"
-            />
+            <template v-if="!LoadingForGetData">
+              <VLabel class="required">
+                Email
+              </VLabel>
+              <VTextField
+                v-model="personal.PersonalEmail"
+                :rules="[requiredValidator, emailValidator]"
+              />
+            </template>
+            <template v-else>
+              <Skeletor
+                height="65px"
+                width="100%"
+
+                pill
+              />
+            </template>
           </VCol>
         </VRow>
         <VRow>
           <VCol>
-            <VBtn
-              v-if="!formDisabled && can('update', 'personal')"
-              type="submit"
-              class="mt-3"
-              :loading="loading"
-              :disabled="formDisabled"
-            >
-              Save
-            </VBtn>
+            <template v-if="!LoadingForGetData">
+              <VBtn
+                v-if="!formDisabled && can('update', 'personal')"
+                type="submit"
+                class="mt-3"
+                :loading="loading"
+                :disabled="formDisabled"
+              >
+                Save
+              </VBtn>
 
-            <VBtn
-              v-if="can('update', 'personal')"
-              class="mt-3 mx-3"
-              color="error"
-              @click="formDisabled = !formDisabled"
-            >
-              Edit personal
-            </VBtn>
+              <VBtn
+                v-if="can('update', 'personal')"
+                class="mt-3 mx-3"
+                color="error"
+                @click="formDisabled = !formDisabled"
+              >
+                Edit personal
+              </VBtn>
+            </template>
+
+            <template v-else>
+              <div
+                class="d-flex"
+              >
+                <Skeletor
+                  v-for="i in 2"
+                  :key="i"
+                  height="65px"
+                  width="150px"
+                  pill
+                  class="ml-3"
+                />
+              </div>
+            </template>
           </VCol>
         </VRow>
       </VForm>
