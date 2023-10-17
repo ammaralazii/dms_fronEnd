@@ -44,33 +44,36 @@ onMounted(async () => {
   if (props.id) {
     const item = await baseService.get(`getByPersonalId/${props.id}`) as any
 
-    if (item.data) {
-      personalAddress.value = item.data
+    if (item.success) {
+      personalAddress.value = item.data ? item.data : {}
       LoadingForGetData.value = false
     }
   }
 })
 
 const onSubmit = async () => {
-  console.log('personalAddress.value : ', personalAddress.value)
-
   const validate = await refForm.value?.validate() as any
   if (validate.valid
   ) {
     loading.value = true
 
-    delete personalAddress.value.personal_id
-
     personalAddressItem.value = { ...personalAddress.value }
 
     let result = null
-    result = await baseService.update('personal_address', filterNull(personalAddressItem.value), personalAddressItem.value.PersonalAddressId) as any
+    if (personalAddress.value.personal_id) {
+      delete personalAddressItem.value.personal_id
+      result = await baseService.update('personal_address', filterNull(personalAddressItem.value), personalAddressItem.value.PersonalAddressId) as any
+      payload.text = 'the address updated successfly .'
+    }
+    else {
+      personalAddress.value.personal_id = props.id
+      personalAddressItem.value.personal_id = props.id
+      result = await baseService.create('personal_address', filterNull(personalAddressItem.value)) as any
+      payload.text = 'the address added successfly .'
+    }
     loading.value = false
     if (result.success) {
       payload.color = 'success'
-
-      payload.text = 'the address updated successfly .'
-
       alert.$state.tosts.push(payload)
     }// /if
   }// /validation
