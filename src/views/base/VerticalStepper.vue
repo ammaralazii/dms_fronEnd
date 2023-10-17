@@ -4,15 +4,17 @@ import { useDisplay } from 'vuetify'
 const props = defineProps({
   steps: {
     required: true,
-    type: Array as () => Array<Record<string, unknown>>,
+    type: Array as () => Array<Record<string, any>>,
+  },
+  btn: {
+    required: false,
+    type: Boolean,
   },
 })
 
 const activeIndex = ref(0)
 
 const screen = useDisplay()
-
-console.log('screen : ', screen.smAndDown.value)
 
 const controller: any = ref([])
 
@@ -58,7 +60,8 @@ const dispalyComponent = (index: number) => {
             :active="controller[index]"
             link
             rounded
-            :class="screen.xs.value ? 'mx-1' : ''"
+            :class="screen.smAndDown.value ? 'mx-1' : 'my-1'"
+            :disabled="step.disabled"
             @click="dispalyComponent(index)"
           >
             <template
@@ -93,7 +96,7 @@ const dispalyComponent = (index: number) => {
             :name="step.title"
           />
         </template>
-        <VRow>
+        <VRow v-if="btn">
           <VCol
             cols="12"
             lg="12"
