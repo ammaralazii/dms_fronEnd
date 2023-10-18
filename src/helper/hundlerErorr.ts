@@ -1,9 +1,9 @@
 import router from '@/router'
 import { useAlertsStore } from '@/stores'
-import removeItemArray from './removeItemArray'
 
 const alertStore = useAlertsStore()
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function hundlerErorr(_err: any) {
   const payload = {
     color: 'error',
@@ -19,7 +19,7 @@ export default function hundlerErorr(_err: any) {
     update: false,
   }/* /payload */
 
-  console.error(_err)
+  console.log(_err)
 
   if (_err?.response?.status === 422 || _err?.response?.status === 500) {
     let errors = []
@@ -31,26 +31,22 @@ export default function hundlerErorr(_err: any) {
             err.forEach(r => {
               payload.text = r as any
               alertStore.$state.tosts.push(payload)
-              removeItemArray(payload, 5040)
             })
           }
           else {
             payload.text = err as any
             alertStore.$state.tosts.push(payload)
-            removeItemArray(payload, 5040)
           }// /if
         })// /forEach
       }
       else {
         payload.text = errors
         alertStore.$state.tosts.push(payload)
-        removeItemArray(payload, 5040)
       }
     }
     else {
       payload.text = _err?.response?.data?.message
       alertStore.$state.tosts.push(payload)
-      removeItemArray(payload, 5040)
     }// end of if
   }
   else if (_err?.response?.status === 401) {

@@ -22,7 +22,7 @@ const LoadingForGetData = ref(true)
 if (route.query.edit)
   formDisabled.value = !JSON.parse(route.query.edit as any)
 
-const personalId = route.params.id || ''
+const personalId = ref(route.params.id || '')
 
 const personal = ref<any>({
   personalId: '',
@@ -45,14 +45,17 @@ const personal = ref<any>({
 const alert = useAlertsStore()
 
 onMounted(async () => {
-  if (personalId) {
-    const personalItem = await baseService.get(`personal/${personalId}`) as any
+  if (personalId.value) {
+    const personalItem = await baseService.get(`personal/${personalId.value}`) as any
 
     if (personalItem.data) {
       personal.value = personalItem.data
       LoadingForGetData.value = false
-      emit('address', personalItem.data.address)
     }
+  }
+  else {
+    formDisabled.value = false
+    LoadingForGetData.value = false
   }
 })
 
@@ -83,15 +86,21 @@ const onSubmit = async () => {
     personalItem.value = { ...personal.value }
 
     let result = null
-    result = await baseService.update('personal', filterNull(personalItem.value), personalItem.value.PersonalId) as any
-
+    if (personalId.value) {
+      result = await baseService.update('personal', filterNull(personalItem.value), personalItem.value.PersonalId) as any
+      if (result.success)
+        payload.text = 'personal updated successfly .'
+    }
+    else {
+      result = await baseService.create('personal', filterNull(personalItem.value)) as any
+      if (result.data) {
+        payload.text = 'personal added successfly .'
+        emit('personalId', result.data.PersonalId)
+      }
+    }
     loading.value = false
-    if (result.success) {
-      payload.color = 'success'
-      payload.text = 'personal updated successfly .'
-
-      alert.$state.tosts.push(payload)
-    }// /if
+    payload.color = 'success'
+    alert.$state.tosts.push(payload)
   }// /validation
 }// /onSubmit
 </script>
@@ -198,7 +207,7 @@ const onSubmit = async () => {
             </VLabel>
             <VTextField
               v-model="personal.personalIdNumber"
-              :rules="[requiredValidator]"
+              :rules="[requiredValidator, integerValidator]"
             />
           </template>
           <template v-else>
@@ -469,7 +478,7 @@ const onSubmit = async () => {
         <VCol>
           <template v-if="!LoadingForGetData">
             <VBtn
-              v-if="!formDisabled && can('update', 'personal')"
+              v-if="(!formDisabled && can('update', 'personal')) || (!personalId && can('create', 'personal'))"
               type="submit"
               class="mt-3 mx-0"
               :loading="loading"
@@ -479,7 +488,7 @@ const onSubmit = async () => {
             </VBtn>
 
             <VBtn
-              v-if="can('update', 'personal')"
+              v-if="can('update', 'personal') && personalId"
               :class=" !formDisabled ? 'mt-3 mx-3' : 'mt-3 mx-0'"
               color="error"
               @click="formDisabled = !formDisabled"

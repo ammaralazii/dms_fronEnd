@@ -20,6 +20,7 @@ const tostss: any = ref([])
 const tostKey = ref(1)
 
 const expirTost = (item: any, i: number) => {
+  console.log('item : ', item)
   setTimeout(() => {
     tostss.value.splice(i, 1)
   }, item.timeOut + 100)

@@ -31,7 +31,7 @@ const id = route.params.id || ''
       <PersonalInformation />
     </template>
     <template #personal_address>
-      <PersonalAddress :id="id" />
+      <PersonalAddress :address-id="id" />
     </template>
   </VerticalStepper>
 </template>

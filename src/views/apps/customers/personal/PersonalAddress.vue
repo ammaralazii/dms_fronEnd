@@ -8,11 +8,13 @@ import { can } from '@layouts/plugins/casl'
 import filterNull from '@/helper/filterNull'
 
 const props = defineProps({
-  id: {
-    type: String,
+  // eslint-disable-next-line vue/require-prop-types
+  personalId: {
     required: true,
   },
 })
+
+const emit = defineEmits(['addedAddress'])
 
 const route = useRoute()
 
@@ -25,6 +27,7 @@ const personalAddress = ref()
 const LoadingForGetData = ref(true)
 
 const alert = useAlertsStore()
+const peRsnId = ref(route.params.id || props.personalId)
 
 const payload = {
   color: '',
@@ -41,15 +44,22 @@ const payload = {
 }/* /payload */
 
 onMounted(async () => {
-  if (props.id) {
-    const item = await baseService.get(`getByPersonalId/${props.id}`) as any
+  if (props.personalId)
+    formDisabled.value = false
+
+  if (peRsnId.value) {
+    const item = await baseService.get(`getByPersonalId/${peRsnId.value}`) as any
 
     if (item.success) {
       personalAddress.value = item.data ? item.data : {}
       LoadingForGetData.value = false
     }
   }
-})
+  else {
+    personalAddress.value = {}
+    LoadingForGetData.value = false
+  }// /if
+})// /onMounted
 
 const onSubmit = async () => {
   const validate = await refForm.value?.validate() as any
@@ -60,14 +70,15 @@ const onSubmit = async () => {
     personalAddressItem.value = { ...personalAddress.value }
 
     let result = null
+
     if (personalAddress.value.personal_id) {
       delete personalAddressItem.value.personal_id
       result = await baseService.update('personal_address', filterNull(personalAddressItem.value), personalAddressItem.value.PersonalAddressId) as any
       payload.text = 'the address updated successfly .'
     }
     else {
-      personalAddress.value.personal_id = props.id
-      personalAddressItem.value.personal_id = props.id
+      personalAddress.value.personal_id = peRsnId.value
+      personalAddressItem.value.personal_id = peRsnId.value
       result = await baseService.create('personal_address', filterNull(personalAddressItem.value)) as any
       payload.text = 'the address added successfly .'
     }
@@ -75,6 +86,13 @@ const onSubmit = async () => {
     if (result.success) {
       payload.color = 'success'
       alert.$state.tosts.push(payload)
+      nextTick(() => {
+        refForm.value?.reset()
+        refForm.value?.resetValidation()
+        peRsnId.value = null
+        formDisabled.value = true
+        emit('addedAddress')
+      })
     }// /if
   }// /validation
 }// /onSubmit
@@ -85,6 +103,16 @@ const onSubmit = async () => {
     class="mx-auto pa-4"
     height="auto"
   >
+    <VAlert
+      v-if="personalId === null"
+      variant="outlined"
+      type="warning"
+      prominent
+      border="top"
+      height="80px"
+    >
+      The process of filling out the information is sequential .
+    </VAlert>
     <VForm
       ref="refForm"
       v-model="isFormValid"
@@ -276,7 +304,7 @@ const onSubmit = async () => {
         <VCol>
           <template v-if="!LoadingForGetData">
             <VBtn
-              v-if="!formDisabled && can('update', 'personal_address')"
+              v-if="(!formDisabled && can('update', 'personal_address') && !personalId) || (personalId && can('create', 'personal_address'))"
               type="submit"
               class="mt-3 mx-0"
               :loading="loading"
@@ -286,12 +314,12 @@ const onSubmit = async () => {
             </VBtn>
 
             <VBtn
-              v-if="can('update', 'personal_address')"
+              v-if="can('update', 'personal_address') && !personalId"
               :class=" !formDisabled ? 'mt-3 mx-3' : 'mt-3 mx-0'"
               color="error"
               @click="formDisabled = !formDisabled"
             >
-              Edit personalAddress
+              Edit personal Address
             </VBtn>
           </template>
 
