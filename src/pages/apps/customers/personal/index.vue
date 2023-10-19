@@ -140,7 +140,7 @@ const selectAllpersonals = () => {
     selectedpersonals.value = []
 
   else
-    selectedpersonals.value = personals.value.map(personal => personal.personalId) as any
+    selectedpersonals.value = personals.value.map(personal => personal.PersonalId) as any
 }// /selectAllpersonals
 
 // this funnction to do filter on personal table
