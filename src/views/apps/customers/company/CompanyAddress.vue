@@ -75,7 +75,7 @@ const onSubmit = async () => {
 
     if (companyAddress.value.company_id) {
       delete companyAddressItem.value.company_id
-      result = await baseService.update('company_address', filterNull(companyAddressItem.value), companyAddressItem.value.PersonalAddressId) as any
+      result = await baseService.update('company_address', filterNull(companyAddressItem.value), companyAddressItem.value.CompanyAddressId) as any
       payload.text = 'the address updated successfly .'
     }
     else {
@@ -392,7 +392,7 @@ const onSubmit = async () => {
         <VCol>
           <template v-if="!LoadingForGetData">
             <VBtn
-              v-if="(can('update', 'company_address') && !companyId) || (companyId && can('create', 'company_address'))"
+              v-if="!formDisabled && (can('update', 'company_address') && !companyId) || (companyId && can('create', 'company_address'))"
               type="submit"
               class="mt-3 mx-0"
               :loading="loading"
@@ -402,7 +402,7 @@ const onSubmit = async () => {
             </VBtn>
 
             <VBtn
-              v-if="can('update', 'company_address') && !companyId === null"
+              v-if="can('update', 'company_address') && !companyId"
               :class=" !formDisabled ? 'mt-3 mx-3' : 'mt-3 mx-0'"
               color="error"
               @click="formDisabled = !formDisabled"
