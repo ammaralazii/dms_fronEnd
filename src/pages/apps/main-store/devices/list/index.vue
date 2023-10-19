@@ -34,8 +34,8 @@ const searchCode = ref()
 const importDialog = ref(false)
 
 const params = ref({
-  perPage: rowPerPage.value,
-  currentPage: currentPage.value,
+  per_page: rowPerPage.value,
+  page: currentPage.value,
   code: null,
 })
 
@@ -60,6 +60,12 @@ const fetchDevices = () => {
   }).finally(() => loadingGetDiveces.value = false)
 }// /fetchUsers
 
+watch(() => currentPage.value, val => {
+  params.value.per_page = rowPerPage.value
+  params.value.page = val
+  fetchDevices()
+})
+
 // 👉 watching current page
 watchEffect(() => {
   if (currentPage.value > totalPage.value)
@@ -67,12 +73,6 @@ watchEffect(() => {
 })
 
 const isFileDrawerVisible = ref(false)
-
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
-})
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {

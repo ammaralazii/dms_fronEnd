@@ -14,7 +14,7 @@ const alert = useAlertsStore()
 const router = useRouter()
 
 // 👉 Store
-const rowPerPage = ref(10)
+const rowPerPage = ref(15)
 const currentPage = ref(1)
 const totalPage = ref(1)
 const totalpersonals = ref(0)
@@ -32,8 +32,8 @@ const searchCode = ref()
 const importDialog = ref(false)
 
 const params = ref({
-  perPage: rowPerPage.value,
-  currentPage: currentPage.value,
+  per_page: rowPerPage.value,
+  page: currentPage.value,
   code: null,
 })
 
@@ -64,18 +64,18 @@ watchEffect(() => {
     currentPage.value = totalPage.value
 })
 
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
-})
-
 // 👉 Computing pagination data
 const paginationData = computed(() => {
   const firstIndex = personals.value.length ? ((currentPage.value - 1) * rowPerPage.value) + 1 : 0
   const lastIndex = personals.value.length + ((currentPage.value - 1) * rowPerPage.value)
 
   return `Showing ${firstIndex} to ${lastIndex} of ${totalpersonals.value} entries`
+})
+
+watch(() => currentPage.value, val => {
+  params.value.per_page = rowPerPage.value
+  params.value.page = val
+  fetchpersonals()
 })
 
 const deleteDialog = (id: any) => {

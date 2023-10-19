@@ -30,24 +30,10 @@ const loadingUpload = ref(false)
 const importDialog = ref(false)
 
 const params = ref({
-  perPage: rowPerPage.value,
-  currentPage: currentPage.value,
+  per_page: rowPerPage.value,
+  page: currentPage.value,
   code: null,
 })
-
-const payload = {
-  color: '',
-  timeOut: 5000,
-  run: true,
-  text: '',
-  position: {
-    top: true,
-    right: false,
-    left: false,
-    bottom: false,
-  },
-  update: false,
-}/* /payload */
 
 // 👉 Fetching cards
 const fetchCards = () => {
@@ -76,10 +62,10 @@ watchEffect(() => {
     currentPage.value = totalPage.value
 })
 
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
+watch(() => currentPage.value, val => {
+  params.value.per_page = rowPerPage.value
+  params.value.page = val
+  fetchCards()
 })
 
 // 👉 Computing pagination dat
@@ -165,7 +151,6 @@ const openExcelDialog = () => {
 }// /openExcelDialog
 
 const goToEditPage = (id: string) => {
-  console.log('id : ', id)
   router.push({
     name: 'apps-main-store-cards-view-id',
     params: {

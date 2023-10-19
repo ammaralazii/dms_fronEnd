@@ -25,7 +25,6 @@ const users = ref<userInfo[]>([])
 const oldList = ref()
 const searchingItems = ref<any>([])
 const userCount = ref<number>()
-const refreshKey = ref(0)
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -53,12 +52,6 @@ const fetchUsers = () => {
     console.error(error)
   })
 }// /fetchUsers
-
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
-})
 
 const rolesItems = computed(() => {
   return alert.$state.roles

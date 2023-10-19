@@ -39,24 +39,10 @@ if (route.query.deviceId)
   deviceId.value = route.query.deviceId
 
 const params = ref({
-  perPage: rowPerPage.value,
-  currentPage: currentPage.value,
+  per_page: rowPerPage.value,
+  page: currentPage.value,
   code: null,
 })
-
-const payload = {
-  color: '',
-  timeOut: 5000,
-  run: true,
-  text: '',
-  position: {
-    top: true,
-    right: false,
-    left: false,
-    bottom: false,
-  },
-  update: false,
-}/* /payload */
 
 // 👉 Fetching accessories
 const fetchaccessories = () => {
@@ -64,7 +50,6 @@ const fetchaccessories = () => {
   alert.fetchaccessories(filterNull(params.value)).then(response => {
     if (response.data?.success) {
       accessories.value = response.data.data.data
-      console.log('accessories.value : ', accessories.value)
       oldList.value = response.data.data.data
       totalPage.value = response.data.data.last_page
       totalaccessories.value = response.data.data.total
@@ -81,7 +66,6 @@ const fetchaccessoriesById = () => {
   params.value.id = alert.$state.deviceId
 
   alert.fetchaccessoriesById(filterNull(params.value)).then(response => {
-    console.log('response : ', response)
     loadaccessories.value = false
     if (response.data?.success) {
       accessories.value = response.data.data.data
@@ -96,17 +80,16 @@ const fetchaccessoriesById = () => {
 }// /fetchaccessories
 
 onMounted(() => {
-  console.log('alert.$state.deviceId : ', alert.$state.deviceId)
   if (deviceId.value)
     fetchaccessoriesById()
   else
     fetchaccessories()
 })
 
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
+watch(() => currentPage.value, val => {
+  params.value.per_page = rowPerPage.value
+  params.value.page = val
+  fetchaccessories()
 })
 
 // 👉 watching current page
