@@ -71,7 +71,7 @@ const onSubmit = async () => {
 
     let result = null
     if (companyId.value) {
-      result = await baseService.update('company', filterNull(companyItem.value), companyItem.value.PersonalId) as any
+      result = await baseService.update('company', filterNull(companyItem.value), companyItem.value.CompanyId) as any
       if (result?.success)
         payload.text = 'company updated successfly .'
     }
@@ -79,7 +79,11 @@ const onSubmit = async () => {
       result = await baseService.create('company', filterNull(companyItem.value)) as any
       if (result?.data) {
         payload.text = 'company added successfly .'
-        emit('companyId', result?.data.CompanyId)
+        nextTick(() => {
+          refForm.value?.reset()
+          refForm.value?.resetValidation()
+          emit('companyId', result?.data.CompanyId)
+        })
       }
     }
     loading.value = false

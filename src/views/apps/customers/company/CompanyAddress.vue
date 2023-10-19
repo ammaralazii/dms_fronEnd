@@ -29,6 +29,8 @@ const LoadingForGetData = ref(true)
 const alert = useAlertsStore()
 const comPnId = ref(route.params.id || props.companyId)
 
+const urlId = route.params.id
+
 const payload = {
   color: '',
   timeOut: 5000,
@@ -44,8 +46,6 @@ const payload = {
 }/* /payload */
 
 onMounted(async () => {
-  console.log('props.companyId : ', props.companyId)
-
   if (props.companyId)
     formDisabled.value = false
 
@@ -88,13 +88,15 @@ const onSubmit = async () => {
     if (result.success) {
       payload.color = 'success'
       alert.$state.tosts.push(payload)
-      nextTick(() => {
-        refForm.value?.reset()
-        refForm.value?.resetValidation()
-        comPnId.value = null
-        formDisabled.value = true
-        emit('addedAddress')
-      })
+      if (!urlId) {
+        nextTick(() => {
+          refForm.value?.reset()
+          refForm.value?.resetValidation()
+          comPnId.value = null
+          formDisabled.value = true
+          emit('addedAddress')
+        })
+      }
     }// /if
   }// /validation
 }// /onSubmit
