@@ -55,5 +55,6 @@ export const useAlertsStore = defineStore('alerts', {
     async fetchaccessoriesById(params: any) { return axiosIns.get('accessorByDeviceId', { params }) }, // /fetchAccessorByDeviceId
     async fetchpersonals(params: any) { return axiosIns.get('personal', { params }) }, // /fetchPersonal
     async fetchcompanys(params: any) { return axiosIns.get('company', { params }) }, // /fetchCompany
+    async fetchforeigns(params: any) { return axiosIns.get('foreign', { params }) }, // /fetchforeigns
   }, /* /action */
 })/* /useAlertsStore */
