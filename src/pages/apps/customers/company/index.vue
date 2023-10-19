@@ -27,7 +27,7 @@ const excelInput = ref()
 const loadingUpload = ref(false)
 const selectedcompanys = ref([])
 const selectAll = ref(false)
-const loadingGetDiveces = ref<boolean>(false)
+const loadingGetCompanies = ref<boolean>(false)
 const searchCode = ref()
 const importDialog = ref(false)
 
@@ -44,7 +44,7 @@ onMounted(() => {
 
 // 👉 Fetching companys
 const fetchcompanys = () => {
-  loadingGetDiveces.value = true
+  loadingGetCompanies.value = true
   alert.fetchcompanys(params.value).then(response => {
     if (response.data?.success) {
       companys.value = response.data.data.data
@@ -55,7 +55,7 @@ const fetchcompanys = () => {
     }// /if
   }).catch(error => {
     console.error(error)
-  }).finally(() => loadingGetDiveces.value = false)
+  }).finally(() => loadingGetCompanies.value = false)
 }// /fetchUsers
 
 // 👉 watching current page
@@ -255,7 +255,7 @@ const godisplayEditPage = (id: string) => {
           <VDivider />
 
           <VProgressLinear
-            v-if="loadingGetDiveces"
+            v-if="loadingGetCompanies"
             color="primary"
             indeterminate
             reverse

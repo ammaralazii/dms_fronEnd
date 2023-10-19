@@ -2,13 +2,14 @@ import { saveAs } from 'file-saver'
 import * as XLSX from 'xlsx'
 
 // Export data to Excel
-export const exportToExcel = (
+export const exportToExcel = async (
   data?: any[] | null,
   tableId?: string | null,
   fileName?: string,
-  indexArr?: number[],
+  indexArr?: number[] | string[],
   colWidth?: number,
   removeString?: string,
+// eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   let ws: XLSX.WorkSheet
   const wb: XLSX.WorkBook = XLSX.utils.book_new()
@@ -28,10 +29,11 @@ export const exportToExcel = (
         indexArr.forEach(deletekey => {
           if (deletekey in item)
             delete item[deletekey]
-        })// /forEach
+        }) // /forEach
 
         return item
-      })// /map
+      }) // /map
+      // /map
     }// /if
 
     ws = XLSX.utils.json_to_sheet(data)

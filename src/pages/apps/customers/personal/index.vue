@@ -27,7 +27,7 @@ const excelInput = ref()
 const loadingUpload = ref(false)
 const selectedpersonals = ref([])
 const selectAll = ref(false)
-const loadingGetDiveces = ref<boolean>(false)
+const loadingGetPersonals = ref<boolean>(false)
 const searchCode = ref()
 const importDialog = ref(false)
 
@@ -44,7 +44,7 @@ onMounted(() => {
 
 // 👉 Fetching personals
 const fetchpersonals = () => {
-  loadingGetDiveces.value = true
+  loadingGetPersonals.value = true
   alert.fetchpersonals(params.value).then(response => {
     if (response.data?.success) {
       personals.value = response.data.data.data
@@ -55,7 +55,7 @@ const fetchpersonals = () => {
     }// /if
   }).catch(error => {
     console.error(error)
-  }).finally(() => loadingGetDiveces.value = false)
+  }).finally(() => loadingGetPersonals.value = false)
 }// /fetchUsers
 
 // 👉 watching current page
@@ -256,7 +256,7 @@ const godisplayEditPage = (id: string) => {
           <VDivider />
 
           <VProgressLinear
-            v-if="loadingGetDiveces"
+            v-if="loadingGetPersonals"
             color="primary"
             indeterminate
             reverse
