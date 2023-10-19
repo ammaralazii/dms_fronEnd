@@ -50,9 +50,10 @@ export const useAlertsStore = defineStore('alerts', {
     async fetchDevices(params: any) {
       return axiosIns.get('device', { params })
     }, // /fetchDevices
-    async fetchCards(params: any) { return axiosIns.get('card', { params }) }, // /fetchDevices
-    async fetchaccessories(params: any) { return axiosIns.get('accessory', { params }) },
-    async fetchaccessoriesById(params: any) { return axiosIns.get('accessorByDeviceId', { params }) },
-    async fetchpersonals(params: any) { return axiosIns.get('personal', { params }) },
+    async fetchCards(params: any) { return axiosIns.get('card', { params }) }, // /fetchCards
+    async fetchaccessories(params: any) { return axiosIns.get('accessory', { params }) }, // /fetchAccessory
+    async fetchaccessoriesById(params: any) { return axiosIns.get('accessorByDeviceId', { params }) }, // /fetchAccessorByDeviceId
+    async fetchpersonals(params: any) { return axiosIns.get('personal', { params }) }, // /fetchPersonal
+    async fetchcompanys(params: any) { return axiosIns.get('company', { params }) }, // /fetchCompany
   }, /* /action */
 })/* /useAlertsStore */
