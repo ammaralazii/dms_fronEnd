@@ -5,11 +5,6 @@ import OtherInformation from '@/views/apps/customers/foreign/OtherInformation.vu
 import Sars from '@/views/apps/customers/foreign/Sars.vue'
 import WorkPermit from '@/views/apps/customers/foreign/WorkPermit.vue'
 
-const emit = defineEmits(['update:isDrawerAddforeignOpen'])
-const OtherInformationKey = ref(0)
-const SarsKey = ref(0)
-const workPermitKey = ref(0)
-
 const steps = [
   {
     title: 'foreign_information',
