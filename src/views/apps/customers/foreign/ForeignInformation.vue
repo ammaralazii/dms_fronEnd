@@ -71,7 +71,7 @@ const onSubmit = async () => {
 
     let result = null
     if (foreignId.value) {
-      result = await baseService.update('foreign', filterNull(foreignItem.value), foreignItem.value.CompanyId) as any
+      result = await baseService.update('foreign', filterNull(foreignItem.value), foreignItem.value.ForeignId) as any
       if (result?.success)
         payload.text = 'foreign updated successfly .'
     }
@@ -253,7 +253,6 @@ const onSubmit = async () => {
               :items="codes"
               :item-title="(item) => item?.name?.common"
               :item-value="(item) => item.cca2"
-              :rules="[requiredValidator]"
             />
           </template>
           <template v-else>

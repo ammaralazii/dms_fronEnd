@@ -75,7 +75,7 @@ const onSubmit = async () => {
 
     if (sars.value.foreign_id) {
       delete sarsItem.value.foreign_id
-      result = await baseService.update('sars', filterNull(sarsItem.value), sarsItem.value.CompanyAddressId) as any
+      result = await baseService.update('sars', filterNull(sarsItem.value), sarsItem.value.SarsId) as any
       payload.text = 'the SARS updated successfly .'
     }
     else {

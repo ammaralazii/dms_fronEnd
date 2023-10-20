@@ -75,7 +75,7 @@ const onSubmit = async () => {
 
     if (work_permit.value.foreign_id) {
       delete work_permitItem.value.foreign_id
-      result = await baseService.update('work_permit', filterNull(work_permitItem.value), work_permitItem.value.CompanyAddressId) as any
+      result = await baseService.update('work_permit', filterNull(work_permitItem.value), work_permitItem.value.WorkPermitId) as any
       payload.text = 'the work permit updated successfly .'
     }
     else {
