@@ -73,8 +73,6 @@ const onSubmit = async () => {
     loading.value = true
     foreignItem.value = { ...foreign.value }
 
-    console.log('foreignItem.value : ', foreignItem.value)
-
     let result = null
     if (foreignId.value) {
       result = await baseService.update('foreign', filterNull(foreignItem.value), foreignItem.value.CompanyId) as any
@@ -88,7 +86,7 @@ const onSubmit = async () => {
         nextTick(() => {
           refForm.value?.reset()
           refForm.value?.resetValidation()
-          emit('foreignId', result?.data.CompanyId)
+          emit('foreignId', result?.data.ForeignId)
         })
       }
     }

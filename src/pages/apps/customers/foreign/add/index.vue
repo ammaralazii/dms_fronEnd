@@ -40,22 +40,13 @@ const workPermitId = ref(route.params.id || '')
 
 const foreignId = (foregnId: string) => {
   otherInfoId.value = foregnId
-  OtherInformationKey.value++
-}// /foreignId
+  sarsId.value = foregnId
+  workPermitId.value = foregnId
 
-const addedOtherInformation = () => {
-  sarsId.value = otherInfoId.value
-  otherInfoId.value = null
-  OtherInformationKey.value++
-  SarsKey.value++
-}// /addedOtherInformation
-
-const addedSars = () => {
-  workPermitId.value = sarsId.value
-  sarsId.value = null
-  SarsKey.value++
   workPermitKey.value++
-}// /addedOtherInformation
+  OtherInformationKey.value++
+  SarsKey.value++
+}// /foreignId
 
 const addedWorkPermit = () => {
   workPermitId.value.value = null
