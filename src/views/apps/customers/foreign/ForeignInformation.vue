@@ -62,10 +62,6 @@ const payload = {
   update: false,
 }/* /payload */
 
-const dateTimePickerConfig = computed(() => {
-  return { enableTime: true, dateFormat: 'Y-m-d' }
-})
-
 const onSubmit = async () => {
   const validate = await refForm.value?.validate() as any
   if (validate.valid

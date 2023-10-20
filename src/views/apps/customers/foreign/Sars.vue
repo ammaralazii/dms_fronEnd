@@ -195,7 +195,7 @@ const onSubmit = async () => {
               color="error"
               @click="formDisabled = !formDisabled"
             >
-              Edit Other Information
+              Edit SARS
             </VBtn>
           </template>
 
