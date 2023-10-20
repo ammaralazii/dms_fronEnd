@@ -48,10 +48,20 @@ const foreignId = (foregnId: string) => {
   SarsKey.value++
 }// /foreignId
 
+const addedOtherInformation = () => {
+  otherInfoId.value = null
+  OtherInformationKey.value++
+}
+
+const addedSars = () => {
+  sarsId.value = null
+  SarsKey.value++
+}
+
 const addedWorkPermit = () => {
-  workPermitId.value.value = null
+  workPermitId.value = null
   workPermitKey.value++
-}// /addedOtherInformation
+}
 </script>
 
 <template>

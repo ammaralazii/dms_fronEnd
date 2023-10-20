@@ -14,7 +14,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['addedAddress'])
+const emit = defineEmits(['addedOtherInformation'])
 
 const route = useRoute()
 
@@ -50,7 +50,7 @@ onMounted(async () => {
     formDisabled.value = false
 
   if (foRnId.value) {
-    const item = await baseService.get(`getByForeignId/${foRnId.value}`) as any
+    const item = await baseService.get(`other_information/getByForeignId/${foRnId.value}`) as any
 
     if (item.success) {
       otherInformation.value = item.data ? item.data : {}
@@ -94,7 +94,7 @@ const onSubmit = async () => {
           refForm.value?.resetValidation()
           foRnId.value = null
           formDisabled.value = true
-          emit('addedAddress')
+          emit('addedOtherInformation')
         })
       }
     }// /if
@@ -238,7 +238,7 @@ const onSubmit = async () => {
         >
           <template v-if="!LoadingForGetData">
             <VLabel>
-              ExpireDate
+              Expire Date
             </VLabel>
             <AppDateTimePicker
               v-model="otherInformation.OtherInformationExpireDate"
