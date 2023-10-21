@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDisplay } from 'vuetify'
+import { can } from '@layouts/plugins/casl'
 
 const props = defineProps({
   steps: {
@@ -10,6 +11,10 @@ const props = defineProps({
     required: false,
     type: Boolean,
   },
+})
+
+watch(() => props.steps, val => {
+  console.log('val : ', val)
 })
 
 const activeIndex = ref(0)
@@ -53,31 +58,36 @@ const dispalyComponent = (index: number) => {
           :class="screen.smAndDown.value ? 'd-flex' : ''"
           color="primary"
         >
-          <VListItem
+          <template
             v-for="(step, index) in steps"
             :key="index"
-            color="primary"
-            :active="controller[index]"
-            link
-            rounded
-            :class="screen.smAndDown.value ? 'mx-1' : 'my-1'"
-            :disabled="step.disabled"
-            @click="dispalyComponent(index)"
           >
-            <template
-              #prepend
+            <VListItem
+
+              v-if="$can(step.action, step.subject)"
+              color="primary"
+              :active="controller[index]"
+              link
+              rounded
+              :class="screen.smAndDown.value ? 'mx-1' : 'my-1'"
+              :disabled="step.disabled"
+              @click="dispalyComponent(index)"
             >
-              <VIcon :class="screen.xs.value ? 'ma-auto' : ''">
-                {{ step.icon }}
-              </VIcon>
-            </template>
-            <VListItemTitle
-              v-if="!screen.xs.value"
-              class="text-capitalize"
-            >
-              {{ step.title.replace('_', ' ') }}
-            </VListItemTitle>
-          </VListItem>
+              <template
+                #prepend
+              >
+                <VIcon :class="screen.xs.value ? 'ma-auto' : ''">
+                  {{ step.icon }}
+                </VIcon>
+              </template>
+              <VListItemTitle
+                v-if="!screen.xs.value"
+                class="text-capitalize"
+              >
+                {{ step.title.replace('_', ' ') }}
+              </VListItemTitle>
+            </VListItem>
+          </template>
         </VList>
       </VCol>
       <VCol

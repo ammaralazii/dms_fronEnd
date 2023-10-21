@@ -11,11 +11,15 @@ const steps = [
     title: 'company_information',
     icon: 'ph-buildings',
     disabled: false,
+    subject: 'comapany',
+    action: 'create',
   },
   {
     title: 'company_address',
     icon: 'ph-map-pin-line',
     disabled: false,
+    subject: 'company_address',
+    action: 'create',
   },
 ]
 
@@ -23,7 +27,6 @@ const route = useRoute()
 const id = ref(route.params.id || null)
 
 const companyId = (compnyId: string) => {
-  console.log('compnyId : ', compnyId)
   id.value = compnyId
   CompanyAddressKey.value++
 }// /companyId

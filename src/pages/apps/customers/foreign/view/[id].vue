@@ -10,21 +10,29 @@ const steps = [
     title: 'foreign_information',
     icon: 'ph-globe-hemisphere-west',
     disabled: false,
+    subject: 'foreign',
+    action: 'update',
   },
   {
     title: 'other_information',
     icon: 'ph-folder-notch-plus',
     disabled: false,
+    subject: 'other_information',
+    action: 'update',
   },
   {
     title: 'SARS',
     icon: 'ph-info',
     disabled: false,
+    subject: 'sars',
+    action: 'update',
   },
   {
     title: 'work_permit',
     icon: 'ph-identification-card',
     disabled: false,
+    subject: 'work_permit',
+    action: 'update',
   },
 ]
 

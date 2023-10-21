@@ -8,11 +8,15 @@ const steps = [
     title: 'company_information',
     icon: 'ph-buildings',
     disabled: false,
+    subject: 'company_address',
+    action: 'update',
   },
   {
     title: 'company_address',
     icon: 'ph-map-pin-line',
     disabled: false,
+    subject: 'company_address',
+    action: 'update',
   },
 ]
 
