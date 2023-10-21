@@ -220,7 +220,7 @@ const onSubmit = async () => {
               Gender
             </VLabel>
             <VAutocomplete
-              v-model="company.companyGender"
+              v-model="company.CompanyGender"
               :items="gender"
             />
           </template>

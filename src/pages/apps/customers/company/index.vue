@@ -329,7 +329,7 @@ const godisplayEditPage = (id: string) => {
                 :key="index"
                 style="height: 3.75rem;"
                 class="tableHover"
-                @dblclick="godisplayEditPage(company.PersonalId)"
+                @dblclick="godisplayEditPage(company.CompanyId)"
               >
                 <td>
                   <VCheckbox
@@ -344,16 +344,16 @@ const godisplayEditPage = (id: string) => {
                   {{ moment(company.CompanyBirthDate).format('YYYY/MM/DD') || 'not found' }}
                 </td>
                 <td class="text-center">
+                  {{ company.CompanySAIDNumber || 'not found' }}
+                </td>
+                <td class="text-center">
                   {{ company.CompanyRelationship || 'not found' }}
                 </td>
                 <td class="text-center">
                   {{ company.CompanyGender || 'not found' }}
                 </td>
                 <td class="text-center">
-                  {{ moment(company.CompanyBirthDate).format('YYYY/MM/DD') || 'not found' }}
-                </td>
-                <td class="text-center">
-                  {{ company.CompanyMedicallyDependent == 1 ? 'Yes' : 'No' || 'not found' }}
+                  {{ company.CompanyMedicallyDependent === true ? 'Yes' : 'No' || 'not found' }}
                 </td>
                 <td
                   class="text-center"

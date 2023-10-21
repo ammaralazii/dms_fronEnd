@@ -4,7 +4,7 @@ export default function (obj: any) {
   const newObj: any = {}
 
   for (let i = 0; i < value.length; i++) {
-    if (value[i])
+    if (value[i] || value[i] === false)
       newObj[key[i]] = value[i]
   }// /for loop
 
