@@ -12,6 +12,7 @@ export const useAlertsStore = defineStore('alerts', {
       userCount: 0,
       activeUserCount: 0,
       permissionItems: [],
+      personalInformation: {},
     }/* /return */
   }, /* /state */
 
