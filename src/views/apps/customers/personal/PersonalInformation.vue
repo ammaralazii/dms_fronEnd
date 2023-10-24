@@ -61,6 +61,7 @@ const onSubmit = async () => {
   if (validate.valid
   ) {
     loading.value = true
+
     personalItem.value = { ...alert.$state.personalItem }
 
     let result = null
@@ -165,7 +166,7 @@ const onSubmit = async () => {
               Third Name
             </VLabel>
             <VTextField
-              v-model="alert.$state.personalItem.personalTirdName"
+              v-model="alert.$state.personalItem.personalTiredName"
               clearable
               :rules="[requiredValidator]"
             />
@@ -295,7 +296,7 @@ const onSubmit = async () => {
           </template>
         </VCol>
 
-        <!-- 👉 Code -->
+        <!-- 👉 country -->
         <VCol
           cols="12"
           xl="3"
@@ -305,10 +306,10 @@ const onSubmit = async () => {
         >
           <template v-if="!LoadingForGetData">
             <VLabel class="required">
-              Code
+              Country
             </VLabel>
             <VAutocomplete
-              v-model="alert.$state.personalItem.PersonalCode"
+              v-model="alert.$state.personalItem.PersonalCountry"
               clearable
               :items="countriesArr"
               :rules="[requiredValidator]"
@@ -456,6 +457,146 @@ const onSubmit = async () => {
               v-model="alert.$state.personalItem.PersonalEmail"
               clearable
               :rules="[requiredValidator, emailValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              width="100%"
+
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Governorate -->
+        <VCol
+          cols="12"
+          xl="4"
+          md="4"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Governorate
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.personalItem.PersonalGovernorate"
+              clearable
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              width="100%"
+
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉City -->
+        <VCol
+          cols="12"
+          xl="4"
+          md="4"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              City
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.personalItem.personalCity"
+              clearable
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              width="100%"
+
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉Region -->
+        <VCol
+          cols="12"
+          xl="4"
+          md="4"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Region
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.personalItem.personalRegion"
+              clearable
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              width="100%"
+
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉Suburb -->
+        <VCol
+          cols="12"
+          xl="4"
+          md="4"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Suburb
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.personalItem.personalAddressSuburb"
+              clearable
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              width="100%"
+
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Street -->
+        <VCol
+          cols="12"
+          xl="4"
+          md="4"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Street
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.personalItem.personalStreet"
+              clearable
+              :rules="[requiredValidator]"
             />
           </template>
           <template v-else>

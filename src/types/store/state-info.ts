@@ -13,4 +13,6 @@ export interface State {
   personalItem: any
   personalAddress: any
   companyAddress: companyAdress
+  companyInfo: any
+  authorizedInfo: any
 }// /state interface

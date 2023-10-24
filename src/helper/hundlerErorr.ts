@@ -19,8 +19,6 @@ export default function hundlerErorr(_err: any) {
     update: false,
   }/* /payload */
 
-  console.log(_err)
-
   if (_err?.response?.status === 422 || _err?.response?.status === 500) {
     let errors = []
     if (typeof _err?.response?.data?.message === 'object' && _err?.response?.data?.message !== null) {

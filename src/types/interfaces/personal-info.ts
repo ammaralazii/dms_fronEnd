@@ -13,5 +13,10 @@ export interface personalInfo {
   personalPhoneNumber: number | string
   personalPhoneNumber2?: number | string
   PersonalEmail: string
-  code: string
+  PersonalCountry: string
+  PersonalGovernorate: string
+  personalCity: string
+  personalRegion: string
+  personalAddressSuburb: string
+  personalStreet: string
 }

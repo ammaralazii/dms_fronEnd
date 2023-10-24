@@ -223,7 +223,7 @@ const godisplayEditPage = (id: string) => {
                 @click="exportToExcel(personals.filter((personal) => {
                   if (selectedpersonals.includes(personal.PersonalId))
                     return personal
-                }), 'myTable', 'personal', [0, 12], 20)"
+                }), 'myTable', 'personal', personals.length === 0 ? [0, 12] : ['PersonalId'], 20)"
               >
                 Export
               </VBtn>
@@ -351,6 +351,47 @@ const godisplayEditPage = (id: string) => {
                 >
                   Email
                 </th>
+
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Country
+                </th>
+
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Governorate
+                </th>
+
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  City
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Region
+                </th>
+
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Suburb
+                </th>
+
+                <th
+                  scope="col"
+                  class="text-center"
+                >
+                  Street
+                </th>
                 <th
                   scope="col"
                   class="text-center"
@@ -409,6 +450,24 @@ const godisplayEditPage = (id: string) => {
                 </td>
                 <td>
                   {{ personal.PersonalEmail || 'not found' }}
+                </td>
+                <td>
+                  {{ personal.PersonalCountry || 'not found' }}
+                </td>
+                <td>
+                  {{ personal.PersonalGovernorate || 'not found' }}
+                </td>
+                <td>
+                  {{ personal.personalCity || 'not found' }}
+                </td>
+                <td>
+                  {{ personal.personalRegion || 'not found' }}
+                </td>
+                <td>
+                  {{ personal.personalAddressSuburb || 'not found' }}
+                </td>
+                <td>
+                  {{ personal.personalStreet || 'not found' }}
                 </td>
                 <td
                   class="text-center"

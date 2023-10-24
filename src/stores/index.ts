@@ -15,6 +15,8 @@ export const useAlertsStore = defineStore('alerts', {
       personalItem: {},
       personalAddress: {},
       companyAddress: {},
+      authorizedInfo: {},
+      companyInfo: {},
     }/* /return */
   }, /* /state */
 

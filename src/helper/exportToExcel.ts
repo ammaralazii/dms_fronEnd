@@ -27,6 +27,7 @@ export const exportToExcel = async (
     if (indexArr.length > 0) {
       data = data.map(item => {
         indexArr.forEach(deletekey => {
+          console.log('item : ', item)
           if (deletekey in item)
             delete item[deletekey]
         }) // /forEach

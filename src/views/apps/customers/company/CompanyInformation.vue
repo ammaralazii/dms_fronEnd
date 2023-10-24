@@ -7,6 +7,14 @@ import { can } from '@layouts/plugins/casl'
 import filterNull from '@/helper/filterNull'
 import { gender } from '@/types/enum/gender'
 
+const props = defineProps({
+  // eslint-disable-next-line vue/prop-name-casing
+  personal_id: {
+    required: true,
+    type: String,
+  },
+})
+
 const emit = defineEmits(['companyId'])
 
 const route = useRoute()
@@ -18,28 +26,23 @@ const formDisabled = ref(true)
 const companyItem = ref()
 const LoadingForGetData = ref(true)
 
-if (route.query.edit)
-  formDisabled.value = !JSON.parse(route.query.edit as any)
-
 const companyId = ref(route.params.id || '')
-
-const company = ref<any>({
-  companyId: '',
-})
 
 const alert = useAlertsStore()
 
 onMounted(async () => {
   if (companyId.value) {
-    const companyItem = await baseService.get(`company/${companyId.value}`) as any
+    const result = await baseService.get(`company/${companyId.value}`) as any
 
-    if (companyItem.data) {
-      company.value = companyItem.data
+    if (result.data) {
+      alert.$state.companyInfo = result.data
       LoadingForGetData.value = false
     }
   }
   else {
-    formDisabled.value = false
+    if (props.personal_id)
+      formDisabled.value = false
+
     LoadingForGetData.value = false
   }
 })
@@ -58,31 +61,29 @@ const payload = {
   update: false,
 }/* /payload */
 
-const dateTimePickerConfig = computed(() => {
-  return { enableTime: true, dateFormat: 'Y-m-d' }
-})
-
 const onSubmit = async () => {
   const validate = await refForm.value?.validate() as any
   if (validate.valid
   ) {
     loading.value = true
-    companyItem.value = { ...company.value }
 
-    let result = null
+    alert.$state.companyInfo.personal_id = props.personal_id
+    companyItem.value = { ...alert.$state.companyInfo }
+
+    let resulte = null as any
     if (companyId.value) {
-      result = await baseService.update('company', filterNull(companyItem.value), companyItem.value.CompanyId) as any
-      if (result?.success)
+      resulte = await baseService.update('company', filterNull(companyItem.value), companyItem.value.CompanyId) as any
+      if (resulte?.success)
         payload.text = 'company updated successfly .'
     }
     else {
-      result = await baseService.create('company', filterNull(companyItem.value)) as any
-      if (result?.data) {
+      resulte = await baseService.create('company', filterNull(companyItem.value)) as any
+      if (resulte?.data) {
         payload.text = 'company added successfly .'
         nextTick(() => {
           refForm.value?.reset()
           refForm.value?.resetValidation()
-          emit('companyId', result?.data.CompanyId)
+          emit('companyId', resulte?.data.CompanyId)
         })
       }
     }
@@ -98,6 +99,16 @@ const onSubmit = async () => {
     class="mx-auto pa-4"
     height="auto"
   >
+    <VAlert
+      v-if="!companyId"
+      variant="outlined"
+      type="warning"
+      prominent
+      border="top"
+      height="80px"
+    >
+      You must fill in company personal first .
+    </VAlert>
     <VForm
       ref="refForm"
       v-model="isFormValid"
@@ -109,152 +120,22 @@ const onSubmit = async () => {
         <!-- 👉 Name -->
         <VCol
           cols="12"
-          xl="3"
-          md="3"
+          xl="12"
+          md="12"
           sm="12"
           xs="12"
         >
           <template v-if="!LoadingForGetData">
             <VLabel>
-              Name
+              Company Name
             </VLabel>
             <VTextField
-              v-model="company.CompanyName"
+              v-model="alert.$state.companyInfo.CompanyName"
             />
           </template>
           <template v-else>
             <Skeletor
               height="65px"
-              pill
-            />
-          </template>
-        </VCol>
-
-        <!-- 👉 Birth Date -->
-        <VCol
-          cols="12"
-          xl="3"
-          md="3"
-          sm="12"
-          xs="12"
-        >
-          <template v-if="!LoadingForGetData">
-            <VLabel>
-              Birth Date
-            </VLabel>
-            <AppDateTimePicker
-              :key="JSON.stringify(dateTimePickerConfig)"
-              v-model:model-value="company.CompanyBirthDate"
-              :config="dateTimePickerConfig"
-              append-inner-icon="ph-calendar"
-            />
-          </template>
-          <template v-else>
-            <Skeletor
-              height="65px"
-              pill
-            />
-          </template>
-        </VCol>
-
-        <!-- 👉 SA I.D Number -->
-        <VCol
-          cols="12"
-          xl="3"
-          md="3"
-          sm="12"
-          xs="12"
-        >
-          <template v-if="!LoadingForGetData">
-            <VLabel>
-              SA I.D Number
-            </VLabel>
-            <VTextField
-              v-model="company.CompanySAIDNumber"
-            />
-          </template>
-          <template v-else>
-            <Skeletor
-              height="65px"
-              pill
-            />
-          </template>
-        </VCol>
-
-        <!-- 👉 Relationship -->
-        <VCol
-          cols="12"
-          xl="3"
-          md="3"
-          sm="12"
-          xs="12"
-        >
-          <template v-if="!LoadingForGetData">
-            <VLabel>
-              Relationship
-            </VLabel>
-            <VTextField
-              v-model="company.CompanyRelationship"
-            />
-          </template>
-          <template v-else>
-            <Skeletor
-              height="65px"
-              width="100%"
-
-              pill
-            />
-          </template>
-        </VCol>
-
-        <!-- 👉 Gender -->
-        <VCol
-          cols="12"
-          xl="3"
-          md="3"
-          sm="12"
-          xs="12"
-        >
-          <template v-if="!LoadingForGetData">
-            <VLabel>
-              Gender
-            </VLabel>
-            <VAutocomplete
-              v-model="company.CompanyGender"
-              :items="gender"
-            />
-          </template>
-          <template v-else>
-            <Skeletor
-              height="65px"
-              width="100%"
-
-              pill
-            />
-          </template>
-        </VCol>
-
-        <!-- 👉 Medically Dependent  -->
-        <VCol
-          cols="12"
-          xl="3"
-          md="3"
-          sm="12"
-          xs="12"
-          class="d-flex align-center mt-5"
-        >
-          <template v-if="!LoadingForGetData">
-            <VCheckbox
-              v-model="company.CompanyMedicallyDependent"
-              label="Medically Dependent"
-              color="primary"
-            />
-          </template>
-          <template v-else>
-            <Skeletor
-              height="65px"
-              width="100%"
-
               pill
             />
           </template>
