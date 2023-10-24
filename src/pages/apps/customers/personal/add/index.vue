@@ -11,11 +11,15 @@ const steps = [
     title: 'personal_information',
     icon: 'ph-folder-simple-user',
     disabled: false,
+    subject: 'personal',
+    action: 'create',
   },
   {
     title: 'personal_address',
     icon: 'ph-map-pin-line',
     disabled: false,
+    subject: 'personal_address',
+    action: 'create',
   },
 ]
 

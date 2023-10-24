@@ -9,4 +9,5 @@ export interface State {
   activeUserCount: number
   permissionItems: any[]
   deviceId: string
+  personalItem: any
 }// /state interface

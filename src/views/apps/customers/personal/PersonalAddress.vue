@@ -136,6 +136,7 @@ const onSubmit = async () => {
             <VTextField
               v-model="personalAddress.PersonalAddressStreetAddressLine1"
               :rules="[requiredValidator]"
+              clearable
             />
           </template>
           <template v-else>
@@ -160,6 +161,7 @@ const onSubmit = async () => {
             </VLabel>
             <VTextField
               v-model="personalAddress.PersonalAddressStreetAddressLine2"
+              clearable
             />
           </template>
           <template v-else>
@@ -185,6 +187,7 @@ const onSubmit = async () => {
             <VTextField
               v-model="personalAddress.personalAddressCity"
               :rules="[requiredValidator]"
+              clearable
             />
           </template>
           <template v-else>
@@ -209,6 +212,7 @@ const onSubmit = async () => {
             </VLabel>
             <VTextField
               v-model="personalAddress.personalAddressSuburb"
+              clearable
             />
           </template>
           <template v-else>
@@ -235,6 +239,7 @@ const onSubmit = async () => {
             </VLabel>
             <VTextField
               v-model="personalAddress.personalAddressProvince"
+              clearable
             />
           </template>
           <template v-else>
@@ -261,6 +266,7 @@ const onSubmit = async () => {
             </VLabel>
             <VTextField
               v-model="personalAddress.personalAddressPostCode"
+              clearable
             />
           </template>
           <template v-else>
@@ -287,6 +293,7 @@ const onSubmit = async () => {
             </VLabel>
             <VTextField
               v-model="personalAddress.persnoalAddressPOBox"
+              clearable
             />
           </template>
           <template v-else>

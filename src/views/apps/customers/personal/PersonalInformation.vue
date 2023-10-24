@@ -7,6 +7,7 @@ import { can } from '@layouts/plugins/casl'
 import filterNull from '@/helper/filterNull'
 import { gender } from '@/types/enum/gender'
 import { ethnic } from '@/types/enum/ethnic'
+import { countriesArr, getCountryCode } from '@/types/enum/countries'
 
 const emit = defineEmits(['personalId'])
 
@@ -24,24 +25,6 @@ if (route.query.edit)
 
 const personalId = ref(route.params.id || '')
 
-const personal = ref<any>({
-  personalId: '',
-  personalFirstName: '',
-  personalSecondName: '',
-  personalTirdName: '',
-  personalIdNumber: '',
-  PersonalIDDateIssued: '',
-  personalBirthDate: '',
-  personalEthnic: '',
-  personalMaritalStatus: '',
-  personalGender: '',
-  personalResidencyCardID: '',
-  personalPhoneNumber: '',
-  personalPhoneNumber2: '',
-  personalEmail: '',
-  code: '',
-})
-
 const alert = useAlertsStore()
 
 onMounted(async () => {
@@ -49,7 +32,7 @@ onMounted(async () => {
     const personalItem = await baseService.get(`personal/${personalId.value}`) as any
 
     if (personalItem.data) {
-      personal.value = personalItem.data
+      alert.$state.personalItem = personalItem.data
       LoadingForGetData.value = false
     }
   }
@@ -73,17 +56,12 @@ const payload = {
   update: false,
 }/* /payload */
 
-const dateTimePickerConfig = computed(() => {
-  return { enableTime: true, dateFormat: 'Y-m-d' }
-})
-
 const onSubmit = async () => {
   const validate = await refForm.value?.validate() as any
   if (validate.valid
   ) {
     loading.value = true
-    personal.value.code = 'IQ'
-    personalItem.value = { ...personal.value }
+    personalItem.value = { ...alert.$state.personalItem }
 
     let result = null
     if (personalId.value) {
@@ -95,6 +73,10 @@ const onSubmit = async () => {
       result = await baseService.create('personal', filterNull(personalItem.value)) as any
       if (result.data) {
         payload.text = 'personal added successfly .'
+        nextTick(() => {
+          refForm.value?.reset()
+          refForm.value?.resetValidation()
+        })
         emit('personalId', result.data.PersonalId)
       }
     }
@@ -131,7 +113,8 @@ const onSubmit = async () => {
               First Name
             </VLabel>
             <VTextField
-              v-model="personal.personalFirstName"
+              v-model="alert.$state.personalItem.personalFirstName"
+              clearable
               :rules="[requiredValidator]"
             />
           </template>
@@ -156,7 +139,8 @@ const onSubmit = async () => {
               Second Name
             </VLabel>
             <VTextField
-              v-model="personal.personalSecondName"
+              v-model="alert.$state.personalItem.personalSecondName"
+              clearable
               :rules="[requiredValidator]"
             />
           </template>
@@ -181,7 +165,8 @@ const onSubmit = async () => {
               Third Name
             </VLabel>
             <VTextField
-              v-model="personal.personalTirdName"
+              v-model="alert.$state.personalItem.personalTirdName"
+              clearable
               :rules="[requiredValidator]"
             />
           </template>
@@ -206,7 +191,8 @@ const onSubmit = async () => {
               ID number
             </VLabel>
             <VTextField
-              v-model="personal.personalIdNumber"
+              v-model="alert.$state.personalItem.personalIdNumber"
+              clearable
               :rules="[requiredValidator, integerValidator]"
             />
           </template>
@@ -233,9 +219,8 @@ const onSubmit = async () => {
               ID Date Issued
             </VLabel>
             <AppDateTimePicker
-              :key="JSON.stringify(dateTimePickerConfig)"
-              v-model:model-value="personal.PersonalIDDateIssued"
-              :config="dateTimePickerConfig"
+              v-model="alert.$state.personalItem.PersonalIDDateIssued"
+              clearable
               :rules="[requiredValidator]"
               append-inner-icon="ph-calendar"
             />
@@ -263,9 +248,8 @@ const onSubmit = async () => {
               Date of Birth
             </VLabel>
             <AppDateTimePicker
-              :key="JSON.stringify(dateTimePickerConfig)"
-              v-model:model-value="personal.personalBirthDate"
-              :config="dateTimePickerConfig"
+              v-model="alert.$state.personalItem.personalBirthDate"
+              clearable
               :rules="[requiredValidator]"
               append-inner-icon="ph-calendar"
             />
@@ -295,7 +279,8 @@ const onSubmit = async () => {
               Ethnic
             </VLabel>
             <VAutocomplete
-              v-model="personal.personalEthnic"
+              v-model="alert.$state.personalItem.personalEthnic"
+              clearable
               :rules="[requiredValidator]"
               :items="ethnic"
             />
@@ -310,7 +295,7 @@ const onSubmit = async () => {
           </template>
         </VCol>
 
-        <!-- 👉 Marital Status  -->
+        <!-- 👉 Code -->
         <VCol
           cols="12"
           xl="3"
@@ -320,11 +305,14 @@ const onSubmit = async () => {
         >
           <template v-if="!LoadingForGetData">
             <VLabel class="required">
-              Marital Status
+              Code
             </VLabel>
-            <VTextField
-              v-model="personal.personalMaritalStatus"
+            <VAutocomplete
+              v-model="alert.$state.personalItem.PersonalCode"
+              clearable
+              :items="countriesArr"
               :rules="[requiredValidator]"
+              :item-value="(item) => getCountryCode(item)"
             />
           </template>
           <template v-else>
@@ -352,7 +340,8 @@ const onSubmit = async () => {
               Gender
             </VLabel>
             <VAutocomplete
-              v-model="personal.personalGender"
+              v-model="alert.$state.personalItem.personalGender"
+              clearable
               :items="gender"
               :rules="[requiredValidator]"
             />
@@ -380,7 +369,8 @@ const onSubmit = async () => {
               Residency Card ID
             </VLabel>
             <VTextField
-              v-model="personal.personalResidencyCardID"
+              v-model="alert.$state.personalItem.personalResidencyCardID"
+              clearable
               :rules="[requiredValidator]"
             />
           </template>
@@ -393,6 +383,7 @@ const onSubmit = async () => {
             />
           </template>
         </VCol>
+
         <!-- 👉 Phone number -->
         <VCol
           cols="12"
@@ -406,7 +397,8 @@ const onSubmit = async () => {
               Phone number
             </VLabel>
             <VTextField
-              v-model="personal.personalPhoneNumber"
+              v-model="alert.$state.personalItem.personalPhoneNumber"
+              clearable
               :rules="[requiredValidator, integerValidator]"
             />
           </template>
@@ -433,7 +425,8 @@ const onSubmit = async () => {
               Phone number 2
             </VLabel>
             <VTextField
-              v-model="personal.personalPhoneNumber2"
+              v-model="alert.$state.personalItem.personalPhoneNumber2"
+              clearable
               :rules="[integerValidator]"
             />
           </template>
@@ -460,7 +453,8 @@ const onSubmit = async () => {
               Email
             </VLabel>
             <VTextField
-              v-model="personal.PersonalEmail"
+              v-model="alert.$state.personalItem.PersonalEmail"
+              clearable
               :rules="[requiredValidator, emailValidator]"
             />
           </template>
