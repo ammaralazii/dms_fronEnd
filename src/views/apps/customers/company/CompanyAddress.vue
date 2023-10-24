@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { VForm } from 'vuetify/components'
-import type { companyAdress } from '@/types/interfaces/company-address'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
 import { emailValidator, integerValidator, requiredValidator } from '@validators'
@@ -23,7 +22,6 @@ const isFormValid = ref(false)
 const loading = ref(false)
 const formDisabled = ref(true)
 const companyAddressItem = ref()
-const companyAddress = ref<companyAdress>()
 const LoadingForGetData = ref(true)
 
 const alert = useAlertsStore()
@@ -53,12 +51,12 @@ onMounted(async () => {
     const item = await baseService.get(`getByCompanyId/${comPnId.value}`) as any
 
     if (item.success) {
-      companyAddress.value = item.data ? item.data : {}
+      alert.$state.companyAddress = item.data ? item.data : {}
       LoadingForGetData.value = false
     }
   }
   else {
-    companyAddress.value = {}
+    alert.$state.companyAddress = {}
     LoadingForGetData.value = false
   }// /if
 })// /onMounted
@@ -69,17 +67,17 @@ const onSubmit = async () => {
   ) {
     loading.value = true
 
-    companyAddressItem.value = { ...companyAddress.value }
+    companyAddressItem.value = { ...alert.$state.companyAddress }
 
     let result = null
 
-    if (companyAddress.value.company_id) {
+    if (alert.$state.companyAddress.company_id) {
       delete companyAddressItem.value.company_id
       result = await baseService.update('company_address', filterNull(companyAddressItem.value), companyAddressItem.value.CompanyAddressId) as any
       payload.text = 'the address updated successfly .'
     }
     else {
-      companyAddress.value.company_id = comPnId.value
+      alert.$state.companyAddress.company_id = comPnId.value as string
       companyAddressItem.value.company_id = comPnId.value
       result = await baseService.create('company_address', filterNull(companyAddressItem.value)) as any
       payload.text = 'the address added successfly .'
@@ -138,7 +136,7 @@ const onSubmit = async () => {
               Street Address Line1
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressStreetAddressLine1"
+              v-model="alert.$state.companyAddress.CompanyAddressStreetAddressLine1"
               clearable
             />
           </template>
@@ -163,7 +161,7 @@ const onSubmit = async () => {
               Street Address Line2
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressStreetAddressLine2"
+              v-model="alert.$state.companyAddress.CompanyAddressStreetAddressLine2"
               clearable
             />
           </template>
@@ -188,7 +186,7 @@ const onSubmit = async () => {
               City
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressCity"
+              v-model="alert.$state.companyAddress.CompanyAddressCity"
               clearable
             />
           </template>
@@ -213,7 +211,7 @@ const onSubmit = async () => {
               Suburb
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressSuburb"
+              v-model="alert.$state.companyAddress.CompanyAddressSuburb"
               clearable
             />
           </template>
@@ -240,7 +238,7 @@ const onSubmit = async () => {
               Province
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressProvince"
+              v-model="alert.$state.companyAddress.CompanyAddressProvince"
               clearable
             />
           </template>
@@ -267,7 +265,7 @@ const onSubmit = async () => {
               Postcode
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressPostcode"
+              v-model="alert.$state.companyAddress.CompanyAddressPostcode"
               clearable
             />
           </template>
@@ -294,7 +292,7 @@ const onSubmit = async () => {
               Telephone (H)
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressTelephoneH"
+              v-model="alert.$state.companyAddress.CompanyAddressTelephoneH"
               clearable
             />
           </template>
@@ -321,7 +319,7 @@ const onSubmit = async () => {
               Telephone (W)
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressTelephoneW"
+              v-model="alert.$state.companyAddress.CompanyAddressTelephoneW"
               clearable
             />
           </template>
@@ -348,7 +346,7 @@ const onSubmit = async () => {
               P.O. Box
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressPOBox"
+              v-model="alert.$state.companyAddress.CompanyAddressPOBox"
               clearable
             />
           </template>
@@ -375,7 +373,7 @@ const onSubmit = async () => {
               Email
             </VLabel>
             <VTextField
-              v-model="companyAddress.CompanyAddressEmail"
+              v-model="alert.$state.companyAddress.CompanyAddressEmail"
               clearable
             />
           </template>

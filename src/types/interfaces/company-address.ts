@@ -10,4 +10,5 @@ export interface companyAdress {
   CompanyAddressTelephoneW?: string
   CompanyAddressPOBox?: string
   CompanyAddressEmail?: string
+  company_id?: string
 }

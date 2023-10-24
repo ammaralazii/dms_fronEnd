@@ -23,7 +23,6 @@ const isFormValid = ref(false)
 const loading = ref(false)
 const formDisabled = ref(true)
 const personalAddressItem = ref()
-const personalAddress = ref()
 const LoadingForGetData = ref(true)
 
 const alert = useAlertsStore()
@@ -51,12 +50,12 @@ onMounted(async () => {
     const item = await baseService.get(`getByPersonalId/${peRsnId.value}`) as any
 
     if (item.success) {
-      personalAddress.value = item.data ? item.data : {}
+      alert.$state.personalAddress = item.data ? item.data : {}
       LoadingForGetData.value = false
     }
   }
   else {
-    personalAddress.value = {}
+    alert.$state.personalAddress = {}
     LoadingForGetData.value = false
   }// /if
 })// /onMounted
@@ -67,17 +66,17 @@ const onSubmit = async () => {
   ) {
     loading.value = true
 
-    personalAddressItem.value = { ...personalAddress.value }
+    personalAddressItem.value = { ...alert.$state.personalAddress }
 
     let result = null
 
-    if (personalAddress.value.personal_id) {
+    if (alert.$state.personalAddress.personal_id) {
       delete personalAddressItem.value.personal_id
       result = await baseService.update('personal_address', filterNull(personalAddressItem.value), personalAddressItem.value.PersonalAddressId) as any
       payload.text = 'the address updated successfly .'
     }
     else {
-      personalAddress.value.personal_id = peRsnId.value
+      alert.$state.personalAddress.personal_id = peRsnId.value
       personalAddressItem.value.personal_id = peRsnId.value
       result = await baseService.create('personal_address', filterNull(personalAddressItem.value)) as any
       payload.text = 'the address added successfly .'
@@ -134,7 +133,7 @@ const onSubmit = async () => {
               Street Address Line1
             </VLabel>
             <VTextField
-              v-model="personalAddress.PersonalAddressStreetAddressLine1"
+              v-model="alert.$state.personalAddress.PersonalAddressStreetAddressLine1"
               :rules="[requiredValidator]"
               clearable
             />
@@ -160,7 +159,7 @@ const onSubmit = async () => {
               Street Address Line2
             </VLabel>
             <VTextField
-              v-model="personalAddress.PersonalAddressStreetAddressLine2"
+              v-model="alert.$state.personalAddress.PersonalAddressStreetAddressLine2"
               clearable
             />
           </template>
@@ -185,7 +184,7 @@ const onSubmit = async () => {
               City
             </VLabel>
             <VTextField
-              v-model="personalAddress.personalAddressCity"
+              v-model="alert.$state.personalAddress.personalAddressCity"
               :rules="[requiredValidator]"
               clearable
             />
@@ -211,7 +210,7 @@ const onSubmit = async () => {
               Suburb
             </VLabel>
             <VTextField
-              v-model="personalAddress.personalAddressSuburb"
+              v-model=" alert.$state.personalAddress.personalAddressSuburb"
               clearable
             />
           </template>
@@ -238,7 +237,7 @@ const onSubmit = async () => {
               Province
             </VLabel>
             <VTextField
-              v-model="personalAddress.personalAddressProvince"
+              v-model=" alert.$state.personalAddress.personalAddressProvince"
               clearable
             />
           </template>
@@ -265,7 +264,7 @@ const onSubmit = async () => {
               Postcode
             </VLabel>
             <VTextField
-              v-model="personalAddress.personalAddressPostCode"
+              v-model=" alert.$state.personalAddress.personalAddressPostCode"
               clearable
             />
           </template>
@@ -292,7 +291,7 @@ const onSubmit = async () => {
               P.O. Box
             </VLabel>
             <VTextField
-              v-model="personalAddress.persnoalAddressPOBox"
+              v-model=" alert.$state.personalAddress.persnoalAddressPOBox"
               clearable
             />
           </template>

@@ -1,4 +1,5 @@
 import type { cases } from '../interfaces/cases'
+import type { companyAdress } from '../interfaces/company-address'
 import type { roles } from '../interfaces/roles'
 
 export interface State {
@@ -10,4 +11,6 @@ export interface State {
   permissionItems: any[]
   deviceId: string
   personalItem: any
+  personalAddress: any
+  companyAddress: companyAdress
 }// /state interface
