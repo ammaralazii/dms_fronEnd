@@ -400,6 +400,7 @@ const godisplayEditPage = (id: string) => {
                 </th>
               </tr>
             </thead>
+
             <!-- 👉 table body -->
             <tbody v-if="personals.length > 0">
               <tr
@@ -545,7 +546,7 @@ const godisplayEditPage = (id: string) => {
 
     <ImportDialog
       :dialog="importDialog"
-      url="upload_excel_personal"
+      url="personal/import"
       filename="personal_strctuer"
       @close="() => {
         importDialog = false

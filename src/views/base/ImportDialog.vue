@@ -51,7 +51,7 @@ const uploadExcelFile = async () => {
 
     let result = null
 
-    result = await baseService.create(props.url, formData) as any
+    result = await baseService.create(`/${props.url}`, formData) as any
 
     loadingUpload.value = false
 
