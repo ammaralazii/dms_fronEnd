@@ -9,6 +9,12 @@ import { gender } from '@/types/enum/gender'
 import { ethnic } from '@/types/enum/ethnic'
 import { countriesArr, getCountryCode } from '@/types/enum/countries'
 
+const props = defineProps({
+  edit: {
+    type: Boolean,
+  },
+})
+
 const emit = defineEmits(['personalId'])
 
 const route = useRoute()
@@ -23,13 +29,18 @@ const LoadingForGetData = ref(true)
 if (route.query.edit)
   formDisabled.value = !JSON.parse(route.query.edit as any)
 
-const personalId = ref(route.params.id || '')
+let personalId: string | null = null
+
+if (route.query.personal_id)
+  personalId = route.query.personal_id as string
+else
+  personalId = route.params.id as string
 
 const alert = useAlertsStore()
 
 onMounted(async () => {
-  if (personalId.value) {
-    const personalItem = await baseService.get(`personal/${personalId.value}`) as any
+  if (personalId && !props.edit) {
+    const personalItem = await baseService.get(`personal/${personalId}`) as any
 
     if (personalItem.data) {
       alert.$state.personalItem = personalItem.data
@@ -64,8 +75,10 @@ const onSubmit = async () => {
 
     personalItem.value = { ...alert.$state.personalItem }
 
+    personalItem.value.PersonalCountry = getCountryCode(personalItem.value.PersonalCountry)
+
     let result = null
-    if (personalId.value) {
+    if (personalId) {
       result = await baseService.update('personal', filterNull(personalItem.value), personalItem.value.PersonalId) as any
       if (result.success)
         payload.text = 'personal updated successfly .'
@@ -313,7 +326,6 @@ const onSubmit = async () => {
               clearable
               :items="countriesArr"
               :rules="[requiredValidator]"
-              :item-value="(item) => getCountryCode(item)"
             />
           </template>
           <template v-else>

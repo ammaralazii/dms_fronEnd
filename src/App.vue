@@ -22,7 +22,7 @@ const tostKey = ref(1)
 const expirTost = (item: any, i: number) => {
   setTimeout(() => {
     tostss.value.splice(i, 1)
-  }, item.timeOut + 100)
+  }, item.timeOut - 100)
 }
 
 watch(() => alert.$state.tosts.length, () => {

@@ -7,6 +7,7 @@ import { can } from '@layouts/plugins/casl'
 import filterNull from '@/helper/filterNull'
 import { gender } from '@/types/enum/gender'
 import sortByText from '@/helper/sortByText'
+import { countriesArr, getCountryCode } from '@/types/enum/countries'
 
 const emit = defineEmits(['foreignId'])
 
@@ -18,27 +19,20 @@ const loading = ref(false)
 const formDisabled = ref(true)
 const foreignItem = ref()
 const LoadingForGetData = ref(true)
-const codes = ref([])
 
 if (route.query.edit)
   formDisabled.value = !JSON.parse(route.query.edit as any)
 
 const foreignId = ref(route.params.id || '')
 
-const foreign = ref<any>({
-  foreignId: '',
-})
-
 const alert = useAlertsStore()
 
 onMounted(async () => {
-  codes.value = sortByText(await baseService.get('https://restcountries.com/v3.1/all') as any) as any
-
   if (foreignId.value) {
-    const foreignItem = await baseService.get(`foreign/${foreignId.value}`) as any
+    const resulte = await baseService.get(`foreign/${foreignId.value}`) as any
 
-    if (foreignItem.data) {
-      foreign.value = foreignItem.data
+    if (resulte.data) {
+      alert.$state.foreignInf = resulte.data
       LoadingForGetData.value = false
     }
   }
@@ -67,18 +61,26 @@ const onSubmit = async () => {
   if (validate.valid
   ) {
     loading.value = true
-    foreignItem.value = { ...foreign.value }
 
-    let result = null
+    foreignItem.value = { ...alert.$state.foreignInf }
+
+    foreignItem.value.ForeignCode = getCountryCode(foreignItem.value.ForeignCode)
+
+    let result: any = null
     if (foreignId.value) {
       result = await baseService.update('foreign', filterNull(foreignItem.value), foreignItem.value.ForeignId) as any
-      if (result?.success)
+      if (result?.success) {
         payload.text = 'foreign updated successfly .'
+        payload.color = 'success'
+        alert.$state.tosts.push(payload)
+      }
     }
     else {
       result = await baseService.create('foreign', filterNull(foreignItem.value)) as any
       if (result?.data) {
         payload.text = 'foreign added successfly .'
+        payload.color = 'success'
+        alert.$state.tosts.push(payload)
         nextTick(() => {
           refForm.value?.reset()
           refForm.value?.resetValidation()
@@ -87,8 +89,6 @@ const onSubmit = async () => {
       }
     }
     loading.value = false
-    payload.color = 'success'
-    alert.$state.tosts.push(payload)
   }// /validation
 }// /onSubmit
 </script>
@@ -119,7 +119,8 @@ const onSubmit = async () => {
               First Name
             </VLabel>
             <VTextField
-              v-model="foreign.ForeignFirstName"
+              v-model="alert.$state.foreignInf.ForeignFirstName"
+              clearable
               :rules="[requiredValidator]"
             />
           </template>
@@ -144,7 +145,8 @@ const onSubmit = async () => {
               Middle Name
             </VLabel>
             <VTextField
-              v-model="foreign.ForeignSecondName"
+              v-model="alert.$state.foreignInf.ForeignSecondName"
+              clearable
               :rules="[requiredValidator]"
             />
           </template>
@@ -169,40 +171,14 @@ const onSubmit = async () => {
               Last Name
             </VLabel>
             <VTextField
-              v-model="foreign.ForeignThirdName"
+              v-model="alert.$state.foreignInf.ForeignThirdName"
+              clearable
               :rules="[requiredValidator]"
             />
           </template>
           <template v-else>
             <Skeletor
               height="65px"
-              pill
-            />
-          </template>
-        </VCol>
-
-        <!-- 👉 Marital Status  -->
-        <VCol
-          cols="12"
-          xl="4"
-          md="4"
-          sm="12"
-          xs="12"
-        >
-          <template v-if="!LoadingForGetData">
-            <VLabel class="required">
-              Marital Status
-            </VLabel>
-            <VTextField
-              v-model="foreign.ForeignMaritalStatus"
-              :rules="[requiredValidator]"
-            />
-          </template>
-          <template v-else>
-            <Skeletor
-              height="65px"
-              width="100%"
-
               pill
             />
           </template>
@@ -221,7 +197,8 @@ const onSubmit = async () => {
               Gender
             </VLabel>
             <VAutocomplete
-              v-model="foreign.ForeignGender"
+              v-model="alert.$state.foreignInf.ForeignGender"
+              clearable
               :items="gender"
               :rules="[requiredValidator]"
             />
@@ -249,10 +226,9 @@ const onSubmit = async () => {
               Code
             </VLabel>
             <VAutocomplete
-              v-model="foreign.code"
-              :items="codes"
-              :item-title="(item) => item?.name?.common"
-              :item-value="(item) => item.cca2"
+              v-model="alert.$state.foreignInf.ForeignCode"
+              clearable
+              :items="countriesArr"
             />
           </template>
           <template v-else>
@@ -278,7 +254,8 @@ const onSubmit = async () => {
               Phone Number
             </VLabel>
             <VTextField
-              v-model="foreign.ForeignPhoneNumber"
+              v-model="alert.$state.foreignInf.ForeignPhoneNumber"
+              clearable
               :rules="[requiredValidator, integerValidator]"
             />
           </template>
@@ -305,7 +282,8 @@ const onSubmit = async () => {
               Phone Number 2
             </VLabel>
             <VTextField
-              v-model="foreign.ForeignPhoneNumber2"
+              v-model="alert.$state.foreignInf.ForeignPhoneNumber2"
+              clearable
               :rules="[integerValidator]"
             />
           </template>
@@ -332,7 +310,8 @@ const onSubmit = async () => {
               Email
             </VLabel>
             <VTextField
-              v-model="foreign.ForeignEmail"
+              v-model="alert.$state.foreignInf.ForeignEmail"
+              clearable
               :rules="[requiredValidator, emailValidator]"
             />
           </template>
@@ -341,6 +320,32 @@ const onSubmit = async () => {
               height="65px"
               width="100%"
 
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Marital Status  -->
+        <VCol
+          cols="12"
+          xl="4"
+          md="4"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VCheckbox
+              v-model="alert.$state.foreignInf.ForeignMaritalStatus"
+              clearable
+              class="mt-6"
+              label="Medically Dependent"
+              color="primary"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              width="100%"
               pill
             />
           </template>

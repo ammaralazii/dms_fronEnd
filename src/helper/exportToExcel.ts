@@ -1,5 +1,6 @@
 import { saveAs } from 'file-saver'
 import * as XLSX from 'xlsx'
+import splitPacalCase from './splitPacalCase'
 
 // Export data to Excel
 export const exportToExcel = async (
@@ -8,7 +9,8 @@ export const exportToExcel = async (
   fileName?: string,
   indexArr?: number[] | string[],
   colWidth?: number,
-  removeString?: string,
+  selctedColumns?: string[],
+  relationalColumns?: string[],
 // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   let ws: XLSX.WorkSheet
@@ -16,23 +18,37 @@ export const exportToExcel = async (
 
   // If data is provided as an array of objects, export it
   if (data && data.length > 0) {
-    function processString(inputString: string) {
-      // Remove "Accessor" from the string
-      const withoutAccessor = inputString.replace(removeString, '')
-
-      // Add a space between the two resulting words
-      return withoutAccessor.replace(/([a-z])([A-Z])/g, '$1 $2')
-    }// /if
-
-    if (indexArr.length > 0) {
+    if (indexArr && indexArr.length > 0) {
       data = data.map(item => {
         indexArr.forEach(deletekey => {
-          console.log('item : ', item)
           if (deletekey in item)
             delete item[deletekey]
         }) // /forEach
 
         return item
+      }) // /map
+      // /map
+    }// /if
+
+    if (selctedColumns && selctedColumns.length > 0) {
+      data = data.map(item => {
+        let addChildItemToPerent: any = {}
+        const newItem: any = {}
+        if (relationalColumns && relationalColumns.length > 0) {
+          relationalColumns.forEach(relationalColumn => {
+            if (relationalColumn in item) {
+              addChildItemToPerent = { ...item, ...item[relationalColumn] }
+              delete addChildItemToPerent[relationalColumn]
+            }
+          })
+        }
+        console.log('addChildItemToPerent : ', addChildItemToPerent)
+        selctedColumns.forEach(selectKey => {
+          if (selectKey in addChildItemToPerent)
+            newItem[splitPacalCase(selectKey)] = addChildItemToPerent[selectKey]
+        }) // /forEach
+
+        return newItem
       }) // /map
       // /map
     }// /if

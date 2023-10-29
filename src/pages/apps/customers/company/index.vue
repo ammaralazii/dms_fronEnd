@@ -3,12 +3,12 @@
 import { ref } from 'vue'
 import debounce from 'lodash/debounce'
 import moment from 'moment'
-import FilterDate from '@/views/base/FilterDate.vue'
 import { useAlertsStore } from '@/stores'
 import type { companyInfo } from '@/types/interfaces/company-info'
-import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import ImportDialog from '@/views/base/ImportDialog.vue'
+import ChoseColumnForExport from '@/views/base/choseColumnForExport.vue'
+import { exportToExcel } from '@/helper/exportToExcel'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -30,6 +30,8 @@ const selectAll = ref(false)
 const loadingGetCompanies = ref<boolean>(false)
 const searchCode = ref()
 const importDialog = ref(false)
+const exportedColumns = ref<string[]>([])
+const exportDialog = ref(false)
 
 const params = ref({
   per_page: rowPerPage.value,
@@ -108,13 +110,13 @@ const confermDeleteDialog = (ids?: any) => {
   }
 }// /confermDeleteDialog
 
-const goToEditPage = (id: any) => {
+const goToEditPage = (id: any, personal_id: string) => {
   router.push({
     name: 'apps-customers-company-view-id',
     params: {
       id,
     },
-    query: { edit: true as any },
+    query: { edit: true as any, personal_id },
   })
 }// /goToEditPage
 
@@ -161,14 +163,26 @@ watch(() => searchCode.value, (val: string) => {
   searchQuery(val)
 })// /watch
 
-const godisplayEditPage = (id: string) => {
+const godisplayEditPage = (id: string, personal_id: string) => {
   router.push({
     name: 'apps-customers-company-view-id',
     params: {
       id,
     },
+    query: {
+      personal_id,
+    },
   })
 }// /goToEditPage
+
+// this function to chose columns for export excel file
+const choseColumns = () => {
+  if (selectedcompanys.value.length > 0) {
+    exportDialog.value = true
+    exportedColumns.value = alert.$state.allCompanyColumns
+  }
+  else { exportToExcel([], 'myTable', 'company', [0, 7], 20) }
+}// /choseColumns
 </script>
 
 <template>
@@ -205,7 +219,6 @@ const godisplayEditPage = (id: string) => {
             <VSpacer />
 
             <div class=" d-flex align-center flex-wrap gap-4">
-              <!-- 👉 Export button -->
               <VBtn
                 v-if="selectedcompanys.length > 0"
                 variant="tonal"
@@ -215,14 +228,13 @@ const godisplayEditPage = (id: string) => {
               >
                 Delete
               </VBtn>
+
+              <!-- 👉 Export button -->
               <VBtn
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel(companys.filter((company) => {
-                  if (selectedcompanys.includes(company.CompanyId))
-                    return company
-                }), 'myTable', 'company', selectedcompanys ? [0, 6] : [0, 7], 20)"
+                @click="choseColumns"
               >
                 Export
               </VBtn>
@@ -278,42 +290,105 @@ const godisplayEditPage = (id: string) => {
                     @change="selectAllcompanys"
                   />
                 </th>
+
                 <th
                   scope="col"
                   class="text-center"
                 >
                   Name
                 </th>
+
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  Birth Date
+                  Date Issued
                 </th>
+
                 <th
                   scope="col"
                   class="text-center"
                 >
-                  SA I.D Number
+                  Registration Number
                 </th>
+
                 <th
                   class="text-center"
                   scope="col"
                 >
-                  Relationship
+                  CMC Licensed Number
                 </th>
+
                 <th
                   class="text-center"
                   scope="col"
                 >
-                  Gender
+                  CMC Licensed Expired
                 </th>
+
                 <th
                   class="text-center"
                   scope="col"
                 >
-                  Medically Dependen
+                  Email
                 </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Phone
+                </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Country
+                </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Governorate
+                </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  City
+                </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Region
+                </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Suburb
+                </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Street
+                </th>
+
+                <th
+                  class="text-center"
+                  scope="col"
+                >
+                  Medically Dependent
+                </th>
+
                 <th
                   class="text-center"
                   scope="col"
@@ -322,6 +397,7 @@ const godisplayEditPage = (id: string) => {
                 </th>
               </tr>
             </thead>
+
             <!-- 👉 table body -->
             <tbody v-if="companys.length > 0">
               <tr
@@ -329,7 +405,7 @@ const godisplayEditPage = (id: string) => {
                 :key="index"
                 style="height: 3.75rem;"
                 class="tableHover"
-                @dblclick="godisplayEditPage(company.CompanyId)"
+                @dblclick="godisplayEditPage(company.CompanyId, company.personal_id)"
               >
                 <td>
                   <VCheckbox
@@ -341,16 +417,40 @@ const godisplayEditPage = (id: string) => {
                   {{ company.CompanyName || 'not found' }}
                 </td>
                 <td class="text-center">
-                  {{ moment(company.CompanyBirthDate).format('YYYY/MM/DD') || 'not found' }}
+                  {{ moment(company.CompanyDateIssued).format('YYYY/MM/DD') || 'not found' }}
                 </td>
                 <td class="text-center">
-                  {{ company.CompanySAIDNumber || 'not found' }}
+                  {{ company.CompanyRegistrationNumber || 'not found' }}
                 </td>
                 <td class="text-center">
-                  {{ company.CompanyRelationship || 'not found' }}
+                  {{ company.CompanyCMCLicensedNumber || 'not found' }}
                 </td>
                 <td class="text-center">
-                  {{ company.CompanyGender || 'not found' }}
+                  {{ company.CompanyCMCLicensedExpired || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanyEmail || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanyPhone || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanyCountry || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanyGovernorate || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanyCity || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanyRegion || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanySuburb || 'not found' }}
+                </td>
+                <td class="text-center">
+                  {{ company.CompanyStreet || 'not found' }}
                 </td>
                 <td class="text-center">
                   {{ company.CompanyMedicallyDependent === true ? 'Yes' : 'No' || 'not found' }}
@@ -364,7 +464,7 @@ const godisplayEditPage = (id: string) => {
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="goToEditPage(company.CompanyId)"
+                    @click="goToEditPage(company.CompanyId, company.personal_id)"
                   >
                     <VIcon
                       size="22"
@@ -437,6 +537,18 @@ const godisplayEditPage = (id: string) => {
         importDialog = false
         fetchcompanys()
       }"
+    />
+
+    <ChoseColumnForExport
+      :dialog="exportDialog"
+      :columns="exportedColumns"
+      :data="companys.filter((company) => {
+        if (selectedcompanys.includes(company.CompanyId))
+          return company
+      })"
+      file-name="company"
+      :relational-columns="['personal']"
+      @close="exportDialog = !exportDialog"
     />
   </section>
 </template>

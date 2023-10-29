@@ -23,13 +23,15 @@ const isFormValid = ref(false)
 const loading = ref(false)
 const formDisabled = ref(true)
 const otherInformationItem = ref()
-const otherInformation = ref<otherInformationInfo>()
 const LoadingForGetData = ref(true)
 
 const alert = useAlertsStore()
 const foRnId = ref(route.params.id || props.foreignId)
 
 const urlId = route.params.id
+
+if (route.query.edit)
+  formDisabled.value = !JSON.parse(route.query.edit as any)
 
 const payload = {
   color: '',
@@ -53,12 +55,13 @@ onMounted(async () => {
     const item = await baseService.get(`other_information/getByForeignId/${foRnId.value}`) as any
 
     if (item.success) {
-      otherInformation.value = item.data ? item.data : {}
+      alert.$state.otherInformation = item.data ? item.data : {}
+
+      console.log('alert.$state.otherInformation : ', alert.$state.otherInformation)
       LoadingForGetData.value = false
     }
   }
   else {
-    otherInformation.value = {}
     LoadingForGetData.value = false
   }// /if
 })// /onMounted
@@ -69,17 +72,17 @@ const onSubmit = async () => {
   ) {
     loading.value = true
 
-    otherInformationItem.value = { ...otherInformation.value }
+    otherInformationItem.value = { ...alert.$state.otherInformation }
 
     let result = null
 
-    if (otherInformation.value.foreign_id) {
+    if (alert.$state.otherInformation.foreign_id) {
       delete otherInformationItem.value.foreign_id
       result = await baseService.update('other_information', filterNull(otherInformationItem.value), otherInformationItem.value.OtherInformationId) as any
       payload.text = 'the other information updated successfly .'
     }
     else {
-      otherInformation.value.foreign_id = foRnId.value
+      alert.$state.otherInformation.foreign_id = foRnId.value as string
       otherInformationItem.value.foreign_id = foRnId.value
       result = await baseService.create('other_information', filterNull(otherInformationItem.value)) as any
       payload.text = 'the other information added successfly .'
@@ -138,7 +141,7 @@ const onSubmit = async () => {
               Passport Number
             </VLabel>
             <VTextField
-              v-model="otherInformation.OtherInformationPassportNumber"
+              v-model="alert.$state.otherInformation.OtherInformationPassportNumber"
               clearable
             />
           </template>
@@ -160,11 +163,13 @@ const onSubmit = async () => {
         >
           <template v-if="!LoadingForGetData">
             <VLabel>
-              Brith
+              Birth
             </VLabel>
-            <VTextField
-              v-model="otherInformation.OtherInformationBrith"
+            <AppDateTimePicker
+
+              v-model="alert.$state.otherInformation.OtherInformationBrith"
               clearable
+              append-inner-icon="ph-calendar"
             />
           </template>
           <template v-else>
@@ -188,7 +193,7 @@ const onSubmit = async () => {
               Date Issued
             </VLabel>
             <AppDateTimePicker
-              v-model="otherInformation.OtherInformationDateIssued"
+              v-model="alert.$state.otherInformation.OtherInformationDateIssued"
               clearable
               append-inner-icon="ph-calendar"
             />
@@ -214,7 +219,7 @@ const onSubmit = async () => {
               Permanent
             </VLabel>
             <VTextField
-              v-model="otherInformation.OtherInformationPermanent"
+              v-model="alert.$state.otherInformation.OtherInformationPermanent"
               clearable
             />
           </template>
@@ -241,7 +246,7 @@ const onSubmit = async () => {
               Expire Date
             </VLabel>
             <AppDateTimePicker
-              v-model="otherInformation.OtherInformationExpireDate"
+              v-model="alert.$state.otherInformation.OtherInformationExpireDate"
               clearable
               append-inner-icon="ph-calendar"
             />
@@ -269,7 +274,7 @@ const onSubmit = async () => {
               Country Issue
             </VLabel>
             <VTextField
-              v-model="otherInformation.OtherInformationCountryIssue"
+              v-model="alert.$state.otherInformation.OtherInformationCountryIssue"
               clearable
             />
           </template>
@@ -296,7 +301,7 @@ const onSubmit = async () => {
               Nationality
             </VLabel>
             <VTextField
-              v-model="otherInformation.OtherInformationNationality"
+              v-model="alert.$state.otherInformation.OtherInformationNationality"
               clearable
             />
           </template>
@@ -315,7 +320,7 @@ const onSubmit = async () => {
         <VCol>
           <template v-if="!LoadingForGetData">
             <VBtn
-              v-if="!formDisabled && (can('update', 'other_information') && !foreignId) || (foreignId && can('create', 'other_information'))"
+              v-if="(can('update', 'other_information') && route.params.id && (!formDisabled || JSON.parse(route.params.edit))) || (!route.params.id && can('create', 'other_information'))"
               type="submit"
               class="mt-3 mx-0"
               :loading="loading"
@@ -325,7 +330,7 @@ const onSubmit = async () => {
             </VBtn>
 
             <VBtn
-              v-if="can('update', 'other_information') && !foreignId"
+              v-if="can('update', 'other_information') && route.params.id"
               :class=" !formDisabled ? 'mt-3 mx-3' : 'mt-3 mx-0'"
               color="error"
               @click="formDisabled = !formDisabled"

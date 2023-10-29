@@ -15,8 +15,14 @@ export const useAlertsStore = defineStore('alerts', {
       personalItem: {},
       personalAddress: {},
       companyAddress: {},
-      authorizedInfo: {},
+      authorizedInfo: [],
       companyInfo: {},
+      foreignInf: {},
+      otherInformation: {},
+      sarsInfo: {},
+      newAuthorizedInfo: [],
+      allCompanyColumns: [],
+      allForeignClumns: [],
     }/* /return */
   }, /* /state */
 
@@ -42,6 +48,16 @@ export const useAlertsStore = defineStore('alerts', {
 
         if (activeUserCount.status === 200)
           this.activeUserCount = activeUserCount.data.data
+
+        const companyColumns = await axiosIns.get('company/getColumns')
+
+        if (companyColumns.status === 200)
+          this.allCompanyColumns = companyColumns.data.data
+
+        const foreignColumns = await axiosIns.get('foreign/getColumns')
+
+        if (foreignColumns.status === 200)
+          this.allForeignClumns = foreignColumns.data.data
       }
       catch (e) {
         console.error('Error : ', e)

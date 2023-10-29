@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import debounce from 'lodash/debounce'
-import moment from 'moment'
-import FilterDate from '@/views/base/FilterDate.vue'
 import { useAlertsStore } from '@/stores'
 import type { foreignInfo } from '@/types/interfaces/foreign-info'
 import { exportToExcel } from '@/helper/exportToExcel'
 import DeleteDialog from '@/views/base/DeleteDialog.vue'
 import ImportDialog from '@/views/base/ImportDialog.vue'
+import ChoseColumnForExport from '@/views/base/ChoseColumnForExport.vue'
 
 const alert = useAlertsStore()
 const router = useRouter()
@@ -29,6 +28,8 @@ const selectAll = ref(false)
 const loadingGetForeigns = ref<boolean>(false)
 const searchCode = ref()
 const importDialog = ref(false)
+const exportDialog = ref(false)
+const foreignColumns = ref<string[]>([])
 
 const params = ref({
   per_page: rowPerPage.value,
@@ -123,7 +124,6 @@ const openExcelDialog = () => {
 }// /openExcelDialog
 
 // this function to add all foreign id to selectedforeigns
-
 watch(() => selectAll.value, (val: boolean) => {
   if (val)
     selectedforeigns.value = foreigns.value.map(foreign => foreign.ForeignId) as any
@@ -169,6 +169,14 @@ const godisplayEditPage = (id: string) => {
     },
   })
 }// /goToEditPage
+
+const exportData = () => {
+  if (selectedforeigns.value.length > 0) {
+    foreignColumns.value = alert.$state.allForeignClumns
+    exportDialog.value = !exportDialog.value
+  }
+  else { exportToExcel([], 'myTable', 'foreign', selectedforeigns.value.length > 0 ? ['ForeignId', 'other_information', 'sars', 'work_permit'] : [0, 7], 20) }
+}
 </script>
 
 <template>
@@ -219,10 +227,7 @@ const godisplayEditPage = (id: string) => {
                 variant="tonal"
                 color="secondary"
                 prepend-icon="ph-arrow-square-out"
-                @click="exportToExcel(foreigns.filter((foreign) => {
-                  if (selectedforeigns.includes(foreign.ForeignId))
-                    return foreign
-                }), 'myTable', 'foreign', selectedforeigns.length > 0 ? ['ForeignId', 'other_information', 'sars', 'work_permit'] : [0, 7], 20)"
+                @click="exportData"
               >
                 Export
               </VBtn>
@@ -349,28 +354,28 @@ const godisplayEditPage = (id: string) => {
                     :value="foreign.ForeignId"
                   />
                 </td>
-                <td>
+                <td class="text-center">
                   {{ foreign.ForeignFirstName || 'not found' }}
                 </td>
-                <td>
+                <td class="text-center">
                   {{ foreign.ForeignSecondName || 'not found' }}
                 </td>
-                <td>
+                <td class="text-center">
                   {{ foreign.ForeignThirdName || 'not found' }}
                 </td>
-                <td>
-                  {{ foreign.ForeignMaritalStatus || 'not found' }}
+                <td class="text-center">
+                  {{ foreign.ForeignMaritalStatus ? 'Yes' : 'No' || 'not found' }}
                 </td>
-                <td>
+                <td class="text-center">
                   {{ foreign.ForeignGender }}
                 </td>
-                <td>
+                <td class="text-center">
                   {{ foreign.ForeignPhoneNumber || 'not found' }}
                 </td>
-                <td>
+                <td class="text-center">
                   {{ foreign.ForeignPhoneNumber2 || 'not found' }}
                 </td>
-                <td>
+                <td class="text-center">
                   {{ foreign.ForeignEmail || 'not found' }}
                 </td>
                 <td
@@ -455,6 +460,19 @@ const godisplayEditPage = (id: string) => {
         importDialog = false
         fetchforeigns()
       }"
+    />
+
+    <ChoseColumnForExport
+      :dialog="exportDialog"
+      :data="foreigns.filter((foreign) => {
+        if (selectedforeigns.includes(foreign.ForeignId))
+          return foreign
+      })"
+      :columns="foreignColumns"
+      :relational-columns="['other_information', 'sars', 'work_permit']"
+      :expect-columns="['ForeignCode']"
+      file-name="foreign"
+      @close="exportDialog = !exportDialog"
     />
   </section>
 </template>

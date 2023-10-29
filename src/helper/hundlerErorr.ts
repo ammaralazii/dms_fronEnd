@@ -19,7 +19,7 @@ export default function hundlerErorr(_err: any) {
     update: false,
   }/* /payload */
 
-  if (_err?.response?.status === 422 || _err?.response?.status === 500) {
+  if (_err?.response?.status === 422) {
     let errors = []
     if (typeof _err?.response?.data?.message === 'object' && _err?.response?.data?.message !== null) {
       errors = Object.values(_err?.response?.data?.message)
@@ -46,6 +46,11 @@ export default function hundlerErorr(_err: any) {
       payload.text = _err?.response?.data?.message
       alertStore.$state.tosts.push(payload)
     }// end of if
+  }
+  else if (_err?.response?.status === 500) {
+    payload.text = 'Server error'
+    payload.color = 'error'
+    alertStore.$state.tosts.push(payload)
   }
   else if (_err?.response?.status === 401) {
     localStorage.removeItem('userData')

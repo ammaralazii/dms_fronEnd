@@ -31,6 +31,9 @@ const foRnId = ref(route.params.id || props.foreignId)
 
 const urlId = route.params.id
 
+if (route.query.edit)
+  formDisabled.value = !JSON.parse(route.query.edit as any)
+
 const payload = {
   color: '',
   timeOut: 5000,
@@ -48,7 +51,6 @@ const payload = {
 onMounted(async () => {
   if (props.foreignId)
     formDisabled.value = false
-
   if (foRnId.value) {
     const item = await baseService.get(`work_permit/getByForeignId/${foRnId.value}`) as any
 
@@ -206,7 +208,7 @@ const onSubmit = async () => {
         <VCol>
           <template v-if="!LoadingForGetData">
             <VBtn
-              v-if="!formDisabled && (can('update', 'work_permit') && !foreignId) || (foreignId && can('create', 'work_permit'))"
+              v-if="route.params.id && (can('update', 'work_permit') && (!formDisabled || JSON.parse(route.params.edit))) || (!route.params.id && can('create', 'work_permit'))"
               type="submit"
               class="mt-3 mx-0"
               :loading="loading"
@@ -216,7 +218,7 @@ const onSubmit = async () => {
             </VBtn>
 
             <VBtn
-              v-if="can('update', 'work_permit') && !foreignId"
+              v-if="can('update', 'work_permit') && route.params.id"
               :class=" !formDisabled ? 'mt-3 mx-3' : 'mt-3 mx-0'"
               color="error"
               @click="formDisabled = !formDisabled"

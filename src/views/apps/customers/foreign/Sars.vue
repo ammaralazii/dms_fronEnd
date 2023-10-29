@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { VForm } from 'vuetify/components'
-import type { sarsInfo } from '@/types/interfaces/sars-info'
 import { useAlertsStore } from '@/stores'
 import { baseService } from '@/api/BaseService'
 import { emailValidator, integerValidator, requiredValidator } from '@validators'
@@ -23,11 +22,13 @@ const isFormValid = ref(false)
 const loading = ref(false)
 const formDisabled = ref(true)
 const sarsItem = ref()
-const sars = ref<sarsInfo>()
 const LoadingForGetData = ref(true)
 
 const alert = useAlertsStore()
 const foRnId = ref(route.params.id || props.foreignId)
+
+if (route.query.edit)
+  formDisabled.value = !JSON.parse(route.query.edit as any)
 
 const urlId = route.params.id
 
@@ -53,12 +54,11 @@ onMounted(async () => {
     const item = await baseService.get(`sars/getByForeignId/${foRnId.value}`) as any
 
     if (item.success) {
-      sars.value = item.data ? item.data : {}
+      alert.$state.sarsInfo = item.data ? item.data : {}
       LoadingForGetData.value = false
     }
   }
   else {
-    sars.value = {}
     LoadingForGetData.value = false
   }// /if
 })// /onMounted
@@ -69,17 +69,17 @@ const onSubmit = async () => {
   ) {
     loading.value = true
 
-    sarsItem.value = { ...sars.value }
+    sarsItem.value = { ...alert.$state.sarsInfo }
 
     let result = null
 
-    if (sars.value.foreign_id) {
-      delete sarsItem.value.foreign_id
+    if (alert.$state.sarsInfo.foreign_id) {
+      delete alert.$state.sarsInfo.foreign_id
       result = await baseService.update('sars', filterNull(sarsItem.value), sarsItem.value.SarsId) as any
       payload.text = 'the SARS updated successfly .'
     }
     else {
-      sars.value.foreign_id = foRnId.value
+      alert.$state.sarsInfo.foreign_id = foRnId.value as string
       sarsItem.value.foreign_id = foRnId.value
       result = await baseService.create('sars', filterNull(sarsItem.value)) as any
       payload.text = 'the SARS added successfly .'
@@ -138,7 +138,7 @@ const onSubmit = async () => {
               Tax Number
             </VLabel>
             <VTextField
-              v-model="sars.SarsTaxNumber"
+              v-model="alert.$state.sarsInfo.SarsTaxNumber"
               clearable
             />
           </template>
@@ -163,7 +163,7 @@ const onSubmit = async () => {
               Office
             </VLabel>
             <VTextField
-              v-model="sars.SarsOffice"
+              v-model="alert.$state.sarsInfo.SarsOffice"
               clearable
             />
           </template>
@@ -180,7 +180,7 @@ const onSubmit = async () => {
         <VCol>
           <template v-if="!LoadingForGetData">
             <VBtn
-              v-if="!formDisabled && (can('update', 'sars') && !foreignId) || (foreignId && can('create', 'sars'))"
+              v-if="(can('update', 'sars') && route.params.id && (!formDisabled || JSON.parse(route.params.edit))) || (!route.params.id && can('create', 'sars'))"
               type="submit"
               class="mt-3 mx-0"
               :loading="loading"
@@ -190,7 +190,7 @@ const onSubmit = async () => {
             </VBtn>
 
             <VBtn
-              v-if="can('update', 'sars') && !foreignId"
+              v-if="can('update', 'sars') && route.params.id"
               :class=" !formDisabled ? 'mt-3 mx-3' : 'mt-3 mx-0'"
               color="error"
               @click="formDisabled = !formDisabled"

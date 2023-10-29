@@ -5,7 +5,7 @@ import { baseService } from '@/api/BaseService'
 import { emailValidator, integerValidator, requiredValidator } from '@validators'
 import { can } from '@layouts/plugins/casl'
 import filterNull from '@/helper/filterNull'
-import { gender } from '@/types/enum/gender'
+import { countriesArr, getCountryCode } from '@/types/enum/countries'
 
 const props = defineProps({
   // eslint-disable-next-line vue/prop-name-casing
@@ -61,6 +61,9 @@ const payload = {
   update: false,
 }/* /payload */
 
+if (route.query.edit)
+  formDisabled.value = !JSON.parse(route.query.edit as any)
+
 const onSubmit = async () => {
   const validate = await refForm.value?.validate() as any
   if (validate.valid
@@ -75,11 +78,15 @@ const onSubmit = async () => {
       resulte = await baseService.update('company', filterNull(companyItem.value), companyItem.value.CompanyId) as any
       if (resulte?.success)
         payload.text = 'company updated successfly .'
+      payload.color = 'success'
+      alert.$state.tosts.push(payload)
     }
     else {
       resulte = await baseService.create('company', filterNull(companyItem.value)) as any
       if (resulte?.data) {
         payload.text = 'company added successfly .'
+        payload.color = 'success'
+        alert.$state.tosts.push(payload)
         nextTick(() => {
           refForm.value?.reset()
           refForm.value?.resetValidation()
@@ -88,8 +95,6 @@ const onSubmit = async () => {
       }
     }
     loading.value = false
-    payload.color = 'success'
-    alert.$state.tosts.push(payload)
   }// /validation
 }// /onSubmit
 </script>
@@ -100,14 +105,14 @@ const onSubmit = async () => {
     height="auto"
   >
     <VAlert
-      v-if="!companyId"
+      v-if="formDisabled && !companyId"
       variant="outlined"
       type="warning"
       prominent
       border="top"
       height="80px"
     >
-      You must fill in company personal first .
+      You must fill in personal information first .
     </VAlert>
     <VForm
       ref="refForm"
@@ -120,17 +125,320 @@ const onSubmit = async () => {
         <!-- 👉 Name -->
         <VCol
           cols="12"
-          xl="12"
-          md="12"
+          xl="3"
+          md="3"
           sm="12"
           xs="12"
         >
           <template v-if="!LoadingForGetData">
-            <VLabel>
+            <VLabel class="required">
               Company Name
             </VLabel>
             <VTextField
               v-model="alert.$state.companyInfo.CompanyName"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Date Issued -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Date Issued
+            </VLabel>
+            <AppDateTimePicker
+              v-model="alert.$state.companyInfo.CompanyDateIssued"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Registration Number -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Registration Number
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyRegistrationNumber"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 CMC Licensed Number -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              CMC Licensed Number
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyCMCLicensedNumber"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 CMC Licensed Expired -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              CMC Licensed Expired
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyCMCLicensedExpired"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Email -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Email
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyEmail"
+              :rules="[requiredValidator, emailValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Phone -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Phone
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyPhone"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Country -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Country
+            </VLabel>
+            <VAutocomplete
+              v-model="alert.$state.companyInfo.CompanyCountry"
+              :rules="[requiredValidator]"
+              :items="countriesArr"
+              :item-value="(item) => getCountryCode(item)"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Governorate -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Governorate
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyGovernorate"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 City -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              City
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyCity"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Region -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Region
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyRegion"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Suburb -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Suburb
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanySuburb"
+              :rules="[requiredValidator]"
+            />
+          </template>
+          <template v-else>
+            <Skeletor
+              height="65px"
+              pill
+            />
+          </template>
+        </VCol>
+
+        <!-- 👉 Street -->
+        <VCol
+          cols="12"
+          xl="3"
+          md="3"
+          sm="12"
+          xs="12"
+        >
+          <template v-if="!LoadingForGetData">
+            <VLabel class="required">
+              Street
+            </VLabel>
+            <VTextField
+              v-model="alert.$state.companyInfo.CompanyStreet"
+              :rules="[requiredValidator]"
             />
           </template>
           <template v-else>
@@ -146,7 +454,7 @@ const onSubmit = async () => {
         <VCol>
           <template v-if="!LoadingForGetData">
             <VBtn
-              v-if="(!formDisabled && can('update', 'company')) || (!companyId && can('create', 'company'))"
+              v-if="(route.params.id && (route.query.edit || !formDisabled) && can('update', 'company')) || (!route.params.id && can('create', 'company'))"
               type="submit"
               class="mt-3 mx-0"
               :loading="loading"
@@ -156,7 +464,7 @@ const onSubmit = async () => {
             </VBtn>
 
             <VBtn
-              v-if="can('update', 'company') && companyId"
+              v-if="can('update', 'company') && route.params.id"
               :class=" !formDisabled ? 'mt-3 mx-3' : 'mt-3 mx-0'"
               color="error"
               @click="formDisabled = !formDisabled"

@@ -13,10 +13,6 @@ const props = defineProps({
   },
 })
 
-watch(() => props.steps, val => {
-  console.log('val : ', val)
-})
-
 const activeIndex = ref(0)
 
 const screen = useDisplay()
@@ -48,14 +44,13 @@ const dispalyComponent = (index: number) => {
     <VRow>
       <VCol
         cols="12"
-        lg="3"
-        md="3"
+        lg="12"
+        md="12"
         sm="12"
         xs="12"
       >
         <VList
-          class="pa-2"
-          :class="screen.smAndDown.value ? 'd-flex' : ''"
+          class="pa-5 d-flex"
           color="primary"
         >
           <template
@@ -63,37 +58,47 @@ const dispalyComponent = (index: number) => {
             :key="index"
           >
             <VListItem
-
               v-if="$can(step.action, step.subject)"
               color="primary"
               :active="controller[index]"
               link
               rounded
-              :class="screen.smAndDown.value ? 'mx-1' : 'my-1'"
+              :class="screen.smAndDown.value ? 'mx-1 iconItem' : 'my-1 iconItem'"
               :disabled="step.disabled"
               @click="dispalyComponent(index)"
             >
-              <template
-                #prepend
+              <VListItemTitle
+                class="text-capitalize"
+                :style="screen.smAndDown.value ? '' : 'display: grid;'"
               >
-                <VIcon :class="screen.xs.value ? 'ma-auto' : ''">
+                <VIcon
+                  size="x-large"
+                  class="ma-auto"
+                >
                   {{ step.icon }}
                 </VIcon>
-              </template>
-              <VListItemTitle
-                v-if="!screen.xs.value"
-                class="text-capitalize"
-              >
-                {{ step.title.replace('_', ' ') }}
+                {{ screen.smAndDown.value ? '' : step.title.replace('_', ' ') }}
               </VListItemTitle>
             </VListItem>
+            <VSpacer
+              v-if="index !== steps.length - 1"
+              class="d-flex align-center justify-center"
+            >
+              <VIcon
+                class="ma-auto"
+                size="x-large"
+                :color="controller[index + 1] ? 'primary' : ''"
+              >
+                ph-caret-right
+              </VIcon>
+            </VSpacer>
           </template>
         </VList>
       </VCol>
       <VCol
         cols="12"
-        lg="9"
-        md="9"
+        lg="12"
+        md="12"
         sm="12"
         xs="12"
       >
@@ -120,16 +125,16 @@ const dispalyComponent = (index: number) => {
             >
               <VCardActions class="d-flex justify-space-between">
                 <VBtn
-                  :disabled="activeIndex === steps.length - 1"
-                  @click="dispalyComponent(activeIndex + 1)"
-                >
-                  Next
-                </VBtn>
-                <VBtn
                   :disabled="activeIndex === 0"
                   @click="dispalyComponent(activeIndex - 1)"
                 >
                   Previous
+                </VBtn>
+                <VBtn
+                  :disabled="activeIndex === steps.length - 1"
+                  @click="dispalyComponent(activeIndex + 1)"
+                >
+                  Next
                 </VBtn>
               </VCardActions>
             </VCard>
@@ -139,6 +144,19 @@ const dispalyComponent = (index: number) => {
     </VRow>
   </div>
 </template>
+
+<style lang="scss">
+.iconItem {
+  .v-list-item__overlay {
+    display: none !important;
+  }
+
+  svg {
+    block-size: 3rem;
+    inline-size: 3rem;
+  }
+}
+</style>
 
 <route lang="yaml">
 meta:
