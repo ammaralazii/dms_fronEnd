@@ -454,7 +454,7 @@ const exportData = () => {
 
     <ImportDialog
       :dialog="importDialog"
-      url="upload_excel_foreign"
+      url="foreign/import"
       filename="foreign_strctuer"
       @close="() => {
         importDialog = false

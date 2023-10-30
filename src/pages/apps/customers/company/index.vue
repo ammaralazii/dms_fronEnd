@@ -531,7 +531,7 @@ const choseColumns = () => {
 
     <ImportDialog
       :dialog="importDialog"
-      url="upload_excel_company"
+      url="company/import"
       filename="company_strctuer"
       @close="() => {
         importDialog = false
